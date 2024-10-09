@@ -1,4 +1,4 @@
-dist/
-node_module/
-dist/
+**/dist/
+**/node_modules/
+**/dist/
 .env*

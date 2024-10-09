@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      context: ./backend-shindow
+      dockerfile: Dockerfile.dev
+    container_name: backend-shindow
+    env_file: ./backend-shindow/.env.development
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend-shindow:/shindow/backend-shindow

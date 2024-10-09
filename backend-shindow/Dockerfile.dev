@@ -1,0 +1,14 @@
+# Node 20.15.0
+FROM node:20-bullseye
+
+WORKDIR /shindow/backend-shindow
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["npx", "ts-node-dev", "src/index.ts"]
