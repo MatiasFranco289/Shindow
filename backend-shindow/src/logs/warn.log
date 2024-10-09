@@ -1,0 +1,7 @@
+[2024-10-09T02:02:21-03:00] [warn]: NODE_ENV value could not be retrieved. Setting to default value 'development'.
+[2024-10-09T02:46:02-03:00] [warn]: NODE_ENV value could not be retrieved. Setting to default value 'development'.
+[2024-10-09T02:46:16-03:00] [warn]: NODE_ENV value could not be retrieved. Setting to default value 'development'.
+[2024-10-09T04:21:21-03:00] [error]: Testing logs
+[2024-10-09T04:21:24-03:00] [warn]: Testing logs
+[2024-10-09T07:25:34Z] [warn]: NODE_ENV value could not be retrieved. Setting to default value 'development'.
+[2024-10-09T04:29:50-03:00] [warn]: NODE_ENV value could not be retrieved. Setting to default value 'development'.
