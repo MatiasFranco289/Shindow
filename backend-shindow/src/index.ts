@@ -1,17 +1,11 @@
-// TODO: Agregar los logs al gitignore
-// TODO: Agregar un .env example
 // TODO: Aplicar sanitizacion
-// TODO: Agregar interface a los del body
-
 // TODO: Agregar middleware de verificacion de sesion (Que pasa si vence la cookie?)
-// TODO: Se deberia eliminar el hash y la conexion cuando la cookie se venza.
-// TODO: Termianr el endpoint de logout
 
 import express, { Router } from "express";
 import logger from "./utils/logger";
 import EnvironmentManager from "./utils/EnvironmentManager";
 import authRouter from "./routes/auth";
-import expressSessionMiddleware from "./middlewares/expressSessionMiddleware";
+import expressSessionMiddleware from "./middlewares/expressSession";
 import errorHandlerMiddleware from "./middlewares/errorHandler";
 
 const app = express();
@@ -19,11 +13,13 @@ const apiRouter = Router();
 const environmentManager = EnvironmentManager.getInstance();
 const apiPort = environmentManager.getEnvironmentVariable("API_PORT");
 const secret = environmentManager.getEnvironmentVariable("SECRET");
+const sessionMaxAge =
+  environmentManager.getEnvironmentVariable("SESSION_MAX_AGE");
 
 app.use("/api", apiRouter);
 
 apiRouter.use(express.json());
-apiRouter.use(expressSessionMiddleware(secret));
+apiRouter.use(expressSessionMiddleware(secret, sessionMaxAge));
 
 apiRouter.use("/auth", authRouter);
 

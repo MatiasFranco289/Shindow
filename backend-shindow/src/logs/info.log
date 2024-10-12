@@ -373,3 +373,160 @@
 [2024-10-12T03:28:59-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
 [2024-10-12T03:29:11-03:00] [warn]: Failed login attempt from IP: '::ffff:172.23.0.1' for uesr vago-dev1. Invalid private key.
 [2024-10-12T03:29:14-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:36:11-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:36:11-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:36:18-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:36:23-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:37:06-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:37:06-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:37:09-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:37:14-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:45:47-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:45:47-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:45:53-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:46:12-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:46:12-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:46:17-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:46:37-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:46:37-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:46:41-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:46:51-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:51:45-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:51:45-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:54:02-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:54:02-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:54:47-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:54:47-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:55:07-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:55:09-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:55:29-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:55:29-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:56:23-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:56:23-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:56:33-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:56:54-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:56:54-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:57:01-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:57:27-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:57:27-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:58:16-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:58:16-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:58:21-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:58:36-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:58:36-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:58:39-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:58:50-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:59:08-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:59:29-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T03:59:29-03:00] [info]: The API is running on port 5000.
+[2024-10-12T03:59:33-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T03:59:38-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T04:01:45-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T04:01:45-03:00] [info]: The API is running on port 5000.
+[2024-10-12T04:01:49-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T04:04:07-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T04:04:07-03:00] [info]: The API is running on port 5000.
+[2024-10-12T04:37:29-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T04:37:29-03:00] [info]: The API is running on port 5000.
+[2024-10-12T04:38:41-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T04:38:41-03:00] [info]: The API is running on port 5000.
+[2024-10-12T04:39:06-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T04:39:07-03:00] [info]: The API is running on port 5000.
+[2024-10-12T04:39:09-03:00] [error]: Failed login attempt from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T04:39:09-03:00] [error]: connect EHOSTUNREACH 186.123.152.30:2022
+[2024-10-12T04:39:27-03:00] [error]: Failed login attempt from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T04:39:27-03:00] [error]: connect EHOSTUNREACH 186.123.152.30:2022
+[2024-10-12T04:45:30-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T04:45:30-03:00] [info]: The API is running on port 5000.
+[2024-10-12T04:45:34-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T04:45:44-03:00] [error]: Failed login attempt from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T04:45:44-03:00] [error]: There is already a connection with the identifier IBz78Cm2Pi5M5pE7Njg_Jx0sZIXED8OC.
+[2024-10-12T04:48:09-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T04:48:09-03:00] [info]: The API is running on port 5000.
+[2024-10-12T04:48:17-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T04:48:17-03:00] [info]: The API is running on port 5000.
+[2024-10-12T04:48:20-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:05:43-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:05:43-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:07:11-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:07:11-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:08:19-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:08:19-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:08:35-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:08:35-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:08:41-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:08:42-03:00] [info]: The connection with id 'jO3m3KWdVQ1GTm5f6SttBsYC0XN-jVpI' created by the user 'vago-dev1' has expired.
+[2024-10-12T05:09:19-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:09:20-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:09:28-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:09:28-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:09:32-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:09:33-03:00] [info]: The connection with id 'ys72f3pGnKyJTRTagrOhfqNvwbcoE-AF' created by the user 'vago-dev1' has expired.
+[2024-10-12T05:09:44-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:09:44-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:09:47-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:09:57-03:00] [info]: The connection with id 'A2PK9k5piYrjOkto-e3ablaEDXGDM1uk' created by the user 'vago-dev1' has expired.
+[2024-10-12T05:10:28-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:10:38-03:00] [info]: The connection with id '4hDE-HVyxxsmpi2ZLKHPXPA1f-WvRRIt' created by the user 'vago-dev1' has expired.
+[2024-10-12T05:10:47-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:10:57-03:00] [info]: The connection with id 'c9PTfFPs51h6CD-JctfuZbZp4x-nYYKh' created by the user 'vago-dev1' has expired.
+[2024-10-12T05:12:58-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:13:08-03:00] [info]: The connection with id 'llBjQ84Ref_gHfAruiwMa-OsKQWNb7DM' created by the user 'vago-dev1' has expired.
+[2024-10-12T05:19:03-03:00] [warn]: Failed login attempt from IP: '::ffff:172.23.0.1' for user vago-dev1. Invalid passphrase.
+[2024-10-12T05:19:18-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:19:22-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:19:28-03:00] [info]: The connection with id 'O0FkSMCn-WSSnwPfBsalu7zNCZ0CwyYf' created by the user 'vago-dev1' has expired.
+[2024-10-12T05:19:32-03:00] [info]: The connection with id 'MgdJvZ9Up0nIcx8PwrDYlg4es8Gya911' created by the user 'vago-dev1' has expired.
+[2024-10-12T05:20:23-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:20:23-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:20:58-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:20:58-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:21:03-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:21:09-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:21:23-03:00] [info]: The connection with id '5ihbwZy9w1xl75cvq7WJNTVEXPrTz2pB' created by the user 'vago-dev1' has expired.
+[2024-10-12T05:21:28-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:21:29-03:00] [info]: The connection with id '2SpyC9VfdLhVdykxLVgGUNfc01fYmxdv' created by the user 'vago-dev1' has expired.
+[2024-10-12T05:22:02-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:22:02-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:22:05-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:22:08-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:22:25-03:00] [info]: The connection with id 'M4wjvaxUy6clnzVn9MZVEiHMSb0xUosU' created by the user 'vago-dev1' has expired.
+[2024-10-12T05:22:28-03:00] [info]: The connection with id 'gfjwP1uXXhmq0aRANsJAJRjtGuLJzzrA' created by the user 'vago-dev1' has expired.
+[2024-10-12T05:24:18-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:24:18-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:25:53-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:25:53-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:28:16-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:28:16-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:28:45-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:28:45-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:28:51-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:29:11-03:00] [info]: The connection with id 'vMKPksO05Usnz_65y1N8MNaKXEUEDFYT' has expired.
+[2024-10-12T05:29:53-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:29:53-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:30:10-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:30:17-03:00] [info]: The connection with id 'MekVWkfprbxmtsCovVNdyaiXOpPTt05e' has expired.
+[2024-10-12T05:32:54-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:32:54-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:33:06-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:33:06-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:33:46-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:33:51-03:00] [info]: The connection with id 'T90WkCzDlnOdNYWJrLdRPQwXF7UneWsV' has expired.
+[2024-10-12T05:33:55-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:34:01-03:00] [info]: The connection with id 'yKL0As_M6mue5R_WAPvr4zYvN9cP50h4' has expired.
+[2024-10-12T05:34:49-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:34:49-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:39:21-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:39:21-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:40:01-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:40:01-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:40:32-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:40:32-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:40:34-03:00] [info]: Environment variables successfully loaded.
+[2024-10-12T05:40:34-03:00] [info]: The API is running on port 5000.
+[2024-10-12T05:40:45-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:40:48-03:00] [info]: The connection with id 'CMxxx4vVpjgF2W4WnPHolcbgPGX3smj4' has expired.
+[2024-10-12T05:40:51-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:40:52-03:00] [info]: The connection with id 'LJKcVUUguNYMKJdMAEWdHyPFQ7xUz_2p' has expired.
+[2024-10-12T05:40:56-03:00] [info]: New connection from IP: '::ffff:172.23.0.1' for user vago-dev1.
+[2024-10-12T05:41:16-03:00] [info]: The connection with id 'oq3dZ70jgw-873Jb85woB_HXC_7eH62d' has expired.

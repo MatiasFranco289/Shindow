@@ -3,6 +3,9 @@ export const DEFAULT_TZ = "UTC";
 export const DEFAULT_SERVER_PORT = "22";
 export const DEFAULT_SERVER_IP = "localhost";
 
+export const DEFAULT_ERROR_MESSAGE =
+  "An unexpected error occurred while processing your request. Please try again later.";
+
 export const HTTP_STATUS_CODE_OK = 200;
 export const HTTP_STATUS_CODE_CONFLICT = 409;
 export const HTTP_STATUS_CODE_UNAUTHORIZED = 401;

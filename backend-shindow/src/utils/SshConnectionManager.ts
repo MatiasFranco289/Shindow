@@ -2,6 +2,7 @@ import { Client } from "ssh2";
 import { v4 as uuidv4 } from "uuid";
 import { ERROR_TYPE_CONNECTION_ID_NOT_UNIQUE } from "../constants";
 import { ConnectionCredentials } from "../interfaces";
+import logger from "./logger";
 
 export class SshConnectionManager {
   public static instance: SshConnectionManager;
@@ -40,37 +41,63 @@ export class SshConnectionManager {
 
   /**
    * Attemps to establish a connection using the provided credentials.
-   * Once the connection has been established, creates a unique identifier and add it to the connectionMap along with the connection.
-   * If the unique identifier already exist (Almost imposible) throws a custom error.
+   * Once the connection has been established, adds the connection to the connectionMap along with the provided sessionId as identifier.
+   * If the provided sessionId already exist throws a custom error.
    *
    * @param serverIP - The ip of the server to connect.
    * @param serverPort - The ssh port of the server.
+   * @param sessionId - A unique identifier that will be used to identify the connection
+   * @param lifetime - The time in ms after that connection will be closed and information deleted from the connections map.
    * @param credentials - The user credentials following the ConnectionCredentials interface
    *
-   * @returns - A string with the unique identifier for the new connection
+   * @returns - A string with the provided sessionId identifying the connection
    */
   public async Connect(
     serverIP: string,
     serverPort: number,
+    sessionId: string,
+    lifetime: string,
     credentials: ConnectionCredentials
   ) {
+    console.log(this.connectionMap);
+
     const connection = await this.CreateNewConnection(
       serverIP,
       serverPort,
       credentials
     );
 
-    const connectionIdentifier = uuidv4();
-
-    if (this.connectionMap.has(connectionIdentifier)) {
+    if (this.connectionMap.has(sessionId)) {
       const error = new Error();
-      error.message = `There is already a connection with the identifier ${connectionIdentifier}.`;
+      error.message = `There is already a connection with the identifier ${sessionId}.`;
       error.name = ERROR_TYPE_CONNECTION_ID_NOT_UNIQUE;
       throw error;
     }
 
-    this.connectionMap.set(connectionIdentifier, connection);
-    return connectionIdentifier;
+    this.connectionMap.set(sessionId, connection);
+
+    // When the lifetime of the session has expired, close the connection and delete the info from the connections map
+    setTimeout(() => {
+      this.EndConnection(sessionId);
+    }, parseInt(lifetime));
+
+    return sessionId;
+  }
+
+  /**
+   * Receives a connection id and if that connection exists, it ends the connection and remove it from the connections map.
+   *
+   * @param connectionId - A string with the id of the connection to close.
+   */
+  public EndConnection(connectionId: string) {
+    const connectionToClose = this.connectionMap.get(connectionId);
+
+    if (connectionToClose) {
+      logger.info(`The connection with id '${connectionId}' has expired.`);
+
+      connectionToClose.end();
+      this.connectionMap.delete(connectionId);
+    }
   }
 
   /**

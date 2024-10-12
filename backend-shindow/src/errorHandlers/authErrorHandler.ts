@@ -1,6 +1,7 @@
 import { Response, Request } from "express";
 import { ApiResponse } from "../interfaces";
 import {
+  DEFAULT_ERROR_MESSAGE,
   HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_CODE_UNAUTHORIZED,
 } from "../constants";
@@ -28,8 +29,7 @@ export default function authErrorHandler(
 
   let response: ApiResponse<null> = {
     status_code: HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR,
-    message:
-      "An unexpected error occurred while processing your request. Please try again later.",
+    message: DEFAULT_ERROR_MESSAGE,
     data: [],
   };
 

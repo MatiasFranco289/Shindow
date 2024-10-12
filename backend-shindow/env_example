@@ -1,0 +1,7 @@
+API_PORT=5000
+API_DOMAIN="http://localhost"
+TZ="America/Argentina/Buenos_Aires"
+SERVER_IP="182.113.221.69"
+SERVER_PORT="2022"
+SECRET="my-secret"
+SESSION_MAX_AGE=86400000

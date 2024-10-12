@@ -12,13 +12,13 @@ declare module "express-session" {
  *
  * @param secret - The secret that will be used by express-session
  */
-const expressSessionMiddleware = (secret: string) => {
+const expressSessionMiddleware = (secret: string, sessionMaxAge: string) => {
   return session({
     secret: secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24,
+      maxAge: parseInt(sessionMaxAge) /* 86400000 */,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     },

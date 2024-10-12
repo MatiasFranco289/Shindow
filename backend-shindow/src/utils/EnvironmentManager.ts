@@ -18,6 +18,7 @@ export default class EnvironmentManager {
     SERVER_IP: DEFAULT_SERVER_IP,
     SERVER_PORT: DEFAULT_SERVER_PORT,
     SECRET: "",
+    SESSION_MAX_AGE: "",
   };
 
   private constructor() {}

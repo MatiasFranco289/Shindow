@@ -5,6 +5,7 @@ export interface EnvironmentVariables {
   SERVER_IP: string;
   SERVER_PORT: string;
   SECRET: string;
+  SESSION_MAX_AGE: string;
 }
 
 export interface ConnectionCredentials {
@@ -23,4 +24,11 @@ export interface ApiResponse<T> {
   status_code: number;
   message: string;
   data: Array<T>;
+}
+
+export interface LoginRequest {
+  username: string;
+  password: string;
+  privateKey: string;
+  passphrase: string;
 }
