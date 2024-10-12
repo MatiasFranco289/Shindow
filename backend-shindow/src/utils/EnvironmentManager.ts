@@ -1,7 +1,11 @@
 import dotenv from "dotenv";
 import { EnvironmentVariables } from "../interfaces";
 import { FileManager } from "./FileManager";
-import { DEFAULT_NODE_ENVIRONMENT } from "../constants";
+import {
+  DEFAULT_NODE_ENVIRONMENT,
+  DEFAULT_SERVER_IP,
+  DEFAULT_SERVER_PORT,
+} from "../constants";
 import logger from "./logger";
 
 /** Singleton class responsible for managing environment variables.*/
@@ -11,6 +15,9 @@ export default class EnvironmentManager {
     API_DOMAIN: "",
     API_PORT: "",
     TZ: "",
+    SERVER_IP: DEFAULT_SERVER_IP,
+    SERVER_PORT: DEFAULT_SERVER_PORT,
+    SECRET: "",
   };
 
   private constructor() {}
@@ -52,14 +59,24 @@ export default class EnvironmentManager {
       }
 
       for (const key in EnvironmentManager.environmentVariables) {
-        let newValue = process.env[key];
-        EnvironmentManager.environmentVariables[key] = newValue;
+        let valueFromEnv = process.env[key];
 
-        if (!newValue) {
+        // If the value can be recovered from the environment, i assign its value
+        if (valueFromEnv) {
+          EnvironmentManager.environmentVariables[key] = valueFromEnv;
+        }
+        // If the value can't be recovered from the environment and it has no default value
+        else if (!EnvironmentManager.environmentVariables[key]) {
           const error = new Error();
           error.message = `Environment variable '${key}' value not found.`;
           logger.error(error.message);
           throw error;
+        }
+        // If the value can't be recovered from the environment but it has a default value
+        else {
+          logger.warn(
+            `'${key}' value could not be found in environment. Setting to default value '${EnvironmentManager.environmentVariables[key]}'.`
+          );
         }
       }
 

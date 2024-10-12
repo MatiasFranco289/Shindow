@@ -5,3 +5,33 @@
 [2024-10-09T04:21:24-03:00] [warn]: Testing logs
 [2024-10-09T07:25:34Z] [warn]: NODE_ENV value could not be retrieved. Setting to default value 'development'.
 [2024-10-09T04:29:50-03:00] [warn]: NODE_ENV value could not be retrieved. Setting to default value 'development'.
+[2024-10-11T06:44:09-03:00] [warn]: 'SERVER_IP' value could not be found in environment. Setting to default value 'localhost'.
+[2024-10-11T06:44:09-03:00] [warn]: 'SERVER_PORT' value could not be found in environment. Setting to default value '22'.
+[2024-10-11T06:45:13-03:00] [warn]: 'SERVER_IP' value could not be found in environment. Setting to default value 'localhost'.
+[2024-10-11T06:45:13-03:00] [warn]: 'SERVER_PORT' value could not be found in environment. Setting to default value '22'.
+[2024-10-11T06:45:54-03:00] [warn]: 'SERVER_IP' value could not be found in environment. Setting to default value 'localhost'.
+[2024-10-11T06:45:54-03:00] [warn]: 'SERVER_PORT' value could not be found in environment. Setting to default value '22'.
+[2024-10-11T06:48:01-03:00] [warn]: 'SERVER_IP' value could not be found in environment. Setting to default value 'localhost'.
+[2024-10-11T06:48:01-03:00] [warn]: 'SERVER_PORT' value could not be found in environment. Setting to default value '22'.
+[2024-10-11T06:48:35-03:00] [warn]: 'SERVER_IP' value could not be found in environment. Setting to default value 'localhost'.
+[2024-10-11T06:48:35-03:00] [warn]: 'SERVER_PORT' value could not be found in environment. Setting to default value '22'.
+[2024-10-11T06:51:23-03:00] [warn]: 'SERVER_IP' value could not be found in environment. Setting to default value 'localhost'.
+[2024-10-11T06:51:23-03:00] [warn]: 'SERVER_PORT' value could not be found in environment. Setting to default value '22'.
+[2024-10-11T06:51:39-03:00] [warn]: 'SERVER_IP' value could not be found in environment. Setting to default value 'localhost'.
+[2024-10-11T06:51:39-03:00] [warn]: 'SERVER_PORT' value could not be found in environment. Setting to default value '22'.
+[2024-10-11T06:56:22-03:00] [warn]: 'SERVER_IP' value could not be found in environment. Setting to default value 'localhost'.
+[2024-10-11T06:56:22-03:00] [warn]: 'SERVER_PORT' value could not be found in environment. Setting to default value '22'.
+[2024-10-11T06:56:32-03:00] [warn]: 'SERVER_IP' value could not be found in environment. Setting to default value 'localhost'.
+[2024-10-11T06:56:32-03:00] [warn]: 'SERVER_PORT' value could not be found in environment. Setting to default value '22'.
+[2024-10-11T06:57:20-03:00] [warn]: 'SERVER_IP' value could not be found in environment. Setting to default value 'localhost'.
+[2024-10-11T06:57:20-03:00] [warn]: 'SERVER_PORT' value could not be found in environment. Setting to default value '22'.
+[2024-10-12T02:53:19-03:00] [warn]: Failed login attempt from IP: '::ffff:172.23.0.1' for user vago-dev1. Invalid passphrase.
+[2024-10-12T02:53:27-03:00] [warn]: Failed login attempt from IP: '::ffff:172.23.0.1' for uesr vago-dev1. Invalid private key.
+[2024-10-12T02:59:04-03:00] [warn]: Failed login attempt from IP: '::ffff:172.23.0.1' for user vago-dev1. Invalid passphrase.
+[2024-10-12T02:59:13-03:00] [warn]: Failed login attempt from IP: '::ffff:172.23.0.1' for user vago-dev1. Invalid passphrase.
+[2024-10-12T02:59:35-03:00] [warn]: Failed login attempt from IP: '::ffff:172.23.0.1' for user vago-dev1. Invalid passphrase.
+[2024-10-12T03:04:43-03:00] [warn]: Failed login attempt from IP: '::ffff:172.23.0.1' for user vago-dev1. Invalid passphrase.
+[2024-10-12T03:04:49-03:00] [warn]: Failed login attempt from IP: '::ffff:172.23.0.1' for user vago-dev1. Invalid passphrase.
+[2024-10-12T03:26:51-03:00] [error]: Failed login attempt from IP: '::ffff:172.23.0.1' for user undefined.
+[2024-10-12T03:26:51-03:00] [error]: Invalid username
+[2024-10-12T03:29:11-03:00] [warn]: Failed login attempt from IP: '::ffff:172.23.0.1' for uesr vago-dev1. Invalid private key.
