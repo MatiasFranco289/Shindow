@@ -1,5 +1,3 @@
-// TODO: Eliminar la carpeta de logs del github
-
 import express, { Router } from "express";
 import logger from "./utils/logger";
 import EnvironmentManager from "./utils/EnvironmentManager";

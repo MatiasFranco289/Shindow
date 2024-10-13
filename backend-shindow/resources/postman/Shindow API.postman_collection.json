@@ -1,0 +1,74 @@
+{
+  "info": {
+    "_postman_id": "ac4f68bc-029f-4ec6-a957-8ae7e5786478",
+    "name": "Shindow API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "22526807"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"my-username\",\n    \"privateKey\": \"-----BEGIN OPENSSH PRIVATE KEY-----\\MIIEpAIBAAKCAQEAuIPhZDzDiYs1BgtydvVh2opIu9p1gAVZmJbxCjtHIPg9YCPs\nHsXOfyEULkTVzmgtqYgQVdvA85pHrYHnn+A6elA9MaFYYGJi1ynqmjTzMYcu7IJU\n/hzTTeZbp4apalrGYdxc48W1RPUTbU7dZASv0xEMNCzdzD9dyyzaLUFmK2T+f1u9\nkpiBxDyHQoFaLdOZ/okGGQcz3LMhGrutxnKpTjkfLED7f9lNZShEZbUqIaYld9Wm\nLei/jRSyunYXQZw94OqJgl8hL3AKvXGAQ23O1QeNEj0/x1tfRNKdxnMpA2hVi5gY\nZDMwSQwBj2mwAwm/wPYNI4qNbn8s7WWi7yQaEQIDAQABAoIBAQCCBb0Ai6km9YfJ\n2KsylLv96lBSwCDos9xtIIB+u0LmQsfNRcMP9EgNYdv8ttkLeHIk8xK/zflsMB2u\ncMot6S6MHprgrFfAo9QO1yTQwdtV3XL9iuIlp15nmJqhtM0ReyIst8JlZ17TVvf3\noQl1f6/+xhaZdbxeP5DyqYqdNWav0GdvfF3NmMXvNMgXTnxbEgxrokZWUeqx7XQw\nWRogqgBuYI9Lu8NWhITJoHvj4fgm2AMsZHOItokpPkEjsef7hGS/6vaDfXKEbdCi\n519gOJaMJeSdul9ccWqaKvxWLCLL4F7YgCTKOL07PGypLoaSuIz9qwbCObL4ynI0\nDJ5iIjDZAoGBAP1y1e2yZDSHhGub4DRpwflPrUniB3HIdNM6ppjgYBrdaPig91SR\ngwU+lWRR8qXbLWSYRhEbEnB+qdN22okq5t3Io246R/MwwieDpvHDC6em+m4ZfHE2\nRlOOo3HQXPy724oyDUdP4ufsLVsYq+Zlz/JtgqbH+D/h/1NziaGzqBqXAoGBALpf\nZVq/Ew5BJltU6DyKSI2pBeAcH7FiMTXXOmV6KoqrTOMrXF8Q+OdMLvRobcJ6Pry/\nMK6CxEs4uiC93VKGFQSKSyxGWaTEFbrHJ/LIIsn+QS3ldQCB2E7G0P/lllE4SdPT\ngAiN9UPUGLu9u7GMpSeofBQIcR07GA0xLq+hi02XAoGAKvoTDphmZ4XnTXwEG78n\nNkhtgQ7D5mZwcPUMFPZPNZ7/0tEwv3VhOz1uhbFjrP4qh1lO4E2v5cWEtKf9zK6q\nsUb5d5KIatOEyMCJSYuiaU5mPs8xi90BNeAFFSKY8f5E7v0nxUTlnCAvXLglRg9T\noK8zLWbRULvY2OTJnNLjGYcCgYB6odi8PGwafg3yHM1vQIJ7DBO8omTMQFMnHUbk\njN0/P3YpKFfwiedtsnhXA/vs8qkjYx5yRcNJx7rZXnUqHuXnhePu7x9/RjMSIoeL\nvdr+VJmozIoPWmDtfO764qPlL4eMpWdiuZ4AEqhvqGm/a08k6D00pVVgqYiq7YjN\nshtKYwKBgQDyvYzG29HUuW4TH4umrAkSun1z/hDZWA0zB45BdbO0dVhfK3kPUPV6\nAhRaZyo3VnZAGkE927XEt0G+2dSpA8Zw9o9z5OqC+PU4uvak0UVJ45cYK0yb/MeX\nw1bGKEMqXuvSm3Fis5hzn71nwBggSIzeVbqkOiOjz6r/dCMy0WOS4w==\n\\n-----END OPENSSH PRIVATE KEY-----\",\n    \"passphrase\": \"my passphrase super secret\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/auth/logout",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "auth", "logout"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Resources",
+      "item": [
+        {
+          "name": "ResourceList",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/resources/list",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "resources", "list"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
