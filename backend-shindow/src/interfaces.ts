@@ -32,3 +32,14 @@ export interface LoginRequest {
   privateKey: string;
   passphrase: string;
 }
+
+export interface Resource {
+  isDirectory: boolean;
+  owner: string;
+  group: string;
+  size: number;
+  name: string;
+  hardLinks: number;
+  date: string;
+  time: string;
+}

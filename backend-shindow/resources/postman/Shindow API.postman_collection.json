@@ -55,15 +55,33 @@
       "item": [
         {
           "name": "ResourceList",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "method": "GET",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
-              "raw": "http://localhost:5000/api/resources/list",
+              "raw": "http://localhost:5000/api/resources/list?path=/home",
               "protocol": "http",
               "host": ["localhost"],
               "port": "5000",
-              "path": ["api", "resources", "list"]
+              "path": ["api", "resources", "list"],
+              "query": [
+                {
+                  "key": "path",
+                  "value": "/home"
+                }
+              ]
             }
           },
           "response": []
