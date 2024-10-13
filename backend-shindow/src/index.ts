@@ -1,5 +1,4 @@
-// TODO: Aplicar sanitizacion
-// TODO: Agregar middleware de verificacion de sesion (Que pasa si vence la cookie?)
+// TODO: Eliminar la carpeta de logs del github
 
 import express, { Router } from "express";
 import logger from "./utils/logger";
@@ -7,6 +6,8 @@ import EnvironmentManager from "./utils/EnvironmentManager";
 import authRouter from "./routes/auth";
 import expressSessionMiddleware from "./middlewares/expressSession";
 import errorHandlerMiddleware from "./middlewares/errorHandler";
+import resourcesRouter from "./routes/resources";
+import protectRoutes from "./middlewares/auth";
 
 const app = express();
 const apiRouter = Router();
@@ -22,6 +23,9 @@ apiRouter.use(express.json());
 apiRouter.use(expressSessionMiddleware(secret, sessionMaxAge));
 
 apiRouter.use("/auth", authRouter);
+
+apiRouter.use(protectRoutes);
+apiRouter.use("/resources", resourcesRouter);
 
 apiRouter.use(errorHandlerMiddleware);
 

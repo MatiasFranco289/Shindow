@@ -88,7 +88,7 @@ const authController = {
     };
 
     try {
-      sshConnectionManager.EndConnection(sessionId);
+      sshConnectionManager.EndConnection(sessionId, false);
     } catch (err) {
       logger.error(
         `The connection with the id '${sessionId}' could not be closed because the following error: `

@@ -78,7 +78,7 @@ export class SshConnectionManager {
 
     // When the lifetime of the session has expired, close the connection and delete the info from the connections map
     setTimeout(() => {
-      this.EndConnection(sessionId);
+      this.EndConnection(sessionId, true);
     }, parseInt(lifetime));
 
     return sessionId;
@@ -88,12 +88,17 @@ export class SshConnectionManager {
    * Receives a connection id and if that connection exists, it ends the connection and remove it from the connections map.
    *
    * @param connectionId - A string with the id of the connection to close.
+   * @param expired - A boolean indicating if the connection expired or not.
    */
-  public EndConnection(connectionId: string) {
+  public EndConnection(connectionId: string, expired: boolean) {
     const connectionToClose = this.connectionMap.get(connectionId);
 
     if (connectionToClose) {
-      logger.info(`The connection with id '${connectionId}' has expired.`);
+      logger.info(
+        `The connection with id '${connectionId}' ${
+          expired ? "has expired" : "has been closed by the user"
+        }.`
+      );
 
       connectionToClose.end();
       this.connectionMap.delete(connectionId);
