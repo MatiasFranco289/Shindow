@@ -1,6 +1,9 @@
 import { Client } from "ssh2";
-import { v4 as uuidv4 } from "uuid";
-import { ERROR_TYPE_CONNECTION_ID_NOT_UNIQUE } from "../constants";
+import {
+  ERROR_TYPE_CONNECTION_ID_NOT_UNIQUE,
+  ERROR_TYPE_RESOURCES,
+  ERROR_TYPE_SSH_CONNECTION_NOT_FOUND,
+} from "../constants";
 import { ConnectionCredentials } from "../interfaces";
 import logger from "./logger";
 
@@ -103,6 +106,58 @@ export class SshConnectionManager {
       connectionToClose.end();
       this.connectionMap.delete(connectionId);
     }
+  }
+
+  /**
+   * Executes a command using a ssh connection and returns a promise.
+   * If the command produces an error the promise will be rejected with the reason.
+   * If the provided sessionId doesn't have a valid connection it will throw an error.
+   * If everything is okay the promise will be resolved with the output of the command.
+   *
+   * @param sessionId - The session id of the user trying to execute the command.
+   * @param command - The command to execute.
+   *
+   * @returns - A promise to be resolved.
+   */
+  public ExecuteCommand(sessionId: string, command: string): Promise<string> {
+    const connection = this.getConnection(sessionId);
+
+    if (!connection) {
+      const error = new Error();
+      error.name = ERROR_TYPE_SSH_CONNECTION_NOT_FOUND;
+      error.message = `The connection with id '${sessionId}' was not found.`;
+
+      logger.error(
+        `The client with id '${sessionId}' tried to execute the command '${command}' but the connection could not be found.`
+      );
+
+      throw error;
+    }
+
+    return new Promise((resolve, reject) => {
+      connection.exec(command, (err, stream) => {
+        if (err) {
+          throw err;
+        }
+
+        stream
+          .on("close", (code: number) => {
+            logger.info(
+              `The command '${command}' executed using connection with id '${sessionId}' ended with code ${code}.`
+            );
+          })
+          .on("data", (data: Buffer) => {
+            resolve(data.toString());
+          })
+          .stderr.on("data", (data: Buffer) => {
+            const error = new Error();
+
+            error.name = ERROR_TYPE_RESOURCES;
+            error.message = data.toString();
+            reject(error);
+          });
+      });
+    });
   }
 
   /**

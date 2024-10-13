@@ -13,7 +13,7 @@ const BAD_PRIVATE_KEY_MESSAGE =
   "Cannot parse privateKey: Unsupported key format";
 const BAD_CREDENTIALS_MESSAGE = "All configured authentication methods failed";
 
-/** This function handles the different error cases for the auth endpoint.
+/** This function handles the different error cases for the auth controller.
  *
  * @param err - An object following the interface CustomError.
  * @param req - Express request.
