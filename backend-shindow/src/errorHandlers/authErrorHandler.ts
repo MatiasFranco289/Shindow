@@ -48,7 +48,7 @@ export default function authErrorHandler(
         response.message = "Incorrect credentials";
 
         logger.warn(
-          `Failed login attempt from IP: '${clientIp}' for uesr ${username}. Invalid private key.`
+          `Failed login attempt from IP: '${clientIp}' for user ${username}. Invalid private key.`
         );
         break;
       case BAD_CREDENTIALS_MESSAGE:

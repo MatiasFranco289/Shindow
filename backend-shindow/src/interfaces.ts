@@ -1,6 +1,7 @@
 export interface EnvironmentVariables {
   API_PORT: string;
   API_DOMAIN: string;
+  CLIENT_DOMAIN: string;
   TZ: string;
   SERVER_IP: string;
   SERVER_PORT: string;

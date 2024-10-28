@@ -1,0 +1,14 @@
+# Node 20.15.0
+FROM node:20-bullseye
+
+WORKDIR /shindow/frontend-shindow
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

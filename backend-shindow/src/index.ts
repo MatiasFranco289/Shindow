@@ -6,8 +6,9 @@ import expressSessionMiddleware from "./middlewares/expressSession";
 import errorHandlerMiddleware from "./middlewares/errorHandler";
 import resourcesRouter from "./routes/resources";
 import protectRoutes from "./middlewares/auth";
+import setCorsOptions from "./middlewares/cors";
 
-const app = express();
+var app = express();
 const apiRouter = Router();
 const environmentManager = EnvironmentManager.getInstance();
 const apiPort = environmentManager.getEnvironmentVariable("API_PORT");
@@ -15,6 +16,7 @@ const secret = environmentManager.getEnvironmentVariable("SECRET");
 const sessionMaxAge =
   environmentManager.getEnvironmentVariable("SESSION_MAX_AGE");
 
+app = setCorsOptions(app);
 app.use("/api", apiRouter);
 
 apiRouter.use(express.json());

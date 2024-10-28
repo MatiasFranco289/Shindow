@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import EnvironmentManager from "../utils/EnvironmentManager";
 import { SshConnectionManager } from "../utils/SshConnectionManager";
 import { ApiResponse, CustomError, LoginRequest } from "../interfaces";
+import CryptoJS from "crypto-js";
 import {
   DEFAULT_ERROR_MESSAGE,
   ERROR_TYPE_AUTH,
@@ -10,9 +11,12 @@ import {
   HTTP_STATUS_CODE_OK,
 } from "../constants";
 import logger from "../utils/logger";
+import { FileManager } from "../utils/FileManager";
 
+const fileManager = FileManager.getInstance();
 const environmentManager = EnvironmentManager.getInstance();
 const sshConnectionManager = SshConnectionManager.getInstance();
+const secret = environmentManager.getEnvironmentVariable("SECRET");
 const serverIp = environmentManager.getEnvironmentVariable("SERVER_IP");
 const connectionMaxAge =
   environmentManager.getEnvironmentVariable("SESSION_MAX_AGE");
@@ -62,8 +66,8 @@ const authController = {
         {
           username: username,
           password: password,
-          privateKey: privateKey,
-          passphrase: passphrase,
+          privateKey: fileManager.Decode(privateKey, secret),
+          passphrase: fileManager.Decode(passphrase, secret),
         }
       );
     } catch (err) {

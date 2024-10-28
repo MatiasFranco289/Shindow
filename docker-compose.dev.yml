@@ -1,5 +1,5 @@
 services:
-  app:
+  back:
     build:
       context: ./backend-shindow
       dockerfile: Dockerfile.dev
@@ -11,3 +11,16 @@ services:
       - "5000:5000"
     volumes:
       - ./backend-shindow:/shindow/backend-shindow
+
+  front:
+    build:
+      context: ./frontend-shindow
+      dockerfile: Dockerfile.dev
+    container_name: frontend-shindow
+    env_file: ./frontend-shindow/.env.local
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend-shindow:/shindow/frontend-shindow
