@@ -5,6 +5,7 @@ import {
   DEFAULT_NODE_ENVIRONMENT,
   DEFAULT_SERVER_IP,
   DEFAULT_SERVER_PORT,
+  DEFAULT_CLIENT_DOMAIN,
 } from "../constants";
 import logger from "./logger";
 
@@ -13,6 +14,7 @@ export default class EnvironmentManager {
   public static instance: EnvironmentManager;
   private static environmentVariables: EnvironmentVariables = {
     API_DOMAIN: "",
+    CLIENT_DOMAIN: DEFAULT_CLIENT_DOMAIN,
     API_PORT: "",
     TZ: "",
     SERVER_IP: DEFAULT_SERVER_IP,
@@ -45,7 +47,7 @@ export default class EnvironmentManager {
       }
 
       // HOSTNAME is added to environment by docker, so if it not exists the project is not running in docker
-      // if the project is not running in docker i nede to load environment variables from the corresponding .env file
+      // if the project is not running in docker i need to load environment variables from the corresponding .env file
       if (!process.env.HOSTNAME) {
         let environmentFileName = `.env.${nodeEnvironment}`;
 

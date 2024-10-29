@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { Resource } from "../interfaces";
-
+import CryptoJS from "crypto-js";
 export class FileManager {
   public static instance: FileManager;
 
@@ -70,5 +70,20 @@ export class FileManager {
    */
   public checkFileExistence(filepath: string): boolean {
     return fs.existsSync(filepath);
+  }
+
+  /**
+   * Receives an encoded string and a secret and decrypts the string.
+   *
+   * @param encoded - The encoded string.
+   * @param secret - The secret used to encode the string.
+   *
+   * @returns - The original string decoded.
+   */
+  public Decode(encoded: string, secret: string) {
+    const bytes = CryptoJS.AES.decrypt(encoded, secret);
+    const decoded = bytes.toString(CryptoJS.enc.Utf8);
+
+    return decoded;
   }
 }
