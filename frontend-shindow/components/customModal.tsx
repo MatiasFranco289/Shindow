@@ -31,7 +31,7 @@ export default function CustomModal({
         }`}
     >
       <div
-        className={`bg-custom-green-100 p-6 rounded-lg w-3/12 flex flex-col justify-center items-center ${
+        className={`bg-custom-green-100 p-6 rounded-lg w-[300px] sm:w-[500px] flex flex-col justify-center items-center ${
           isModalOpen ? "opacity-100" : "opacity-0"
         } duration-500`}
       >
@@ -42,7 +42,7 @@ export default function CustomModal({
 
         <button
           type="submit"
-          className={`border border-gray-400 w-3/12 text-4xl font-semibold p-3 rounded-xl flex justify-center duration-200 text-gray-400
+          className={`border border-gray-400 w-4/12 text-4xl font-semibold p-3 rounded-xl flex justify-center duration-200 text-gray-400
             hover:text-gray-200 hover:border-gray-200 active:border-white active:text-white`}
           onClick={() => setModalOpen(false)}
         >

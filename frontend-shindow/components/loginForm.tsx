@@ -26,11 +26,13 @@ interface LoginFormValues {
 interface LoginFormProps {
   setErrorModalOpen: Dispatch<SetStateAction<boolean>>;
   setModalMessage: Dispatch<SetStateAction<string>>;
+  setModalTitle: Dispatch<SetStateAction<string>>;
 }
 
 export default function LoginForm({
   setErrorModalOpen,
   setModalMessage,
+  setModalTitle,
 }: LoginFormProps) {
   const router = useRouter();
   const environmentManager = EnvironmentManager.getInstance();
@@ -64,10 +66,6 @@ export default function LoginForm({
     } placeholder-gray-500`;
   };
 
-  // TODO: Proteger rutas (Agregar provider)
-  // TODO: Documentar tema del secret y variables de entorno
-  // TODO: Responsive
-
   /**
    * This function emulated a user click over the hidden input stored in the reference in order
    * to open the user file manager and let him choose a file.
@@ -98,12 +96,17 @@ export default function LoginForm({
     );
 
     if (fileSize > maxFileSize) {
-      // TODO: Handle error here
-      console.log("Ta muy grande mano");
+      setModalTitle("Error!");
+      setModalMessage(
+        `The selected key exceeds the maximum allowed size (${maxFileSize} bytes).`
+      );
+      setErrorModalOpen(true);
+
+      console.error(`Error: The selected key exceeds the maximum allowed sized. You can change the maximum 
+        file size allowed from the .env file.`);
       return;
     }
 
-    // TODO: Handle file read error here
     const fileContent = await fileManager.ReadFile(file);
     const encryptedContent = CryptoJS.AES.encrypt(
       fileContent,
@@ -130,6 +133,7 @@ export default function LoginForm({
     axiosInstance
       .post(loginEndpoint, bodyRequest)
       .then((_response) => {
+        localStorage.setItem("username", formValues.username);
         router.push("/explorer");
       })
       .catch((err) => {
@@ -140,6 +144,7 @@ export default function LoginForm({
         if (err.response?.data) {
           const response: ApiResponse<null> = err.response.data;
           const responseCode = response.status_code;
+          setModalTitle("Login failed!");
           setModalMessage(loginErrorHandler(responseCode));
           console.error(response);
         } else {
@@ -167,7 +172,7 @@ export default function LoginForm({
           }`}
         >
           <div className="w-full text-center">
-            <h1 className="text-6xl">SHINDOW</h1>
+            <h1 className="text-5xl sm:text-6xl font-semibold">SHINDOW</h1>
           </div>
 
           {/* This input is used to simulate a click when the user want's to select a key file*/}
