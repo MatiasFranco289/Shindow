@@ -11,3 +11,14 @@ export interface ApiResponse<T> {
   message: string;
   data: Array<T>;
 }
+
+export interface Resource {
+  date: string;
+  group: string;
+  hardLinks: number;
+  isDirectory: boolean;
+  name: string;
+  owner: string;
+  size: number;
+  time: string;
+}
