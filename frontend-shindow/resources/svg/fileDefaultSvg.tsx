@@ -6,6 +6,7 @@ export default function FileDefaultSvg() {
       viewBox="0 0 116 158"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className="w-full h-full"
     >
       <path
         d="M0 16C0 7.16345 6.24782 0 13.9549 0L71.5 0C116 38 71.5 0 116 38V142C116 150.837 109.752 158 102.045 158H13.9549C6.24782 158 0 150.837 0 142V16Z"
