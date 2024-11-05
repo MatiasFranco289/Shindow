@@ -14,7 +14,7 @@ import { CLIENT_DEFAULT_ERROR_MESSAGE, LOGIN_ENDPOINT } from "@/constants";
 import { ApiResponse } from "@/interfaces";
 import loginErrorHandler from "@/errorHandlers/loginErrorHandler";
 import { useRouter } from "next/navigation";
-//TODO: Que si entras al login y ya estas logeado te mande pal explorer
+
 interface LoginFormValues {
   username: string;
   password: string;

@@ -1,34 +1,50 @@
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { useNavigation } from "./navigationProvider";
 
 export interface NavigationHeaderProps {
-  actualPath: string;
+  canGoForward: boolean;
   goBack: () => void;
+  goForward: () => void;
 }
 
 export default function NavigationHeader({
-  actualPath,
   goBack,
+  goForward,
+  canGoForward,
 }: NavigationHeaderProps) {
+  const { actualPath } = useNavigation();
+
   return (
     <div className="w-full bg-custom-green-50 flex justify-center p-5 fixed top-0 left-0">
       {/* Buttons */}
-      <div className="absolute left-6 flex text-3xl space-x-4" onClick={goBack}>
+      <div className="absolute left-6 flex text-3xl space-x-4">
         {/* Back btn */}
         <div
           className={`p-1 rounded-md ${
-            actualPath !== "/" && " hover:bg-white/10 active:bg-white/15"
+            actualPath !== "/" &&
+            " hover:bg-white/10 active:bg-white/15 duration-200"
           }`}
+          onClick={goBack}
         >
           <IoChevronBack
             className={`${
-              actualPath !== "/" ? "text-white rounded-md" : "text-white/25"
-            }`}
+              actualPath !== "/" ? "text-white" : "text-white/25"
+            } rounded-md`}
           />
         </div>
 
         {/* Next btn */}
-        <div className="p-1">
-          <IoChevronForward className="text-white/25" />
+        <div
+          className={`p-1 rounded-md ${
+            canGoForward && "hover:bg-white/10 active:bg-white/15 duration-200"
+          }`}
+          onClick={goForward}
+        >
+          <IoChevronForward
+            className={`${
+              canGoForward ? "text-white" : "text-white/25"
+            } rounded-md`}
+          />
         </div>
       </div>
 

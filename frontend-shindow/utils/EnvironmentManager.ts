@@ -3,6 +3,7 @@ import {
   DEFAULT_CLIENT_BASE_URL,
   DEFAULT_MAX_KEY_SIZE,
   DEFAULT_TZ,
+  DEFAULT_INITIAL_PATH,
 } from "@/constants";
 import { EnvironmentVariables } from "@/interfaces";
 
@@ -14,6 +15,7 @@ export default class EnvironmentManager {
     NEXT_PUBLIC_TZ: DEFAULT_TZ,
     NEXT_PUBLIC_API_BASE_URL: DEFAULT_API_BASE_URL,
     NEXT_PUBLIC_CLIENT_BASE_URL: DEFAULT_CLIENT_BASE_URL,
+    NEXT_PUBLIC_INITIAL_PATH: DEFAULT_INITIAL_PATH,
   };
 
   private constructor() {}
@@ -42,6 +44,7 @@ export default class EnvironmentManager {
       NEXT_PUBLIC_TZ: process.env.NEXT_PUBLIC_TZ,
       NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
       NEXT_PUBLIC_CLIENT_BASE_URL: process.env.NEXT_PUBLIC_CLIENT_BASE_URL,
+      NEXT_PUBLIC_INITIAL_PATH: process.env.NEXT_PUBLIC_INITIAL_PATH,
     };
 
     for (const key in environmentVariables) {
@@ -51,9 +54,9 @@ export default class EnvironmentManager {
         environmentVariables[key as keyof EnvironmentVariables];
 
       // If the value of the variable is not found in the environment
-      if (!valueFromEnv) {
+      if (valueFromEnv === undefined) {
         // If has no default value
-        if (!initialValue) {
+        if (initialValue === undefined) {
           const error = new Error();
           error.message = `The value of the variable ${key} could not be found in the environment.`;
           console.error(error.message);

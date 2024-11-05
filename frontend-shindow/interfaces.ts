@@ -4,6 +4,7 @@ export interface EnvironmentVariables {
   NEXT_PUBLIC_TZ: string;
   NEXT_PUBLIC_API_BASE_URL: string;
   NEXT_PUBLIC_CLIENT_BASE_URL: string;
+  NEXT_PUBLIC_INITIAL_PATH: string;
 }
 
 export interface ApiResponse<T> {
@@ -21,4 +22,5 @@ export interface Resource {
   owner: string;
   size: number;
   time: string;
+  shortName: string;
 }

@@ -43,7 +43,7 @@ export class FileManager {
           size: parseInt(lsLineData[4]),
           date: lsLineData[5],
           time: lsLineData[6],
-          name: lsLineData[8],
+          name: lsLineData.slice(8, lsLineData.length).join(" ").split("->")[0],
         });
       }
     });
