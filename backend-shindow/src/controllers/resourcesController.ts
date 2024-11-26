@@ -30,7 +30,7 @@ const resourcesController = {
     try {
       const result = await sshConnectionManager.ExecuteCommand(
         sessionId,
-        `${command} ${path}`
+        `${command} "${path}"`
       );
 
       const resourcesList: Array<Resource> = fileManager.LsToResource(result);
