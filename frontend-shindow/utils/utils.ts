@@ -22,3 +22,18 @@ export function normalizeName(name: string) {
 
   return shortName;
 }
+
+/**
+ * This function receives a path as a string.
+ * It returns the given path as a string with all the directory names normalized
+ *
+ * @param path - The path to normalize
+ * @returns - The normalized path as a string
+ */
+export function normalizePath(path: string) {
+  if (path == "/") return path;
+
+  let newPath: string = "";
+  path.split("/").forEach((name) => (newPath += normalizeName(name) + "/"));
+  return newPath;
+}
