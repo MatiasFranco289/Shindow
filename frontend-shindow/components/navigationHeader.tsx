@@ -1,5 +1,6 @@
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useNavigation } from "./navigationProvider";
+import { normalizePath } from "@/utils/utils";
 
 export interface NavigationHeaderProps {
   canGoForward: boolean;
@@ -49,7 +50,7 @@ export default function NavigationHeader({
       </div>
 
       <div className="bg-custom-green-100 w-3/6 p-1 pl-2 rounded-lg">
-        <p>{actualPath}</p>
+        <p>{normalizePath(actualPath)}</p>
       </div>
     </div>
   );
