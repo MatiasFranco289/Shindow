@@ -24,3 +24,9 @@ export interface Resource {
   time: string;
   shortName: string;
 }
+
+export interface ContextMenuItemData {
+  id: number;
+  title: string;
+  function: Function;
+}

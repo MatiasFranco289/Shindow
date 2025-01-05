@@ -17,6 +17,7 @@ import resourceListErrorHandler from "@/errorHandlers/resourceListErrorHandler";
 import CustomModal from "@/components/customModal";
 import LoadingOverlay from "@/components/loadingOverlay";
 import { useNavigation } from "@/components/navigationProvider";
+import ContextMenu from "@/components/contextMenu";
 export default function FileExplorer() {
   const environmentManager = EnvironmentManager.getInstance();
   const initialPath = environmentManager.GetEnvironmentVariable(
@@ -175,7 +176,12 @@ export default function FileExplorer() {
   }
 
   return (
-    <div className="bg-custom-green-100 w-full min-h-screen">
+    <div
+      className="bg-custom-green-100 w-full min-h-screen"
+      onContextMenu={(e) => {
+        e.preventDefault();
+      }}
+    >
       <NavigationHeader
         goBack={goBack}
         goForward={goForward}
@@ -183,6 +189,7 @@ export default function FileExplorer() {
       />
 
       <div className="flex flex-wrap content-start items-start pt-24">
+        <ContextMenu data={"data"} />
         {resourceList.map((resource, index) => {
           if (resource.isDirectory) {
             return (
