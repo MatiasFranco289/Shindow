@@ -1,3 +1,5 @@
+import { ReactElement } from "react";
+
 export interface EnvironmentVariables {
   NEXT_PUBLIC_SECRET: string;
   NEXT_PUBLIC_KEY_FILE_MAX_SIZE: string;
@@ -26,7 +28,7 @@ export interface Resource {
 }
 
 export interface ContextMenuItemData {
-  id: number;
+  icon: ReactElement;
   title: string;
-  function: Function;
+  function: () => void;
 }

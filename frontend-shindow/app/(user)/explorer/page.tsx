@@ -18,6 +18,10 @@ import CustomModal from "@/components/customModal";
 import LoadingOverlay from "@/components/loadingOverlay";
 import { useNavigation } from "@/components/navigationProvider";
 import ContextMenu from "@/components/contextMenu";
+
+//TODO: see if there's a better way to send the icon to the context menu item
+import { FaRegCopy, FaPaste, FaTrash, FaUpload } from "react-icons/fa6";
+
 export default function FileExplorer() {
   const environmentManager = EnvironmentManager.getInstance();
   const initialPath = environmentManager.GetEnvironmentVariable(
@@ -39,10 +43,23 @@ export default function FileExplorer() {
   const [modalMessage, setModalMessage] = useState<string>("");
   const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [rightClickDetected, setRightClickDetected] = useState<boolean>(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState({
+    x: 0,
+    y: 0,
+  });
 
   useEffect(() => {
     // The first time the apps looads i call the goTo function to get the resources passing an empty array to not move from the actualPath
     goTo("");
+  }, []);
+
+  useEffect(() => {
+    const handleClick = () => setRightClickDetected(false);
+    window.addEventListener("click", handleClick);
+    return () => {
+      window.removeEventListener("click", handleClick);
+    };
   }, []);
 
   /**
@@ -175,11 +192,42 @@ export default function FileExplorer() {
     });
   }
 
+  let cmiData = [
+    {
+      icon: <FaRegCopy />,
+      title: "Copy",
+      function: () => {
+        console.log("AAAA");
+      },
+    },
+    {
+      icon: <FaPaste />,
+      title: "Paste",
+      function: () => {
+        console.log("BBBB");
+      },
+    },
+    {
+      icon: <FaTrash />,
+      title: "Delete",
+      function: () => {
+        console.log("CCCC");
+      },
+    },
+    {
+      icon: <FaUpload />,
+      title: "Upload",
+      function: () => {
+        console.log("CCCC");
+      },
+    },
+  ];
+
   return (
     <div
       className="bg-custom-green-100 w-full min-h-screen"
       onContextMenu={(e) => {
-        e.preventDefault();
+        e.preventDefault(); //TODO: make sure that the user can't scroll when the context menu is open
       }}
     >
       <NavigationHeader
@@ -188,8 +236,16 @@ export default function FileExplorer() {
         canGoForward={pathHistory.length > historyActualIndex}
       />
 
-      <div className="flex flex-wrap content-start items-start pt-24">
-        <ContextMenu data={"data"} />
+      <div
+        className="flex flex-wrap content-start items-start pt-24"
+        onContextMenu={(e) => {
+          setRightClickDetected(true);
+          setContextMenuPosition({
+            x: e.pageX,
+            y: e.pageY,
+          });
+        }}
+      >
         {resourceList.map((resource, index) => {
           if (resource.isDirectory) {
             return (
@@ -215,6 +271,13 @@ export default function FileExplorer() {
           }
         })}
       </div>
+      {rightClickDetected && (
+        <ContextMenu
+          x={contextMenuPosition.x}
+          y={contextMenuPosition.y}
+          data={cmiData}
+        />
+      )}
 
       <CustomModal
         isModalOpen={errorModalOpen}
