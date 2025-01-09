@@ -23,7 +23,7 @@ export default function CustomModal({
   };
   return (
     <div
-      className={`w-screen min-h-screen fixed top-0 left-0 bg-black/20 flex justify-center items-center backdrop-blur-sm duration-200
+      className={`w-screen min-h-screen fixed z-50 top-0 left-0 bg-black/20 flex justify-center items-center backdrop-blur-sm duration-200
         ${
           isModalOpen
             ? "opacity-100 pointer-events-auto"

@@ -2,13 +2,19 @@
 
 import {
   CLIENT_DEFAULT_ERROR_MESSAGE,
+  contextMenuItemsExplorer,
   HTTP_STATUS_CODE_SERVICE_UNAVAILABLE,
   RESOURCE_LIST_ENDPOINT,
 } from "@/constants";
-import { ApiResponse, Resource } from "@/interfaces";
+import {
+  ApiResponse,
+  ContextMenuItemData,
+  Position2D,
+  Resource,
+} from "@/interfaces";
 import axiosInstance from "@/utils/axiosInstance";
 import EnvironmentManager from "@/utils/EnvironmentManager";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import DirectoryIcon from "@/components/directoryIcon";
 import FileIcon from "@/components/fileIcon";
 import { normalizeName } from "@/utils/utils";
@@ -18,9 +24,6 @@ import CustomModal from "@/components/customModal";
 import LoadingOverlay from "@/components/loadingOverlay";
 import { useNavigation } from "@/components/navigationProvider";
 import ContextMenu from "@/components/contextMenu";
-
-//TODO: see if there's a better way to send the icon to the context menu item
-import { FaRegCopy, FaPaste, FaTrash, FaUpload } from "react-icons/fa6";
 
 export default function FileExplorer() {
   const environmentManager = EnvironmentManager.getInstance();
@@ -43,22 +46,29 @@ export default function FileExplorer() {
   const [modalMessage, setModalMessage] = useState<string>("");
   const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [rightClickDetected, setRightClickDetected] = useState<boolean>(false);
-  const [contextMenuPosition, setContextMenuPosition] = useState({
+  const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
+  const [contextMenuItems, setContextMenuItems] =
+    useState<Array<ContextMenuItemData>>();
+  const [contextMenuPosition, setContextMenuPosition] = useState<Position2D>({
     x: 0,
     y: 0,
   });
+  const contextMenuRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     // The first time the apps looads i call the goTo function to get the resources passing an empty array to not move from the actualPath
     goTo("");
-  }, []);
 
-  useEffect(() => {
-    const handleClick = () => setRightClickDetected(false);
-    window.addEventListener("click", handleClick);
+    // Listen for the left-click event
+    document.addEventListener("click", hideContextMenu);
+
+    // Listen for the right-click event
+    document.addEventListener("contextmenu", handleContextMenuPosition);
+
+    // Cleanup event listeners
     return () => {
-      window.removeEventListener("click", handleClick);
+      document.removeEventListener("contextmenu", handleContextMenuPosition);
+      document.removeEventListener("click", hideContextMenu);
     };
   }, []);
 
@@ -192,42 +202,76 @@ export default function FileExplorer() {
     });
   }
 
-  let cmiData = [
-    {
-      icon: <FaRegCopy />,
-      title: "Copy",
-      function: () => {
-        console.log("AAAA");
-      },
-    },
-    {
-      icon: <FaPaste />,
-      title: "Paste",
-      function: () => {
-        console.log("BBBB");
-      },
-    },
-    {
-      icon: <FaTrash />,
-      title: "Delete",
-      function: () => {
-        console.log("CCCC");
-      },
-    },
-    {
-      icon: <FaUpload />,
-      title: "Upload",
-      function: () => {
-        console.log("CCCC");
-      },
-    },
-  ];
+  /**
+   * This function makes sure that the context menu closes when a click is detected outside of the context menu itself
+   * @param event - The mouse event
+   */
+  const hideContextMenu = (event: MouseEvent) => {
+    if (
+      contextMenuRef.current &&
+      !contextMenuRef.current.contains(event.target as Node)
+    ) {
+      setShowContextMenu(false);
+    }
+  };
+
+  /**
+   * This function handles the position of the context menu according to its position on the page. It ensures that the context menu doesn't overflow the page itself.
+   * @param event - The mouse event
+   */
+  const handleContextMenuPosition = (event: MouseEvent) => {
+    event.preventDefault();
+
+    const { pageX, pageY, clientX, clientY } = event;
+
+    const menuWidth = contextMenuRef.current?.offsetWidth || 0;
+    const menuHeight = contextMenuRef.current?.offsetHeight || 0;
+
+    const spaceRight = window.innerWidth - clientX;
+    const spaceBottom = window.innerHeight - clientY;
+
+    let newLeft = pageX;
+    let newTop = pageY;
+
+    if (spaceRight < menuWidth) {
+      // If there's not enough space on the right, position the menu to the left
+      newLeft = pageX - menuWidth;
+    }
+
+    if (spaceBottom < menuHeight) {
+      // If there's not enough space below, position the menu above
+      newTop = pageY - menuHeight;
+    }
+
+    setContextMenuPosition({ x: newLeft, y: newTop });
+  };
+
+  /**
+   * This function takes care of showing the context menu when a right click is detected.
+   * @param event - Mouse event
+   */
+  const handleRightClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    setShowContextMenu(true);
+    setContextMenuPosition({
+      x: event.pageX,
+      y: event.pageY,
+    });
+  };
+
+  /**
+   * Function that sets the items on the context menu.
+   * @param items - The items that the context menu will show
+   */
+  function getContextMenuItems(items: Array<ContextMenuItemData>): void {
+    setContextMenuItems(items);
+  }
 
   return (
     <div
       className="bg-custom-green-100 w-full min-h-screen"
       onContextMenu={(e) => {
-        e.preventDefault(); //TODO: make sure that the user can't scroll when the context menu is open
+        e.preventDefault();
       }}
     >
       <NavigationHeader
@@ -237,15 +281,15 @@ export default function FileExplorer() {
       />
 
       <div
-        className="flex flex-wrap content-start items-start pt-24"
-        onContextMenu={(e) => {
-          setRightClickDetected(true);
-          setContextMenuPosition({
-            x: e.pageX,
-            y: e.pageY,
-          });
-        }}
+        className="flex flex-wrap content-start items-start pt-24 min-h-screen relative"
+        onContextMenu={handleRightClick}
       >
+        <div
+          className=" w-full min-h-screen absolute inset-0"
+          onContextMenu={() => {
+            setContextMenuItems(contextMenuItemsExplorer);
+          }}
+        ></div>
         {resourceList.map((resource, index) => {
           if (resource.isDirectory) {
             return (
@@ -256,6 +300,7 @@ export default function FileExplorer() {
                 isSelected={selectedResourceName === resource.name}
                 setSelectedResourceName={setSelectedResourceName}
                 updatePath={(resourceName: string) => goTo(resourceName)}
+                setContextMenuItems={getContextMenuItems}
               />
             );
           } else {
@@ -266,18 +311,19 @@ export default function FileExplorer() {
                 key={`resource_${index}`}
                 isSelected={selectedResourceName === resource.name}
                 setSelectedResourceName={setSelectedResourceName}
+                setContextMenuItems={getContextMenuItems}
               />
             );
           }
         })}
+        {showContextMenu && (
+          <ContextMenu
+            position={contextMenuPosition}
+            reference={contextMenuRef}
+            items={contextMenuItems}
+          />
+        )}
       </div>
-      {rightClickDetected && (
-        <ContextMenu
-          x={contextMenuPosition.x}
-          y={contextMenuPosition.y}
-          data={cmiData}
-        />
-      )}
 
       <CustomModal
         isModalOpen={errorModalOpen}

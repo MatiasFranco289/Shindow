@@ -32,3 +32,8 @@ export interface ContextMenuItemData {
   title: string;
   function: () => void;
 }
+
+export interface Position2D {
+  x: Number;
+  y: Number;
+}

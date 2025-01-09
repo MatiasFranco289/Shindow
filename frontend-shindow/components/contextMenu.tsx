@@ -1,36 +1,39 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ContextMenuItem from "./contextMenuItem";
-import { ContextMenuItemData } from "@/interfaces";
+import { ContextMenuItemData, Position2D } from "@/interfaces";
+import { number } from "yup";
 
 interface ContextMenuProps {
-  data: Array<ContextMenuItemData>;
-  x: number;
-  y: number;
+  items: Array<ContextMenuItemData> | undefined;
+  position: Position2D;
+  reference: React.RefObject<HTMLUListElement>;
 }
 
-export default function ContextMenu({ data, x, y }: ContextMenuProps) {
-  const [clicked, setClicked] = useState(false);
-  const [coordinates, setCoordinates] = useState({
-    x: 0,
-    y: 0,
-  });
-
+export default function ContextMenu({
+  items,
+  position,
+  reference,
+}: ContextMenuProps) {
   useEffect(() => {
-    const handleClick = () => setClicked(false);
-    window.addEventListener("click", handleClick);
+    document.body.style.overflow = "hidden"; //Disables scrolling
     return () => {
-      window.removeEventListener("click", handleClick);
+      document.body.style.overflow = ""; //Enables scrolling when the component is unmounted
     };
   }, []);
 
   return (
-    <ul
-      className="bg-custom-green-150 sm:min-w-40 py-3 rounded-xl absolute"
-      style={{ top: `${y}px`, left: `${x}px` }}
-    >
-      {data.map((item, index) => (
-        <ContextMenuItem data={item} />
-      ))}
-    </ul>
+    <>
+      {items && (
+        <ul
+          className="bg-custom-green-150 sm:min-w-40 py-3 rounded-xl absolute z-20"
+          style={{ top: `${position.y}px`, left: `${position.x}px` }}
+          ref={reference}
+        >
+          {items.map((item, index) => (
+            <ContextMenuItem data={item} key={index} />
+          ))}
+        </ul>
+      )}
+    </>
   );
 }
