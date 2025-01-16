@@ -2,11 +2,17 @@ import { NextFunction, Request, Response } from "express";
 import { SshConnectionManager } from "../utils/SshConnectionManager";
 import { ApiResponse, CustomError, Resource } from "../interfaces";
 import { FileManager } from "../utils/FileManager";
-import { ERROR_TYPE_RESOURCES, HTTP_STATUS_CODE_OK } from "../constants";
+import {
+  DEFAULT_UPLOAD_DIRECTORY,
+  ERROR_TYPE_RESOURCES,
+  ERROR_TYPE_UPLOAD_RESOURCE,
+  HTTP_STATUS_CODE_OK,
+} from "../constants";
 import multer from "multer";
 import path from "path";
 import { Server } from "socket.io";
 import fs from "fs";
+import { FILE_NOT_FOUND_MESSAGE } from "../errorHandlers/uploadResourceErrorHandler";
 
 const sshConnectionManager = SshConnectionManager.getInstance();
 const fileManager = FileManager.getInstance();
@@ -14,11 +20,10 @@ const fileManager = FileManager.getInstance();
 // TODO: Mover la configuracion de multer a otro lado
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, "uploads"); // Usamos __dirname para garantizar la ruta absoluta
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir);
+    if (!fs.existsSync(DEFAULT_UPLOAD_DIRECTORY)) {
+      fs.mkdirSync(DEFAULT_UPLOAD_DIRECTORY);
     }
-    cb(null, uploadDir);
+    cb(null, DEFAULT_UPLOAD_DIRECTORY);
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname);
@@ -69,46 +74,63 @@ const resourcesController = {
       return next(customError);
     }
   },
-  // TODO: Inferior tipo correcto al req
-  uploadResource: (io: Server) => (req: any, res: Response) => {
-    const uploadMiddleware = upload.single("file");
 
-    uploadMiddleware(req, res, (err) => {
-      if (err) {
-        return res
-          .status(500)
-          .json({ message: "Error al subir el archivo", error: err.message });
-      }
+  uploadResource:
+    (io: Server) =>
+    (req: any, res: Response<ApiResponse<null>>, next: NextFunction) => {
+      const sessionId = req.sessionID;
+      const uploadMiddleware = upload.single("file");
+      const response: ApiResponse<null> = {
+        status_code: HTTP_STATUS_CODE_OK,
+        message: "Resource successfully uploaded.",
+        data: [],
+      };
+      let customError: CustomError = {
+        errorType: ERROR_TYPE_UPLOAD_RESOURCE,
+        error: new Error(FILE_NOT_FOUND_MESSAGE),
+      };
 
-      if (!req.file) {
-        return res
-          .status(400)
-          .json({ message: "No se recibió ningún archivo" });
-      }
+      uploadMiddleware(req, res, (err: Error) => {
+        const { file } = req;
 
-      const fileName = req.file.filename;
-      const filePath = path.join(__dirname, "uploads", fileName);
-      const fileSize = req.file.size; // Tamaño del archivo
-      let uploaded = 0;
+        if (!file) return next(customError);
 
-      // Emitir progreso real
-      const fileStream = fs.createReadStream(filePath);
+        if (err) {
+          customError.error = err;
+          return next(customError);
+        }
 
-      fileStream.on("data", (chunk) => {
-        uploaded += chunk.length;
-        const progress = Math.round((uploaded / fileSize) * 100);
-        io.emit("upload-progress", { progress });
+        const fileName = req.file.filename;
+        const filePath = path.join(__dirname, "../../uploads", fileName);
+        const fileSize = req.file.size;
+        let uploaded = 0;
+
+        // Emit progress of the upload in realtime
+        const fileStream = fs.createReadStream(filePath);
+
+        fileStream.on("data", (chunk) => {
+          uploaded += chunk.length;
+          // TODO: You should change this to reach 50% max instead of 100 because the other
+          // 50% should be from the transferency between backend and ssh server using sftp
+          const progress = Math.round((uploaded / fileSize) * 100);
+          io.emit("upload-progress", { progress });
+        });
+
+        fileStream.on("end", () => {
+          // TODO: Once the file is in the backend i need to call this method to
+          // transfer the file to the server
+          const result = sshConnectionManager.uploadFileWithProgress(
+            sessionId,
+            filePath,
+            "/home/vago-dev1/test"
+          );
+
+          io.emit("upload-complete", { fileName });
+        });
+
+        res.status(response.status_code).json(response);
       });
-
-      fileStream.on("end", () => {
-        io.emit("upload-complete", { fileName });
-      });
-
-      res
-        .status(200)
-        .json({ message: "Archivo subido exitosamente", fileName });
-    });
-  },
+    },
 };
 
 export default resourcesController;

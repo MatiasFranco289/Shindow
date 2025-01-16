@@ -1,8 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { CustomError } from "../interfaces";
-import { ERROR_TYPE_AUTH, ERROR_TYPE_RESOURCES } from "../constants";
+import {
+  ERROR_TYPE_AUTH,
+  ERROR_TYPE_RESOURCES,
+  ERROR_TYPE_UPLOAD_RESOURCE,
+} from "../constants";
 import authErrorHandler from "../errorHandlers/authErrorHandler";
 import resourcesErrorHandler from "../errorHandlers/resourcesErrorHandler";
+import uploadResourcesErrorHandler from "../errorHandlers/uploadResourceErrorHandler";
 
 /**
  * This middleware receives a err following the CustomError interface and calls the correct error handler.
@@ -25,6 +30,8 @@ const errorHandlerMiddleware = (
     case ERROR_TYPE_RESOURCES:
       resourcesErrorHandler(err.error, req, res);
       break;
+    case ERROR_TYPE_UPLOAD_RESOURCE:
+      uploadResourcesErrorHandler(err.error, req, res);
   }
 };
 

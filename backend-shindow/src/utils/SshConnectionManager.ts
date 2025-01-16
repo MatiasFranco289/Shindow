@@ -6,6 +6,7 @@ import {
 } from "../constants";
 import { ConnectionCredentials } from "../interfaces";
 import logger from "./logger";
+import fs from "fs";
 
 export class SshConnectionManager {
   public static instance: SshConnectionManager;
@@ -62,8 +63,6 @@ export class SshConnectionManager {
     lifetime: string,
     credentials: ConnectionCredentials
   ) {
-    console.log(this.connectionMap);
-
     const connection = await this.CreateNewConnection(
       serverIP,
       serverPort,
@@ -196,6 +195,40 @@ export class SshConnectionManager {
           reject(err);
         })
         .connect(connectionObject);
+    });
+  }
+
+  // TODO: Finish this method
+  public async uploadFileWithProgress(
+    sessionId: string,
+    localPath: string,
+    remotePath: string
+  ): Promise<void> {
+    const connection = this.getConnection(sessionId);
+
+    if (!connection) {
+      throw new Error(`Connection with id ${sessionId} not found.`);
+    }
+
+    connection.sftp((err, sftp) => {
+      sftp.fastPut(
+        "/shindow/backend-shindow/testFile.txt",
+        "/home/shared/uploaded/testFile.txt",
+        {
+          // Progress
+          step: (totalTransferred, chunk, fileSize) => {
+            const percentage = ((totalTransferred / fileSize) * 100).toFixed(2);
+            console.log(`Progress: ${percentage}%`);
+          },
+        },
+        (err) => {
+          if (err) {
+            console.error("Error uploading file:", err);
+          } else {
+            console.log("File uploaded successfully.");
+          }
+        }
+      );
     });
   }
 }

@@ -66,8 +66,8 @@ const authController = {
         {
           username: username,
           password: password,
-          privateKey: fileManager.Decode(privateKey, secret),
-          passphrase: fileManager.Decode(passphrase, secret),
+          privateKey: /* fileManager.Decode(privateKey, secret) */ privateKey, // TODO: Descomentar esto
+          passphrase: /* fileManager.Decode(passphrase, secret) */ passphrase, // TODO: Descomentar esto
         }
       );
     } catch (err) {

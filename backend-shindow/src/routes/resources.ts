@@ -1,7 +1,7 @@
 import { Router } from "express";
 import resourcesController from "../controllers/resourcesController";
 import getResourcesAtValidation from "../validations/getResourcesAt";
-import { Server as SocketIOServer } from "socket.io"; // Importar SocketIOServer si lo necesitas
+import { Server as SocketIOServer } from "socket.io";
 
 const resourcesRouter = (io: SocketIOServer) => {
   const router = Router();
