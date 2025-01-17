@@ -2,6 +2,7 @@ import { Router } from "express";
 import resourcesController from "../controllers/resourcesController";
 import getResourcesAtValidation from "../validations/getResourcesAt";
 import { Server as SocketIOServer } from "socket.io";
+import uploadResourceValidation from "../validations/uploadResource";
 
 const resourcesRouter = (io: SocketIOServer) => {
   const router = Router();
@@ -12,7 +13,11 @@ const resourcesRouter = (io: SocketIOServer) => {
     resourcesController.getResourcesAt
   );
 
-  router.post("/upload", resourcesController.uploadResource(io));
+  router.post(
+    "/upload",
+    uploadResourceValidation,
+    resourcesController.uploadResource(io)
+  );
 
   return router;
 };

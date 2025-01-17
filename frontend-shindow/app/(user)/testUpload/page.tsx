@@ -25,7 +25,7 @@ const UploadFile = () => {
 
     try {
       await axiosInstance.post(
-        "http://localhost:5000/api/resources/upload",
+        "http://localhost:5000/api/resources/upload?remotePath=/home/vago-dev1",
         formData,
         {
           headers: {

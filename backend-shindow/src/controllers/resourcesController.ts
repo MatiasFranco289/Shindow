@@ -1,3 +1,4 @@
+// TODO: Add postman collection
 import { NextFunction, Request, Response } from "express";
 import { SshConnectionManager } from "../utils/SshConnectionManager";
 import { ApiResponse, CustomError, Resource } from "../interfaces";
@@ -8,28 +9,19 @@ import {
   ERROR_TYPE_UPLOAD_RESOURCE,
   HTTP_STATUS_CODE_OK,
 } from "../constants";
-import multer from "multer";
 import path from "path";
 import { Server } from "socket.io";
 import fs from "fs";
-import { FILE_NOT_FOUND_MESSAGE } from "../errorHandlers/uploadResourceErrorHandler";
+import {
+  FILE_NOT_FOUND_MESSAGE,
+  REMOTE_PATH_NOT_FOUND_MESSAGE,
+  REMOTE_PATH_NOT_VALID,
+} from "../errorHandlers/uploadResourceErrorHandler";
+import logger from "../utils/logger";
+import upload from "../utils/multer";
 
 const sshConnectionManager = SshConnectionManager.getInstance();
 const fileManager = FileManager.getInstance();
-
-// TODO: Mover la configuracion de multer a otro lado
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    if (!fs.existsSync(DEFAULT_UPLOAD_DIRECTORY)) {
-      fs.mkdirSync(DEFAULT_UPLOAD_DIRECTORY);
-    }
-    cb(null, DEFAULT_UPLOAD_DIRECTORY);
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  },
-});
-const upload = multer({ storage });
 
 const resourcesController = {
   /**
@@ -74,12 +66,21 @@ const resourcesController = {
       return next(customError);
     }
   },
-
+  /**
+   * Manages the upload of a resource from a client to this backend server
+   * and after that the resource is uploaded from this backend server to the SSH server.
+   * Provides updates of the upload progress in real times using socket.io
+   *
+   * @param io - The Socket.io server instance to emit progress events.
+   * @returns
+   */
   uploadResource:
     (io: Server) =>
-    (req: any, res: Response<ApiResponse<null>>, next: NextFunction) => {
+    async (req: any, res: Response<ApiResponse<null>>, next: NextFunction) => {
       const sessionId = req.sessionID;
+      const remotePath = req.query.remotePath as string;
       const uploadMiddleware = upload.single("file");
+
       const response: ApiResponse<null> = {
         status_code: HTTP_STATUS_CODE_OK,
         message: "Resource successfully uploaded.",
@@ -90,45 +91,97 @@ const resourcesController = {
         error: new Error(FILE_NOT_FOUND_MESSAGE),
       };
 
-      uploadMiddleware(req, res, (err: Error) => {
-        const { file } = req;
+      // Validates if the provided remotePath exist in the SSH server and you have permissions
+      try {
+        await sshConnectionManager.ExecuteCommand(
+          sessionId,
+          `ls ${remotePath}`
+        );
+      } catch (err) {
+        customError.error = new Error(REMOTE_PATH_NOT_VALID);
+        return next(customError);
+      }
 
-        if (!file) return next(customError);
-
+      uploadMiddleware(req, res, async (err: Error) => {
         if (err) {
           customError.error = err;
           return next(customError);
         }
 
-        const fileName = req.file.filename;
-        const filePath = path.join(__dirname, "../../uploads", fileName);
-        const fileSize = req.file.size;
+        const { file } = req;
+
+        // Validation of fields file and remotePath
+        if (!file) return next(customError);
+
+        const fileName = file.filename;
+        const filePath = path.join(DEFAULT_UPLOAD_DIRECTORY, fileName);
+        const fileSize = file.size;
         let uploaded = 0;
+
+        logger.info(
+          `The client with id '${sessionId}' has initiated the upload of the resource '${fileName}'.`
+        );
 
         // Emit progress of the upload in realtime
         const fileStream = fs.createReadStream(filePath);
 
+        // Tranfer of the resource from the client to this backend server
         fileStream.on("data", (chunk) => {
           uploaded += chunk.length;
-          // TODO: You should change this to reach 50% max instead of 100 because the other
           // 50% should be from the transferency between backend and ssh server using sftp
-          const progress = Math.round((uploaded / fileSize) * 100);
+
+          // The progress is calculated in a range between 0% and 50% max
+          const progress = Math.floor((uploaded / fileSize) * 50);
           io.emit("upload-progress", { progress });
         });
 
+        // When the tranfer is complete and the file is in the backend server i start the tranfer from this server
+        // to the ssh server
         fileStream.on("end", () => {
-          // TODO: Once the file is in the backend i need to call this method to
-          // transfer the file to the server
-          const result = sshConnectionManager.uploadFileWithProgress(
-            sessionId,
-            filePath,
-            "/home/vago-dev1/test"
+          logger.info(
+            `The resource '${fileName}' has been successfully uploaded.`
           );
 
-          io.emit("upload-complete", { fileName });
-        });
+          sshConnectionManager
+            .uploadFileWithProgress(
+              sessionId,
+              filePath,
+              remotePath,
+              fileName,
+              (progress: number) => {
+                // I remap the original percentage (between 0 - 100) to a new range between  50-100
+                const mappedPercentage = Math.floor(50 + (progress / 100) * 50);
 
-        res.status(response.status_code).json(response);
+                if (mappedPercentage === 100) {
+                  // Once the resource is alredy in the SSH server i delete the resource from the backend server
+                  fileManager
+                    .DeleteResourceAsync(filePath)
+                    .then(() => {
+                      logger.info(
+                        `The temporal resource '${fileName} has been deleted successfully.`
+                      );
+                    })
+                    .catch((err) => {
+                      logger.error(
+                        `The following error has ocurred while trying to delete the temporal resource '${fileName}': ${err}`
+                      );
+                    });
+
+                  io.emit("upload-complete", { fileName });
+                } else {
+                  io.emit("upload-progress", mappedPercentage);
+                }
+              }
+            )
+            .then(() => {
+              return res.status(response.status_code).json(response);
+            })
+            .catch((err) => {
+              // If and error occurs during the tranfer a generic 500 error is sent to the client
+              customError.error = err;
+              return next(customError);
+            });
+        });
       });
     },
 };

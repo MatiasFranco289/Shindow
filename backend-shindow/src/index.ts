@@ -12,17 +12,18 @@ import setCorsOptions from "./middlewares/cors";
 var app = express();
 const apiRouter = Router();
 
-const io = new SocketIOServer({
-  cors: {
-    origin: "*", // TODO: Ajustar
-  },
-});
-
 const environmentManager = EnvironmentManager.getInstance();
 const apiPort = environmentManager.getEnvironmentVariable("API_PORT");
 const secret = environmentManager.getEnvironmentVariable("SECRET");
 const sessionMaxAge =
   environmentManager.getEnvironmentVariable("SESSION_MAX_AGE");
+const clientDomain = environmentManager.getEnvironmentVariable("CLIENT_DOMAIN");
+
+const io = new SocketIOServer({
+  cors: {
+    origin: clientDomain,
+  },
+});
 
 app = setCorsOptions(app);
 app.use("/api", apiRouter);
@@ -37,12 +38,11 @@ apiRouter.use("/resources", resourcesRouter(io));
 
 apiRouter.use(errorHandlerMiddleware);
 
-//TODO: Arreglar, Manejar eventos de conexión de Socket.IO
 io.on("connection", (socket) => {
-  console.log("Cliente conectado");
+  logger.info("Socket.IO client connected.");
 
   socket.on("disconnect", () => {
-    console.log("Cliente desconectado");
+    logger.info("Socket.IO client disconnected.");
   });
 });
 

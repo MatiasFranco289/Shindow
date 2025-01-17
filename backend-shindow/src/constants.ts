@@ -5,7 +5,7 @@ export const DEFAULT_TZ = "UTC";
 export const DEFAULT_SERVER_PORT = "22";
 export const DEFAULT_SERVER_IP = "localhost";
 export const DEFAULT_CLIENT_DOMAIN = "http://localhost:3000";
-export const DEFAULT_UPLOAD_DIRECTORY = path.join(__dirname, "../../uploads");
+export const DEFAULT_UPLOAD_DIRECTORY = path.join(__dirname, "../uploads");
 
 export const DEFAULT_ERROR_MESSAGE =
   "An unexpected error occurred while processing your request. Please try again later.";

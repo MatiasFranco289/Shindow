@@ -6,7 +6,7 @@ import {
 } from "../constants";
 import { ConnectionCredentials } from "../interfaces";
 import logger from "./logger";
-import fs from "fs";
+import path from "path";
 
 export class SshConnectionManager {
   public static instance: SshConnectionManager;
@@ -198,37 +198,83 @@ export class SshConnectionManager {
     });
   }
 
-  // TODO: Finish this method
+  /**
+   * Uploads a file to an SSH server using SFTP and provides progress updates.
+   *
+   * This method initiates an SFTP file transfer from the local system to the SSH server.
+   * It monitors the transfer progress and calls the provided callback function to
+   * report the transfer percentage. If any errors occur during the transfer, they
+   * will be thrown and can be caught in the calling function.
+   *
+   * @param sessionId - The session ID for the SSH connection.
+   * @param localPath - The local file path of the file to be uploaded.
+   * @param remotePath - The remote directory path where the file will be uploaded.
+   * @param resourceName - The name of the resource being uploaded.
+   * @param cb - A callback function to report transfer progress as a percentage.
+   *
+   * @throws {Error} If the connection with the given session ID is not found or if an error occurs during the file transfer.
+   *
+   * @returns {Promise<void>} Resolves when the file transfer is complete, either successfully or with an error.
+   */
   public async uploadFileWithProgress(
     sessionId: string,
     localPath: string,
-    remotePath: string
+    remotePath: string,
+    resourceName: string,
+    cb: (progreess: number) => void
   ): Promise<void> {
     const connection = this.getConnection(sessionId);
 
     if (!connection) {
-      throw new Error(`Connection with id ${sessionId} not found.`);
+      const error = new Error();
+      error.name = ERROR_TYPE_SSH_CONNECTION_NOT_FOUND;
+      error.message = `The connection with id '${sessionId}' was not found.`;
+
+      logger.error(
+        `The client with id '${sessionId}' tried to upload a resource but the connection could not be found.`
+      );
+
+      throw error;
     }
 
-    connection.sftp((err, sftp) => {
-      sftp.fastPut(
-        "/shindow/backend-shindow/testFile.txt",
-        "/home/shared/uploaded/testFile.txt",
-        {
-          // Progress
-          step: (totalTransferred, chunk, fileSize) => {
-            const percentage = ((totalTransferred / fileSize) * 100).toFixed(2);
-            console.log(`Progress: ${percentage}%`);
-          },
-        },
-        (err) => {
-          if (err) {
-            console.error("Error uploading file:", err);
-          } else {
-            console.log("File uploaded successfully.");
-          }
-        }
-      );
-    });
+    logger.info(
+      `The transfer of the resource '${resourceName}' to the SSH server has been initiated.`
+    );
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        connection.sftp((_err, sftp) => {
+          sftp.fastPut(
+            localPath,
+            path.join(remotePath, resourceName),
+            {
+              step: (totalTransferred, chunk, fileSize) => {
+                const percentage = Math.floor(
+                  (totalTransferred / fileSize) * 100
+                );
+                cb(percentage);
+              },
+            },
+            (err) => {
+              if (err) {
+                logger.error(
+                  `The tranfer of the resource '${resourceName}' to the SSH server has finished with the following error: ${err}`
+                );
+
+                reject(err);
+              } else {
+                logger.info(
+                  `The tranfer of the resource '${resourceName}' to the SSH server has finished successfully.`
+                );
+
+                resolve();
+              }
+            }
+          );
+        });
+      });
+    } catch (err) {
+      throw err;
+    }
   }
 }

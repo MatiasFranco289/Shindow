@@ -1,6 +1,8 @@
 import * as fs from "fs";
 import { Resource } from "../interfaces";
 import CryptoJS from "crypto-js";
+import logger from "./logger";
+
 export class FileManager {
   public static instance: FileManager;
 
@@ -85,5 +87,19 @@ export class FileManager {
     const decoded = bytes.toString(CryptoJS.enc.Utf8);
 
     return decoded;
+  }
+
+  /**
+   * Receives a resource path and attemps to delete it.
+   * Throws an error if the resource can't be deleted.
+   *
+   * @param resourcePath - The path of the resource to be deleted.
+   */
+  public async DeleteResourceAsync(resourcePath: string): Promise<void> {
+    try {
+      await fs.promises.unlink(resourcePath);
+    } catch (err) {
+      throw err;
+    }
   }
 }
