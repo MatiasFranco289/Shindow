@@ -148,11 +148,11 @@ const resourcesController = {
               filePath,
               remotePath,
               fileName,
-              (progress: number) => {
+              (realProgress: number) => {
                 // I remap the original percentage (between 0 - 100) to a new range between  50-100
-                const mappedPercentage = Math.floor(50 + (progress / 100) * 50);
+                const progress = Math.floor(50 + (realProgress / 100) * 50);
 
-                if (mappedPercentage === 100) {
+                if (progress === 100) {
                   // Once the resource is alredy in the SSH server i delete the resource from the backend server
                   fileManager
                     .DeleteResourceAsync(filePath)
@@ -169,7 +169,7 @@ const resourcesController = {
 
                   io.emit("upload-complete", { fileName });
                 } else {
-                  io.emit("upload-progress", mappedPercentage);
+                  io.emit("upload-progress", { progress });
                 }
               }
             )

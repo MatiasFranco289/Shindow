@@ -1,7 +1,9 @@
 "use client";
-import React, { useState } from "react";
-import { AxiosProgressEvent } from "axios";
 import axiosInstance from "@/utils/axiosInstance";
+import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
+
+const socket = io("http://localhost:5000"); // Asegúrate de usar la URL correcta para tu servidor
 
 const UploadFile = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -31,24 +33,35 @@ const UploadFile = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-          onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-            if (progressEvent.total) {
-              const percent = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              setProgress(percent);
-            }
-          },
           timeout: Infinity,
         }
       );
-
       setMessage("Archivo subido exitosamente");
       setProgress(0); // Resetear progreso después de la carga
     } catch (error) {
       setMessage(`Error al subir el archivo: ${(error as Error).message}`);
     }
   };
+
+  useEffect(() => {
+    // Escuchar el evento de progreso de carga
+    socket.on("upload-progress", (data) => {
+      console.log(data.progress);
+      setProgress(data.progress);
+    });
+
+    // Escuchar el evento de carga completa
+    socket.on("upload-complete", (data) => {
+      setMessage(`El archivo ${data.fileName} se ha subido correctamente.`);
+      /* setProgress(100);  */
+    });
+
+    // Limpiar al desmontar el componente
+    return () => {
+      socket.off("upload-progress");
+      socket.off("upload-complete");
+    };
+  }, []);
 
   return (
     <div>
