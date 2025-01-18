@@ -1,4 +1,3 @@
-// TODO: Add postman collection
 import { NextFunction, Request, Response } from "express";
 import { SshConnectionManager } from "../utils/SshConnectionManager";
 import { ApiResponse, CustomError, Resource } from "../interfaces";
@@ -14,7 +13,6 @@ import { Server } from "socket.io";
 import fs from "fs";
 import {
   FILE_NOT_FOUND_MESSAGE,
-  REMOTE_PATH_NOT_FOUND_MESSAGE,
   REMOTE_PATH_NOT_VALID,
 } from "../errorHandlers/uploadResourceErrorHandler";
 import logger from "../utils/logger";
