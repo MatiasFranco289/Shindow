@@ -144,6 +144,8 @@ export class SshConnectionManager {
             logger.info(
               `The command '${command}' executed using connection with id '${sessionId}' ended with code ${code}.`
             );
+
+            resolve("");
           })
           .on("data", (data: Buffer) => {
             resolve(data.toString());

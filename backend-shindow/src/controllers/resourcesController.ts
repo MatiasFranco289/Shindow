@@ -4,8 +4,13 @@ import { ApiResponse, CustomError, Resource } from "../interfaces";
 import { FileManager } from "../utils/FileManager";
 import {
   DEFAULT_UPLOAD_DIRECTORY,
+  ERROR_TYPE_COPY_RESOURCE,
+  ERROR_TYPE_CREATE_DIRECTORY,
+  ERROR_TYPE_DELETE_RESOURCE,
+  ERROR_TYPE_MOVE_RESOURCE,
   ERROR_TYPE_RESOURCES,
   ERROR_TYPE_UPLOAD_RESOURCE,
+  HTTP_STATUS_CODE_CREATED,
   HTTP_STATUS_CODE_OK,
 } from "../constants";
 import path from "path";
@@ -182,6 +187,165 @@ const resourcesController = {
         });
       });
     },
+  /**
+   * Creates a new directory in the given path.
+   * Receives a value "path" by query with the path of the directory to be created.
+   * Returns error responses if the user doesn't have sufficient permissions, the directory already exists or if the path is invalid.
+   *
+   * @param req - Express request.
+   * @param res - Express response.
+   * @param next - Express NextFunction.
+   * @returns
+   */
+  createDirectory: async (
+    req: Request,
+    res: Response<ApiResponse<null>>,
+    next: NextFunction
+  ) => {
+    const sessionId = req.sessionID;
+    const { path } = req.query;
+    const command = `mkdir`;
+    const response: ApiResponse<null> = {
+      status_code: HTTP_STATUS_CODE_CREATED,
+      message: "Resource successfully created.",
+      data: [],
+    };
+
+    try {
+      await sshConnectionManager.ExecuteCommand(
+        sessionId,
+        `${command} "${path}"`
+      );
+
+      res.status(response.status_code).json(response);
+    } catch (err) {
+      const customError: CustomError = {
+        errorType: ERROR_TYPE_CREATE_DIRECTORY,
+        error: err,
+      };
+
+      return next(customError);
+    }
+  },
+  /**
+   * Deletes a resource in the given path.
+   * Receives a value "path" by query with the path of the resource to be deleted.
+   * Returns error responses if the user doesn't have sufficient permissions, the path is invalid or
+   * if the resource is a directory and the option -r is not specified.
+   *
+   * @param req - Express request.
+   * @param res - Express response.
+   * @param next - Express NextFunction.
+   * @returns
+   */
+  deleteResource: async (
+    req: Request,
+    res: Response<ApiResponse<null>>,
+    next: NextFunction
+  ) => {
+    const sessionId = req.sessionID;
+    const { path } = req.query;
+    const { recursive, force } = req.body;
+    const command = `rm${recursive ? " -r" : ""}${force ? " -f" : ""}`;
+    const response: ApiResponse<null> = {
+      status_code: HTTP_STATUS_CODE_OK,
+      message: "The resource was successfully deleted.",
+      data: [],
+    };
+
+    try {
+      await sshConnectionManager.ExecuteCommand(
+        sessionId,
+        `${command} "${path}"`
+      );
+
+      res.status(response.status_code).json(response);
+    } catch (err) {
+      const customError: CustomError = {
+        errorType: ERROR_TYPE_DELETE_RESOURCE,
+        error: err,
+      };
+
+      return next(customError);
+    }
+  },
+  /**
+   * Copy a resource from the given origin path to the destination path.
+   * Receives a values "originPath", "destinationPath" and "recursive" by body.
+   * Returns error responses if the user doesn't have sufficient permissions, if the path is invalid or if the
+   * resource is a directory and the option "recursive" is not specified.
+   *
+   * @param req - Express request.
+   * @param res - Express response.
+   * @param next - Express NextFunction.
+   * @returns
+   */
+  copyResource: async (
+    req: Request,
+    res: Response<ApiResponse<null>>,
+    next: NextFunction
+  ) => {
+    const sessionId = req.sessionID;
+    const { originPath, destinationPath, recursive } = req.body;
+    const command = `cp${recursive ? " -r" : ""}`;
+    const response: ApiResponse<null> = {
+      status_code: HTTP_STATUS_CODE_OK,
+      message: "Resource successfully copied.",
+      data: [],
+    };
+
+    try {
+      await sshConnectionManager.ExecuteCommand(
+        sessionId,
+        `${command} "${originPath}" "${destinationPath}"`
+      );
+
+      res.status(response.status_code).json(response);
+    } catch (err) {
+      const customError: CustomError = {
+        errorType: ERROR_TYPE_COPY_RESOURCE,
+        error: err,
+      };
+
+      return next(customError);
+    }
+  },
+  /**
+   * Move a resource from the given origin path to the destination path.
+   * Receives a values "originPath" and "destinationPath" by body.
+   * Returns error responses if the user doesn't have sufficient permissions or if the path is invalid
+   *
+   * @param req - Express request.
+   * @param res - Express response.
+   * @param next - Express NextFunction.
+   * @returns
+   */
+  moveResource: async (req: Request, res: Response, next: NextFunction) => {
+    const sessionId = req.sessionID;
+    const { originPath, destinationPath } = req.body;
+    const command = "mv";
+    const response: ApiResponse<null> = {
+      status_code: HTTP_STATUS_CODE_OK,
+      message: "Resource successfully moved.",
+      data: [],
+    };
+
+    try {
+      await sshConnectionManager.ExecuteCommand(
+        sessionId,
+        `${command} "${originPath}" "${destinationPath}"`
+      );
+
+      res.status(response.status_code).json(response);
+    } catch (err) {
+      const customError: CustomError = {
+        errorType: ERROR_TYPE_MOVE_RESOURCE,
+        error: err,
+      };
+
+      return next(customError);
+    }
+  },
 };
 
 export default resourcesController;
