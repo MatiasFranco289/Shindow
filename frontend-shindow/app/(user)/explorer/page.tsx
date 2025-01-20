@@ -274,11 +274,13 @@ export default function FileExplorer() {
         e.preventDefault();
       }}
     >
-      <NavigationHeader
-        goBack={goBack}
-        goForward={goForward}
-        canGoForward={pathHistory.length > historyActualIndex}
-      />
+      <div onContextMenu={() => setShowContextMenu(false)}>
+        <NavigationHeader
+          goBack={goBack}
+          goForward={goForward}
+          canGoForward={pathHistory.length > historyActualIndex}
+        />
+      </div>
 
       <div
         className="flex flex-wrap content-start items-start pt-24 min-h-screen relative"

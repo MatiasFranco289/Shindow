@@ -29,6 +29,7 @@ export default function FileIcon({
   };
 
   const handleRightClick = () => {
+    setSelectedResourceName(name);
     setContextMenuItems(contextMenuItemsFile);
   };
 

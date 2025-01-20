@@ -31,6 +31,7 @@ export default function DirectoryIcon({
   };
 
   const handleRightClick = () => {
+    setSelectedResourceName(name);
     setContextMenuItems(contextMenuItemsDirectory);
   };
 
