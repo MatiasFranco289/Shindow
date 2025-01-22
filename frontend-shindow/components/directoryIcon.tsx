@@ -1,3 +1,5 @@
+import { contextMenuItemsDirectory } from "@/constants";
+import { ContextMenuItemData } from "@/interfaces";
 import DirectoryDefaultSvg from "@/resources/svg/directoryDefaultSvg";
 import { Dispatch, SetStateAction } from "react";
 
@@ -7,6 +9,7 @@ interface DirectoryIconProps {
   isSelected: boolean;
   setSelectedResourceName: Dispatch<SetStateAction<string>>;
   updatePath: (resourceName: string) => void;
+  setContextMenuItems: (itesm: Array<ContextMenuItemData>) => void;
 }
 
 export default function DirectoryIcon({
@@ -15,6 +18,7 @@ export default function DirectoryIcon({
   isSelected,
   setSelectedResourceName,
   updatePath,
+  setContextMenuItems,
 }: DirectoryIconProps) {
   /**
    * This function is called when the resource lost the focus
@@ -26,13 +30,19 @@ export default function DirectoryIcon({
     }
   };
 
+  const handleRightClick = () => {
+    setSelectedResourceName(name);
+    setContextMenuItems(contextMenuItemsDirectory);
+  };
+
   return (
     <div
-      className={`w-48 rounded-xl cursor-default m-2 p-6 active:bg-white/20 ${
+      className={`relative z-10 w-48 rounded-xl cursor-default m-2 p-6 active:bg-white/20 ${
         isSelected ? "bg-white/10 hover:bg-white/15" : "hover:bg-white/5"
       }`}
       onClick={() => setSelectedResourceName(name)}
       onDoubleClick={() => updatePath(name)}
+      onContextMenu={handleRightClick}
       onBlur={onDeselect}
       tabIndex={0}
     >

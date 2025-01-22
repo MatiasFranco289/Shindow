@@ -16,7 +16,7 @@ export default function NavigationHeader({
   const { actualPath } = useNavigation();
 
   return (
-    <div className="w-full bg-custom-green-50 flex justify-center p-5 fixed top-0 left-0">
+    <div className="w-full bg-custom-green-50 flex justify-center p-5 fixed z-20 top-0 left-0">
       {/* Buttons */}
       <div className="absolute left-6 flex text-3xl space-x-4">
         {/* Back btn */}

@@ -1,3 +1,5 @@
+import { contextMenuItemsFile } from "@/constants";
+import { ContextMenuItemData } from "@/interfaces";
 import FileDefaultSvg from "@/resources/svg/fileDefaultSvg";
 import { Dispatch, SetStateAction } from "react";
 
@@ -6,6 +8,7 @@ interface FileIconProps {
   shortName: string;
   isSelected: boolean;
   setSelectedResourceName: Dispatch<SetStateAction<string>>;
+  setContextMenuItems: (itesm: Array<ContextMenuItemData>) => void;
 }
 
 export default function FileIcon({
@@ -13,6 +16,7 @@ export default function FileIcon({
   shortName,
   isSelected,
   setSelectedResourceName,
+  setContextMenuItems,
 }: FileIconProps) {
   /**
    * This function is called when the resource lost the focus
@@ -24,12 +28,18 @@ export default function FileIcon({
     }
   };
 
+  const handleRightClick = () => {
+    setSelectedResourceName(name);
+    setContextMenuItems(contextMenuItemsFile);
+  };
+
   return (
     <div
-      className={`w-48 rounded-xl cursor-default m-2 p-6 active:bg-white/20 ${
+      className={`relative z-10 w-48 rounded-xl cursor-default m-2 p-6 active:bg-white/20 ${
         isSelected ? "bg-white/10 hover:bg-white/15" : "hover:bg-white/5"
       }`}
       onClick={() => setSelectedResourceName(name)}
+      onContextMenu={handleRightClick}
       onBlur={onDeselect}
       tabIndex={0}
     >
