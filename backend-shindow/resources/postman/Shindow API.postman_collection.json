@@ -5,6 +5,7 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "22526807"
   },
+
   "item": [
     {
       "name": "Auth",
@@ -80,6 +81,37 @@
                 {
                   "key": "path",
                   "value": "/home"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "UploadFile",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/home/deshens/Downloads/android-studio-2024.2.1.11-linux.tar.gz"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/resources/upload?remotePath=/home/vago-dev1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "resources", "upload"],
+              "query": [
+                {
+                  "key": "remotePath",
+                  "value": "/home/vago-dev1"
                 }
               ]
             }
