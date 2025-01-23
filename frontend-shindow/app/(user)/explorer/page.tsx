@@ -14,7 +14,7 @@ import {
 } from "@/interfaces";
 import axiosInstance from "@/utils/axiosInstance";
 import EnvironmentManager from "@/utils/EnvironmentManager";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, SetStateAction } from "react";
 import DirectoryIcon from "@/components/directoryIcon";
 import FileIcon from "@/components/fileIcon";
 import { normalizeName } from "@/utils/utils";
@@ -24,6 +24,8 @@ import CustomModal from "@/components/customModal";
 import LoadingOverlay from "@/components/loadingOverlay";
 import { useNavigation } from "@/components/navigationProvider";
 import ContextMenu from "@/components/contextMenu";
+import UploadMenu from "@/components/uploadMenu";
+import { FaUpload } from "react-icons/fa6";
 
 export default function FileExplorer() {
   const environmentManager = EnvironmentManager.getInstance();
@@ -54,6 +56,7 @@ export default function FileExplorer() {
     y: 0,
   });
   const contextMenuRef = useRef<HTMLUListElement>(null);
+  const [showUploadMenu, setShowUploadMenu] = useState<boolean>(false);
 
   useEffect(() => {
     // The first time the apps looads i call the goTo function to get the resources passing an empty array to not move from the actualPath
@@ -289,7 +292,16 @@ export default function FileExplorer() {
         <div
           className=" w-full min-h-screen absolute inset-0"
           onContextMenu={() => {
-            setContextMenuItems(contextMenuItemsExplorer);
+            setContextMenuItems([
+              {
+                icon: <FaUpload />,
+                title: "Upload",
+                function: () => {
+                  setShowUploadMenu(true);
+                  setShowContextMenu(false);
+                },
+              },
+            ]); //TODO:change this
           }}
         ></div>
         {resourceList.map((resource, index) => {
@@ -326,7 +338,9 @@ export default function FileExplorer() {
           />
         )}
       </div>
-
+      {showUploadMenu && (
+        <UploadMenu setMenuOpen={setShowUploadMenu} uploadPath={actualPath} />
+      )}
       <CustomModal
         isModalOpen={errorModalOpen}
         setModalOpen={setErrorModalOpen}
