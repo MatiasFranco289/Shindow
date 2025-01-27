@@ -2,7 +2,6 @@
 
 import {
   CLIENT_DEFAULT_ERROR_MESSAGE,
-  contextMenuItemsExplorer,
   HTTP_STATUS_CODE_SERVICE_UNAVAILABLE,
   RESOURCE_LIST_ENDPOINT,
 } from "@/constants";
@@ -14,7 +13,7 @@ import {
 } from "@/interfaces";
 import axiosInstance from "@/utils/axiosInstance";
 import EnvironmentManager from "@/utils/EnvironmentManager";
-import { useEffect, useState, useRef, SetStateAction } from "react";
+import { useEffect, useState, useRef, SetStateAction, use } from "react";
 import DirectoryIcon from "@/components/directoryIcon";
 import FileIcon from "@/components/fileIcon";
 import { normalizeName } from "@/utils/utils";
@@ -57,6 +56,19 @@ export default function FileExplorer() {
   });
   const contextMenuRef = useRef<HTMLUListElement>(null);
   const [showUploadMenu, setShowUploadMenu] = useState<boolean>(false);
+  const [uploadPath, setUploadPath] = useState<string>(actualPath);
+
+  const contextMenuItemsExplorer = [
+    {
+      icon: <FaUpload />,
+      title: "Upload",
+      function: () => {
+        setShowUploadMenu(true);
+        setShowContextMenu(false);
+        updateUploadPath("");
+      },
+    },
+  ];
 
   useEffect(() => {
     // The first time the apps looads i call the goTo function to get the resources passing an empty array to not move from the actualPath
@@ -83,7 +95,7 @@ export default function FileExplorer() {
   async function goTo(resourceName: string) {
     let newPath = actualPath;
 
-    if (actualPath !== "/") {
+    if (actualPath !== "/" && resourceName != "") {
       newPath += "/";
     }
 
@@ -270,6 +282,17 @@ export default function FileExplorer() {
     setContextMenuItems(items);
   }
 
+  /**
+   * Function to update the upload path based on the resource name.
+   * If the resource name is empty, then the uploadPath will be the current path
+   * @param resourceName - The name of the resource that'll be used to update the path
+   */
+  const updateUploadPath = (resourceName: string) => {
+    let newPath = actualPath;
+    if (resourceName != "") newPath += "/" + resourceName;
+    setUploadPath(newPath);
+  };
+
   return (
     <div
       className="bg-custom-green-100 w-full min-h-screen"
@@ -292,16 +315,7 @@ export default function FileExplorer() {
         <div
           className=" w-full min-h-screen absolute inset-0"
           onContextMenu={() => {
-            setContextMenuItems([
-              {
-                icon: <FaUpload />,
-                title: "Upload",
-                function: () => {
-                  setShowUploadMenu(true);
-                  setShowContextMenu(false);
-                },
-              },
-            ]); //TODO:change this
+            setContextMenuItems(contextMenuItemsExplorer);
           }}
         ></div>
         {resourceList.map((resource, index) => {
@@ -315,6 +329,8 @@ export default function FileExplorer() {
                 setSelectedResourceName={setSelectedResourceName}
                 updatePath={(resourceName: string) => goTo(resourceName)}
                 setContextMenuItems={getContextMenuItems}
+                showUploadMenu={setShowUploadMenu}
+                updateUploadPath={updateUploadPath}
               />
             );
           } else {
@@ -339,7 +355,11 @@ export default function FileExplorer() {
         )}
       </div>
       {showUploadMenu && (
-        <UploadMenu setMenuOpen={setShowUploadMenu} uploadPath={actualPath} />
+        <UploadMenu
+          setMenuOpen={setShowUploadMenu}
+          uploadPath={uploadPath}
+          refreshPage={goTo}
+        />
       )}
       <CustomModal
         isModalOpen={errorModalOpen}

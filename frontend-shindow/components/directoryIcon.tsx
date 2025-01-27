@@ -1,7 +1,7 @@
-import { contextMenuItemsDirectory } from "@/constants";
 import { ContextMenuItemData } from "@/interfaces";
 import DirectoryDefaultSvg from "@/resources/svg/directoryDefaultSvg";
 import { Dispatch, SetStateAction } from "react";
+import { FaRegCopy, FaPaste, FaTrash, FaUpload } from "react-icons/fa6";
 
 interface DirectoryIconProps {
   name: string;
@@ -9,7 +9,9 @@ interface DirectoryIconProps {
   isSelected: boolean;
   setSelectedResourceName: Dispatch<SetStateAction<string>>;
   updatePath: (resourceName: string) => void;
-  setContextMenuItems: (itesm: Array<ContextMenuItemData>) => void;
+  setContextMenuItems: (items: Array<ContextMenuItemData>) => void;
+  showUploadMenu: (show: SetStateAction<boolean>) => void;
+  updateUploadPath: (resourceName: string) => void;
 }
 
 export default function DirectoryIcon({
@@ -19,7 +21,41 @@ export default function DirectoryIcon({
   setSelectedResourceName,
   updatePath,
   setContextMenuItems,
+  showUploadMenu,
+  updateUploadPath,
 }: DirectoryIconProps) {
+  const contextMenuItemsDirectory: Array<ContextMenuItemData> = [
+    {
+      icon: <FaRegCopy />,
+      title: "Copy",
+      function: () => {
+        alert("Copy folder");
+      },
+    },
+    {
+      icon: <FaPaste />,
+      title: "Paste",
+      function: () => {
+        alert("paste into folder");
+      },
+    },
+    {
+      icon: <FaTrash />,
+      title: "Delete",
+      function: () => {
+        alert("delete folder (you sure?)");
+      },
+    },
+    {
+      icon: <FaUpload />,
+      title: "Upload",
+      function: () => {
+        updateUploadPath(name);
+        showUploadMenu(true);
+      },
+    },
+  ];
+
   /**
    * This function is called when the resource lost the focus
    * and sets the selectedResourceName to an empty string

@@ -1,18 +1,21 @@
+import { Resource } from "@/interfaces";
 import axiosInstance from "@/utils/axiosInstance";
 import path from "path";
 import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:5000"); //TODO:constant?
+const socket = io("http://localhost:5000"); //TODO:constant
 
 interface UploadMenuProps {
   setMenuOpen: Dispatch<SetStateAction<boolean>>;
   uploadPath: string;
+  refreshPage: (path: string) => void;
 }
 
 export default function UploadMenu({
   setMenuOpen,
   uploadPath,
+  refreshPage,
 }: UploadMenuProps) {
   const [file, setFile] = useState<File | null>(null);
   const [progress, setProgress] = useState<number>(0);
@@ -53,6 +56,7 @@ export default function UploadMenu({
       );
       setMessage("File uploaded succesfully"); //TODO: change this into a constant
       setProgress(0); // Resetear progreso después de la carga
+      refreshPage("");
     } catch (error) {
       setMessage(`Error uploading file: ${(error as Error).message}`); //TODO: constant?
     }
