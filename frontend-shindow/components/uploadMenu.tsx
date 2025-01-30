@@ -63,7 +63,7 @@ export default function UploadMenu({
   };
 
   useEffect(() => {
-    // Liste to the upload progress event
+    // Listen to the upload progress event
     socket.on("upload-progress", (data) => {
       console.log(data.progress);
       setProgress(data.progress);

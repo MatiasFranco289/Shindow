@@ -25,6 +25,7 @@ import { useNavigation } from "@/components/navigationProvider";
 import ContextMenu from "@/components/contextMenu";
 import UploadMenu from "@/components/uploadMenu";
 import { FaUpload } from "react-icons/fa6";
+import FileDropZone from "@/components/fileDropZone";
 
 export default function FileExplorer() {
   const environmentManager = EnvironmentManager.getInstance();
@@ -318,6 +319,7 @@ export default function FileExplorer() {
             setContextMenuItems(contextMenuItemsExplorer);
           }}
         ></div>
+        <FileDropZone uploadPath={actualPath} refreshPage={goTo} />
         {resourceList.map((resource, index) => {
           if (resource.isDirectory) {
             return (
