@@ -1,14 +1,13 @@
 "use client";
 
 import {
-  CLIENT_DEFAULT_ERROR_MESSAGE,
   HTTP_STATUS_CODE_SERVICE_UNAVAILABLE,
   RESOURCE_LIST_ENDPOINT,
 } from "@/constants";
 import { ApiResponse, Resource } from "@/interfaces";
 import axiosInstance from "@/utils/axiosInstance";
 import EnvironmentManager from "@/utils/EnvironmentManager";
-import { useEffect, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import DirectoryIcon from "@/components/directoryIcon";
 import FileIcon from "@/components/fileIcon";
 import { normalizeName } from "@/utils/utils";
@@ -17,6 +16,11 @@ import resourceListErrorHandler from "@/errorHandlers/resourceListErrorHandler";
 import CustomModal from "@/components/customModal";
 import LoadingOverlay from "@/components/loadingOverlay";
 import { useNavigation } from "@/components/navigationProvider";
+import CustomContextMenu, {
+  toggleContextMenuState,
+} from "@/components/customContextMenu";
+import { useExplorer } from "@/components/explorerProvider";
+import KeyboardController from "@/utils/KeyboardController";
 export default function FileExplorer() {
   const environmentManager = EnvironmentManager.getInstance();
   const initialPath = environmentManager.GetEnvironmentVariable(
@@ -34,13 +38,25 @@ export default function FileExplorer() {
     setHistoryActualIndex,
   } = useNavigation();
   const [resourceList, setResourceList] = useState<Array<Resource>>([]);
-  const [selectedResourceName, setSelectedResourceName] = useState<string>("/");
   const [modalMessage, setModalMessage] = useState<string>("");
   const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [iconRefs, setIconRefs] = useState<Array<RefObject<HTMLDivElement>>>(
+    []
+  );
+
+  const {
+    isContextMenuOpen,
+    setContextMenuOpen,
+    setMousePosition,
+    selectedResourceNames,
+    setSelectedResourceNames,
+    setActiveResourceNames,
+  } = useExplorer();
 
   useEffect(() => {
     // The first time the apps looads i call the goTo function to get the resources passing an empty array to not move from the actualPath
+    KeyboardController.GetInstance(window); // Ensures KeyboardController class to be initializated
     goTo("");
   }, []);
 
@@ -174,13 +190,72 @@ export default function FileExplorer() {
     });
   }
 
+  /**
+   * This function is called when any mouse button is pressed inside the explorer div
+   * and updates the coords x, y of the cursor
+   *
+   * @param e - The mouse event
+   */
+  const updateMousePosition = (e: React.MouseEvent) => {
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  };
+
+  /**
+   * This function is passed to the icon components.
+   * It is called from the icon component when it is mounted and add the reference
+   * of the component to the iconRefs list.
+   * @param newRef
+   */
+  const handleAddRef = (newRef: RefObject<HTMLDivElement>) => {
+    const newIconRefs = iconRefs;
+    newIconRefs.push(newRef);
+
+    setIconRefs(newIconRefs);
+  };
+
+  /**
+   * This function is called when a click is made.
+   * If the click was outside of any icon and the context menu
+   * is closed, then all icons are deselected.
+   */
+  const deselectResources = (e: React.MouseEvent) => {
+    const iconClicked = iconRefs.some((iconRefs) =>
+      iconRefs.current?.contains(e.target as Node)
+    );
+
+    if (!iconClicked && !isContextMenuOpen) {
+      setSelectedResourceNames(new Set<string>());
+    }
+  };
+
+  /**
+   * This function is called when you release the mouse button and
+   * sets all icons as non active.
+   */
+  const deactiveIcons = () => {
+    setActiveResourceNames(new Set<string>());
+  };
+
   return (
-    <div className="bg-custom-green-100 w-full min-h-screen">
+    <div
+      className={`bg-custom-green-100 w-full min-h-screen`}
+      onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
+      onMouseDown={(e) => {
+        updateMousePosition(e);
+        toggleContextMenuState(e, isContextMenuOpen, setContextMenuOpen);
+        deselectResources(e);
+      }}
+      onMouseUp={() => {
+        deactiveIcons();
+      }}
+    >
       <NavigationHeader
         goBack={goBack}
         goForward={goForward}
         canGoForward={pathHistory.length > historyActualIndex}
       />
+
+      <CustomContextMenu />
 
       <div className="flex flex-wrap content-start items-start pt-24">
         {resourceList.map((resource, index) => {
@@ -190,9 +265,11 @@ export default function FileExplorer() {
                 name={resource.name}
                 shortName={resource.shortName}
                 key={`resource_${index}`}
-                isSelected={selectedResourceName === resource.name}
-                setSelectedResourceName={setSelectedResourceName}
+                isSelected={Array.from(selectedResourceNames).some(
+                  (resourceName) => resourceName === resource.name
+                )}
                 updatePath={(resourceName: string) => goTo(resourceName)}
+                handleAddRef={handleAddRef}
               />
             );
           } else {
@@ -201,8 +278,10 @@ export default function FileExplorer() {
                 name={resource.name}
                 shortName={resource.shortName}
                 key={`resource_${index}`}
-                isSelected={selectedResourceName === resource.name}
-                setSelectedResourceName={setSelectedResourceName}
+                isSelected={Array.from(selectedResourceNames).some(
+                  (resourceName) => resourceName === resource.name
+                )}
+                handleAddRef={handleAddRef}
               />
             );
           }

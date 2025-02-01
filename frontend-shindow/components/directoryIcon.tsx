@@ -1,40 +1,94 @@
 import DirectoryDefaultSvg from "@/resources/svg/directoryDefaultSvg";
-import { Dispatch, SetStateAction } from "react";
+import { useExplorer } from "./explorerProvider";
+import { RefObject, useEffect, useRef } from "react";
+import KeyboardController from "@/utils/KeyboardController";
 
 interface DirectoryIconProps {
   name: string;
   shortName: string;
   isSelected: boolean;
-  setSelectedResourceName: Dispatch<SetStateAction<string>>;
   updatePath: (resourceName: string) => void;
+  handleAddRef: (ref: RefObject<HTMLDivElement>) => void;
 }
 
 export default function DirectoryIcon({
   name,
   shortName,
   isSelected,
-  setSelectedResourceName,
   updatePath,
+  handleAddRef,
 }: DirectoryIconProps) {
+  const {
+    isContextMenuOpen,
+    selectedResourceNames,
+    setSelectedResourceNames,
+    setActiveResourceNames,
+    activeResourceNames,
+  } = useExplorer();
+  // This controls whether any mouse button is held down over the directory.
+  const isActive = Array.from(activeResourceNames).find(
+    (activeName) => activeName === name
+  );
+  const iconRef = useRef<HTMLDivElement>(null);
+  const bgColor = isActive
+    ? "bg-white/20"
+    : isSelected
+    ? "bg-white/10 hover:bg-white/15"
+    : "hover:bg-white/5";
+
+  useEffect(() => {
+    handleAddRef(iconRef);
+  }, []);
+
   /**
-   * This function is called when the resource lost the focus
-   * and sets the selectedResourceName to an empty string
+   * This function is called when you click the directory using any mouse button.
+   * If the context menu is open it does nothing.
+   * Updates the selected resource names adding this resource name to the set or overlapping the set
+   * depending if the shift key is pressed or not.
+   * Add the name of this directory the the set of activeResourceNames.
    */
-  const onDeselect = () => {
-    if (isSelected) {
-      setSelectedResourceName("");
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (isContextMenuOpen) return;
+
+    const alreadySelected = selectedResourceNames.has(name);
+    const keyboardController = KeyboardController.GetInstance(window);
+    const shiftPressed = keyboardController.isShiftPressed();
+
+    // When more than one resource is selected and you click over an already selected
+    // resource without press the shift then all the selected resources becomes active
+    if (selectedResourceNames.size > 0 && !shiftPressed && alreadySelected) {
+      selectedResourceNames.forEach((selectedResourceNames) => {
+        const newActiveResourceNames = activeResourceNames;
+        newActiveResourceNames.add(selectedResourceNames);
+        setActiveResourceNames(newActiveResourceNames);
+      });
     }
+
+    // If you click an already selected resource to open the context menu
+    // it's not necessary to do nothing because it is already selected
+    if (alreadySelected && e.button === 2) return;
+
+    // If shift is pressed the name is added to the Set
+    if (shiftPressed) {
+      setSelectedResourceNames(selectedResourceNames.add(name));
+    } else {
+      // If shift isn't pressed the name overlaps the set instead of be added
+      const newSelectedResourceNames = new Set<string>();
+      newSelectedResourceNames.add(name);
+
+      setSelectedResourceNames(newSelectedResourceNames);
+    }
+
+    setActiveResourceNames(activeResourceNames.add(name));
   };
 
   return (
     <div
-      className={`w-48 rounded-xl cursor-default m-2 p-6 active:bg-white/20 ${
-        isSelected ? "bg-white/10 hover:bg-white/15" : "hover:bg-white/5"
-      }`}
-      onClick={() => setSelectedResourceName(name)}
+      className={`w-48 rounded-xl cursor-default m-2 p-6 ${bgColor}`}
+      onMouseDown={(e) => handleMouseDown(e)}
       onDoubleClick={() => updatePath(name)}
-      onBlur={onDeselect}
       tabIndex={0}
+      ref={iconRef}
     >
       <div className="text-center flex justify-center h-36 w-36">
         <DirectoryDefaultSvg />
