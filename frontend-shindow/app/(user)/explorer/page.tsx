@@ -21,6 +21,10 @@ import CustomContextMenu, {
 } from "@/components/customContextMenu";
 import { useExplorer } from "@/components/explorerProvider";
 import KeyboardController from "@/utils/KeyboardController";
+import { FaRegCopy } from "react-icons/fa";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { FaRegPaste } from "react-icons/fa6";
+
 export default function FileExplorer() {
   const environmentManager = EnvironmentManager.getInstance();
   const initialPath = environmentManager.GetEnvironmentVariable(
@@ -44,7 +48,6 @@ export default function FileExplorer() {
   const [iconRefs, setIconRefs] = useState<Array<RefObject<HTMLDivElement>>>(
     []
   );
-
   const {
     isContextMenuOpen,
     setContextMenuOpen,
@@ -240,24 +243,32 @@ export default function FileExplorer() {
     <div
       className={`bg-custom-green-100 w-full min-h-screen`}
       onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
-      onMouseDown={(e) => {
-        updateMousePosition(e);
-        toggleContextMenuState(e, isContextMenuOpen, setContextMenuOpen);
-        deselectResources(e);
-      }}
-      onMouseUp={() => {
-        deactiveIcons();
-      }}
     >
       <NavigationHeader
         goBack={goBack}
         goForward={goForward}
         canGoForward={pathHistory.length > historyActualIndex}
       />
-
-      <CustomContextMenu />
-
-      <div className="flex flex-wrap content-start items-start pt-24">
+      <div
+        className="flex flex-wrap content-start items-start pt-24"
+        onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
+        onMouseDown={(e) => {
+          updateMousePosition(e);
+          toggleContextMenuState(e, isContextMenuOpen, setContextMenuOpen);
+          deselectResources(e);
+        }}
+        onMouseUp={() => {
+          deactiveIcons();
+        }}
+      >
+        {/* TODO: Maybe move the implementation of options to other site? */}
+        <CustomContextMenu
+          options={[
+            { label: "Copiar", callback: () => {}, icon: FaRegCopy },
+            { label: "Eliminar", callback: () => {}, icon: FaRegTrashAlt },
+            { label: "Pegar", callback: () => {}, icon: FaRegPaste },
+          ]}
+        />
         {resourceList.map((resource, index) => {
           if (resource.isDirectory) {
             return (
@@ -287,7 +298,6 @@ export default function FileExplorer() {
           }
         })}
       </div>
-
       <CustomModal
         isModalOpen={errorModalOpen}
         setModalOpen={setErrorModalOpen}
@@ -295,7 +305,6 @@ export default function FileExplorer() {
         message={modalMessage}
         type="ERROR"
       />
-
       <LoadingOverlay isOpen={isLoading} />
     </div>
   );

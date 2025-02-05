@@ -37,3 +37,24 @@ export function normalizePath(path: string) {
   path.split("/").forEach((name) => (newPath += normalizeName(name) + "/"));
   return newPath;
 }
+
+/**
+ * Limits a number between the given values
+ *
+ * @param value - The number to limit.
+ * @param min - The min value the number can have.
+ * @param max - The max value the number can have.
+ * @returns - The number limites to the given values.
+ */
+export function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
+/**
+ * Disables or enables the scroll in the page.
+ *
+ * @param enable - A boolean being true if scroll is enabled
+ */
+export function toggleScroll(enable: boolean) {
+  document.body.style.overflow = enable ? "auto" : "hidden";
+}
