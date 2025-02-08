@@ -21,9 +21,7 @@ import CustomContextMenu, {
 } from "@/components/customContextMenu";
 import { useExplorer } from "@/components/explorerProvider";
 import KeyboardController from "@/utils/KeyboardController";
-import { FaRegCopy } from "react-icons/fa";
-import { FaRegTrashAlt } from "react-icons/fa";
-import { FaRegPaste } from "react-icons/fa6";
+import CustomContextMenuLogic from "@/components/customContextMenuLogic";
 
 export default function FileExplorer() {
   const environmentManager = EnvironmentManager.getInstance();
@@ -44,7 +42,9 @@ export default function FileExplorer() {
   const [resourceList, setResourceList] = useState<Array<Resource>>([]);
   const [modalMessage, setModalMessage] = useState<string>("");
   const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [contextMenuRef, setContextMenuRef] = useState<
+    RefObject<HTMLDivElement | null>
+  >(useRef<HTMLDivElement>(null));
   const [iconRefs, setIconRefs] = useState<Array<RefObject<HTMLDivElement>>>(
     []
   );
@@ -55,6 +55,8 @@ export default function FileExplorer() {
     selectedResourceNames,
     setSelectedResourceNames,
     setActiveResourceNames,
+    isLoading,
+    setIsLoading,
   } = useExplorer();
 
   useEffect(() => {
@@ -195,11 +197,14 @@ export default function FileExplorer() {
 
   /**
    * This function is called when any mouse button is pressed inside the explorer div
-   * and updates the coords x, y of the cursor
+   * and updates the coords x, y of the cursor.
+   * It does nothing if the context menu is open
    *
    * @param e - The mouse event
    */
   const updateMousePosition = (e: React.MouseEvent) => {
+    if (isContextMenuOpen) return;
+
     setMousePosition({ x: e.clientX, y: e.clientY });
   };
 
@@ -254,21 +259,19 @@ export default function FileExplorer() {
         onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
         onMouseDown={(e) => {
           updateMousePosition(e);
-          toggleContextMenuState(e, isContextMenuOpen, setContextMenuOpen);
+          toggleContextMenuState(
+            e,
+            isContextMenuOpen,
+            setContextMenuOpen,
+            contextMenuRef
+          );
           deselectResources(e);
         }}
         onMouseUp={() => {
           deactiveIcons();
         }}
       >
-        {/* TODO: Maybe move the implementation of options to other site? */}
-        <CustomContextMenu
-          options={[
-            { label: "Copiar", callback: () => {}, icon: FaRegCopy },
-            { label: "Eliminar", callback: () => {}, icon: FaRegTrashAlt },
-            { label: "Pegar", callback: () => {}, icon: FaRegPaste },
-          ]}
-        />
+        <CustomContextMenu setContextMenuRef={setContextMenuRef} />
         {resourceList.map((resource, index) => {
           if (resource.isDirectory) {
             return (
@@ -298,6 +301,7 @@ export default function FileExplorer() {
           }
         })}
       </div>
+
       <CustomModal
         isModalOpen={errorModalOpen}
         setModalOpen={setErrorModalOpen}
@@ -306,6 +310,8 @@ export default function FileExplorer() {
         type="ERROR"
       />
       <LoadingOverlay isOpen={isLoading} />
+
+      <CustomContextMenuLogic />
     </div>
   );
 }

@@ -9,8 +9,6 @@ import React, {
   SetStateAction,
   createContext,
   useContext,
-  useEffect,
-  useRef,
   useState,
 } from "react";
 
@@ -23,6 +21,10 @@ interface ExplorerContextType {
   setSelectedResourceNames: Dispatch<SetStateAction<Set<string>>>;
   activeResourceNames: Set<string>;
   setActiveResourceNames: Dispatch<SetStateAction<Set<string>>>;
+  isNewDirectoryMenuOpen: boolean;
+  setNewDirectoryMenuOpen: Dispatch<SetStateAction<boolean>>;
+  isLoading: boolean;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 const ExplorerContext = createContext<ExplorerContextType | undefined>(
@@ -47,6 +49,9 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
   const [activeResourceNames, setActiveResourceNames] = useState<Set<string>>(
     new Set<string>()
   );
+  const [isNewDirectoryMenuOpen, setNewDirectoryMenuOpen] =
+    useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   return (
     <ExplorerContext.Provider
@@ -55,10 +60,14 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
         setContextMenuOpen,
         mousePosition,
         setMousePosition,
-        selectedResourceNames: selectedResourceNames,
-        setSelectedResourceNames: setSelectedResourceNames,
+        selectedResourceNames,
+        setSelectedResourceNames,
         activeResourceNames,
         setActiveResourceNames,
+        isNewDirectoryMenuOpen,
+        setNewDirectoryMenuOpen,
+        isLoading,
+        setIsLoading,
       }}
     >
       {children}

@@ -1,10 +1,17 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useExplorer } from "./explorerProvider";
-import { IconType } from "react-icons";
+import { MdOutlineCreateNewFolder } from "react-icons/md";
 import { clamp, toggleScroll } from "@/utils/utils";
 /**
  * This function controls open and closes the customContextMenu.
- * It is called when a click is detected so if the menu is open it is closed.
+ * It is called when a click is detected so if the menu is open and the click was not in the menu, it is closed
  * Otherwise, if the menu isn't open and the click is the right then the menu state changes.
  *
  * Also calls the fucntion 'toggleScroll' to enable or disable the scroll depending if the menu is
@@ -12,14 +19,18 @@ import { clamp, toggleScroll } from "@/utils/utils";
  * @param e - The mouse event
  * @param isContextMenuOpen - A boolean being true if the context menu is open
  * @param setContextMenuOpen - A setter for the isContextMenuOpen boolean
+ * @param ref - A reference of the div returned by this component
  * @returns
  */
 export const toggleContextMenuState = (
   e: React.MouseEvent,
   isContextMenuOpen: boolean,
-  setContextMenuOpen: Dispatch<SetStateAction<boolean>>
+  setContextMenuOpen: Dispatch<SetStateAction<boolean>>,
+  ref: RefObject<HTMLDivElement | null>
 ) => {
-  if (isContextMenuOpen) {
+  const clickOnMenu = ref.current?.contains(e.target as Node);
+
+  if (!clickOnMenu && isContextMenuOpen) {
     setContextMenuOpen(false);
     toggleScroll(true);
     return;
@@ -32,15 +43,14 @@ export const toggleContextMenuState = (
 };
 
 interface CustomContextMenuProps {
-  options: Array<{
-    label: string;
-    callback: () => void;
-    icon: IconType;
-  }>;
+  setContextMenuRef: Dispatch<SetStateAction<RefObject<HTMLDivElement | null>>>;
 }
 
-export default function CustomContextMenu({ options }: CustomContextMenuProps) {
-  const { isContextMenuOpen, mousePosition } = useExplorer();
+export default function CustomContextMenu({
+  setContextMenuRef,
+}: CustomContextMenuProps) {
+  const { isContextMenuOpen, mousePosition, selectedResourceNames } =
+    useExplorer();
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
   const [contextMenuDimensions, setContextMenuDimensions] = useState<{
     width: number;
@@ -49,6 +59,7 @@ export default function CustomContextMenu({ options }: CustomContextMenuProps) {
     width: 0,
     height: 0,
   });
+  const { setNewDirectoryMenuOpen, setContextMenuOpen } = useExplorer();
 
   // When the component it's mounted the dimensions in pixels are updated
   // in the provider state
@@ -57,6 +68,7 @@ export default function CustomContextMenu({ options }: CustomContextMenuProps) {
 
     const { width, height } = contextMenuRef.current.getBoundingClientRect();
     setContextMenuDimensions({ width, height });
+    setContextMenuRef(contextMenuRef);
   }, []);
 
   /**
@@ -66,7 +78,7 @@ export default function CustomContextMenu({ options }: CustomContextMenuProps) {
    * @returns - The x,y position of the context menu
    */
   const getContextMenuPosition = () => {
-    if (!window) return { x: 0, y: 0 };
+    if (typeof window === "undefined") return { x: 0, y: 0 };
 
     const windowSize = {
       width: window.innerWidth,
@@ -88,6 +100,18 @@ export default function CustomContextMenu({ options }: CustomContextMenuProps) {
     return contextMenuPosition;
   };
 
+  const menuOptions = [
+    {
+      label: "New Directory ...",
+      onClick: () => {
+        setNewDirectoryMenuOpen(true);
+        setContextMenuOpen(false);
+      },
+      icon: MdOutlineCreateNewFolder,
+      disabled: !!selectedResourceNames.size,
+    },
+  ];
+
   return (
     <div
       style={{
@@ -95,21 +119,31 @@ export default function CustomContextMenu({ options }: CustomContextMenuProps) {
         top: `${getContextMenuPosition().y}px`,
       }}
       className={`fixed bg-custom-green-150 z-50 flex flex-col rounded-md overflow-hidden ${
-        isContextMenuOpen ? "opacity-100" : "opacity-0"
+        isContextMenuOpen
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
       }`}
       ref={contextMenuRef}
     >
-      {options.map((option, index) => {
+      {menuOptions.map((option, index) => {
         const Icon = option.icon;
 
         return (
           <div
-            onClick={option.callback}
-            className="flex justify-start items-center hover:bg-white/10 p-3 cursor-pointer"
+            onClick={option.onClick}
+            className={`flex justify-start items-center hover:bg-white/10 p-3 cursor-pointer ${
+              option.disabled
+                ? "text-gray-400 pointer-events-none"
+                : "text-white pointer-events-auto"
+            }`}
             key={`custom_menu_option_${index}`}
           >
             <Icon className="text-2xl" />
-            {<span className="mx-3 text-sm">{option.label}</span>}
+            {
+              <span className="mx-3 text-sm" style={{ userSelect: "none" }}>
+                {option.label}
+              </span>
+            }
           </div>
         );
       })}
