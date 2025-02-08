@@ -7,7 +7,8 @@ const createDirectoryValidation = [
     .exists()
     .withMessage("path is required.")
     .isString()
-    .withMessage("path must be an string."),
+    .withMessage("path must be an string.")
+    .customSanitizer((value) => value.replace(/["]/g, "")),
   (req: Request, res: Response, next: NextFunction) => {
     validateResult(req, res, next);
   },
