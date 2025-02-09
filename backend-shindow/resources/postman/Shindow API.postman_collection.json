@@ -5,7 +5,6 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "22526807"
   },
-
   "item": [
     {
       "name": "Auth",
@@ -114,6 +113,105 @@
                   "value": "/home/vago-dev1"
                 }
               ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CreateDirectory",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/resources/new?path=/home/vago-dev1/test/asd",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "resources", "new"],
+              "query": [
+                {
+                  "key": "path",
+                  "value": "/home/vago-dev1/test/asd"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DeleteResource",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"recursive\": false,\n    \"force\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/resources/delete?path=/home/vago-dev1/asd.txt",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "resources", "delete"],
+              "query": [
+                {
+                  "key": "path",
+                  "value": "/home/vago-dev1/asd.txt"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CopyResource",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"originPath\": \"/home/vago-dev1/test\",\n    \"destinationPath\": \"/home/vago-dev1/testCopy\",\n    \"recursive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/resources/copy",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "resources", "copy"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "MoveResource",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"originPath\": \"/home/vago-dev1/test\",\n    \"destinationPath\": \"/home/vago-dev1/test2\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/resources/move",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "resources", "move"]
             }
           },
           "response": []
