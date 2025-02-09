@@ -9,6 +9,7 @@ import {
 import { useExplorer } from "./explorerProvider";
 import { MdOutlineCreateNewFolder } from "react-icons/md";
 import { clamp, toggleScroll } from "@/utils/utils";
+import { isContext } from "vm";
 /**
  * This function controls open and closes the customContextMenu.
  * It is called when a click is detected so if the menu is open and the click was not in the menu, it is closed
@@ -119,7 +120,9 @@ export default function CustomContextMenu({
         top: `${getContextMenuPosition().y}px`,
       }}
       className={`fixed bg-custom-green-150 z-50 flex flex-col rounded-md overflow-hidden ${
-        isContextMenuOpen
+        !contextMenuRef.current
+          ? "opacity-0 pointer-events-none"
+          : isContextMenuOpen
           ? "opacity-100 pointer-events-auto"
           : "opacity-0 pointer-events-none hidden"
       }`}
@@ -140,7 +143,10 @@ export default function CustomContextMenu({
           >
             <Icon className="text-2xl" />
             {
-              <span className="mx-3 text-sm" style={{ userSelect: "none" }}>
+              <span
+                className="mx-3 text-sm whitespace-nowrap"
+                style={{ userSelect: "none" }}
+              >
                 {option.label}
               </span>
             }

@@ -57,13 +57,14 @@ export default function NewDirectory({ goTo }: NewDirectoryProps) {
         goTo("");
       })
       .catch((err) => {
+        let errorMessage = CLIENT_DEFAULT_ERROR_MESSAGE;
+
         if (err instanceof AxiosError && err.response) {
           const errorResponse: ApiResponse<null> = err.response.data;
-          setErrorModalMessage(errorResponse.message);
-        } else {
-          setErrorModalMessage(CLIENT_DEFAULT_ERROR_MESSAGE);
+          errorMessage = errorResponse.message;
         }
 
+        setErrorModalMessage(errorMessage);
         setErrorModalOpen(true);
       })
       .finally(() => {
