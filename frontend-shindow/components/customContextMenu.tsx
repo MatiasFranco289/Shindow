@@ -121,7 +121,7 @@ export default function CustomContextMenu({
       className={`fixed bg-custom-green-150 z-50 flex flex-col rounded-md overflow-hidden ${
         isContextMenuOpen
           ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none"
+          : "opacity-0 pointer-events-none hidden"
       }`}
       ref={contextMenuRef}
     >

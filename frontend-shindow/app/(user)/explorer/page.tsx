@@ -25,9 +25,6 @@ import CustomContextMenuLogic from "@/components/customContextMenuLogic";
 
 export default function FileExplorer() {
   const environmentManager = EnvironmentManager.getInstance();
-  const initialPath = environmentManager.GetEnvironmentVariable(
-    "NEXT_PUBLIC_INITIAL_PATH"
-  );
   const apiBaseUrl = environmentManager.GetEnvironmentVariable(
     "NEXT_PUBLIC_API_BASE_URL"
   );
@@ -40,8 +37,6 @@ export default function FileExplorer() {
     setHistoryActualIndex,
   } = useNavigation();
   const [resourceList, setResourceList] = useState<Array<Resource>>([]);
-  const [modalMessage, setModalMessage] = useState<string>("");
-  const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
   const [contextMenuRef, setContextMenuRef] = useState<
     RefObject<HTMLDivElement | null>
   >(useRef<HTMLDivElement>(null));
@@ -57,6 +52,10 @@ export default function FileExplorer() {
     setActiveResourceNames,
     isLoading,
     setIsLoading,
+    errorModalOpen,
+    setErrorModalOpen,
+    errorModalMessage,
+    setErrorModalMessage,
   } = useExplorer();
 
   useEffect(() => {
@@ -72,8 +71,9 @@ export default function FileExplorer() {
    */
   async function goTo(resourceName: string) {
     let newPath = actualPath;
+    let actualPathLastCharacter = actualPath[actualPath.length - 1];
 
-    if (actualPath !== "/") {
+    if (resourceName !== "" && actualPathLastCharacter !== "/") {
       newPath += "/";
     }
 
@@ -98,7 +98,7 @@ export default function FileExplorer() {
       setHistoryActualIndex(historyActualIndex + 1);
     } catch (err) {
       const errorCode = err as number;
-      setModalMessage(resourceListErrorHandler(errorCode));
+      setErrorModalMessage(resourceListErrorHandler(errorCode));
       setErrorModalOpen(true);
     }
 
@@ -122,7 +122,7 @@ export default function FileExplorer() {
         setHistoryActualIndex(historyActualIndex - 1);
       } catch (err) {
         const errorCode = err as number;
-        setModalMessage(resourceListErrorHandler(errorCode));
+        setErrorModalMessage(resourceListErrorHandler(errorCode));
         setErrorModalOpen(true);
       }
 
@@ -146,7 +146,7 @@ export default function FileExplorer() {
       setHistoryActualIndex(historyActualIndex + 1);
     } catch (err) {
       const errorCode = err as number;
-      setModalMessage(resourceListErrorHandler(errorCode));
+      setErrorModalMessage(resourceListErrorHandler(errorCode));
       setErrorModalOpen(true);
     }
 
@@ -246,7 +246,7 @@ export default function FileExplorer() {
 
   return (
     <div
-      className={`bg-custom-green-100 w-full min-h-screen`}
+      className={`bg-custom-green-100 w-full min-h-screen flex`}
       onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
     >
       <NavigationHeader
@@ -255,7 +255,7 @@ export default function FileExplorer() {
         canGoForward={pathHistory.length > historyActualIndex}
       />
       <div
-        className="flex flex-wrap content-start items-start pt-24"
+        className="flex flex-wrap content-start items-start pt-24 w-full"
         onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
         onMouseDown={(e) => {
           updateMousePosition(e);
@@ -306,12 +306,12 @@ export default function FileExplorer() {
         isModalOpen={errorModalOpen}
         setModalOpen={setErrorModalOpen}
         title="Error!"
-        message={modalMessage}
+        message={errorModalMessage}
         type="ERROR"
       />
       <LoadingOverlay isOpen={isLoading} />
 
-      <CustomContextMenuLogic />
+      <CustomContextMenuLogic goTo={goTo} />
     </div>
   );
 }

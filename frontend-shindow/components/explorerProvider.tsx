@@ -25,6 +25,10 @@ interface ExplorerContextType {
   setNewDirectoryMenuOpen: Dispatch<SetStateAction<boolean>>;
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
+  errorModalOpen: boolean;
+  setErrorModalOpen: Dispatch<SetStateAction<boolean>>;
+  errorModalMessage: string;
+  setErrorModalMessage: Dispatch<SetStateAction<string>>;
 }
 
 const ExplorerContext = createContext<ExplorerContextType | undefined>(
@@ -52,6 +56,8 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
   const [isNewDirectoryMenuOpen, setNewDirectoryMenuOpen] =
     useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
+  const [errorModalMessage, setErrorModalMessage] = useState<string>("");
 
   return (
     <ExplorerContext.Provider
@@ -68,6 +74,10 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
         setNewDirectoryMenuOpen,
         isLoading,
         setIsLoading,
+        errorModalOpen,
+        setErrorModalOpen,
+        errorModalMessage,
+        setErrorModalMessage,
       }}
     >
       {children}

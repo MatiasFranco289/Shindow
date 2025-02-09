@@ -35,6 +35,8 @@ export function normalizePath(path: string) {
 
   let newPath: string = "";
   path.split("/").forEach((name) => (newPath += normalizeName(name) + "/"));
+  newPath = newPath.slice(0, -1);
+
   return newPath;
 }
 

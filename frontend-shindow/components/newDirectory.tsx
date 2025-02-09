@@ -1,30 +1,47 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useExplorer } from "./explorerProvider";
 import { toggleScroll } from "@/utils/utils";
 import axiosInstance from "@/utils/axiosInstance";
 import EnvironmentManager from "@/utils/EnvironmentManager";
 import { useNavigation } from "./navigationProvider";
+import { ApiResponse } from "@/interfaces";
+import { AxiosError } from "axios";
+import { CLIENT_DEFAULT_ERROR_MESSAGE } from "@/constants";
 
-export default function NewDirectory() {
-  const { setNewDirectoryMenuOpen, setIsLoading } = useExplorer();
+interface NewDirectoryProps {
+  goTo: (resourceName: string) => void;
+}
+
+export default function NewDirectory({ goTo }: NewDirectoryProps) {
+  const {
+    setNewDirectoryMenuOpen,
+    setIsLoading,
+    setErrorModalMessage,
+    setErrorModalOpen,
+  } = useExplorer();
   const { actualPath } = useNavigation();
   const [directoryName, setDirectoryName] = useState<string>("");
   const environmentManager = EnvironmentManager.getInstance();
+  const inputRef = useRef<HTMLInputElement>(null);
   const apiBaseUrl = environmentManager.GetEnvironmentVariable(
     "NEXT_PUBLIC_API_BASE_URL"
   );
-
   const btnStyles = `border border-gray-300 text-gray-300 hover:border-gray-200 
     hover:text-gray-200 disabled:border-gray-400 disabled:text-gray-400 
     active:border-white active:text-white py-2 px-6 rounded-md flex 
     justify-center duration-200`;
 
-  const handleCancel = () => {
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  const closeModal = () => {
     setNewDirectoryMenuOpen(false);
     toggleScroll(true);
   };
 
-  // TODO: Implement this
   const handleCreate = () => {
     let createDirectoryUrl = `${apiBaseUrl}/resources/new`;
     createDirectoryUrl += `?path=${actualPath}`;
@@ -36,14 +53,22 @@ export default function NewDirectory() {
 
     axiosInstance
       .post(createDirectoryUrl)
-      .then((response) => {
-        console.log(response);
+      .then(() => {
+        goTo("");
       })
       .catch((err) => {
-        //
+        if (err instanceof AxiosError && err.response) {
+          const errorResponse: ApiResponse<null> = err.response.data;
+          setErrorModalMessage(errorResponse.message);
+        } else {
+          setErrorModalMessage(CLIENT_DEFAULT_ERROR_MESSAGE);
+        }
+
+        setErrorModalOpen(true);
       })
       .finally(() => {
         setIsLoading(false);
+        closeModal();
       });
   };
 
@@ -51,7 +76,7 @@ export default function NewDirectory() {
     <div className="w-screen h-screen fixed top-0  left-0 flex justify-center items-center">
       <div className="bg-custom-green-150 w-2/6 rounded-lg overflow-hidden border">
         <div className="w-full flex justify-between items-center p-4 pb-2">
-          <button className={btnStyles} type="button" onClick={handleCancel}>
+          <button className={btnStyles} type="button" onClick={closeModal}>
             Cancel
           </button>
           <h2 className="text-lg font-semibold">New Directory</h2>
@@ -74,6 +99,7 @@ export default function NewDirectory() {
              focus:border-gray-400 placeholder-gray-500"
             value={directoryName}
             onChange={(e) => setDirectoryName(e.target.value)}
+            ref={inputRef}
           />
         </div>
       </div>
