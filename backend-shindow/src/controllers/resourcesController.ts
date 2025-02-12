@@ -203,19 +203,22 @@ const resourcesController = {
     next: NextFunction
   ) => {
     const sessionId = req.sessionID;
-    const { path } = req.query;
+    const path = req.query.path;
+    const name = req.query.name as string;
+
     const command = `mkdir`;
+
     const response: ApiResponse<null> = {
       status_code: HTTP_STATUS_CODE_CREATED,
       message: "Resource successfully created.",
       data: [],
     };
 
+    let finalCommand = `${command} ${path}/`;
+    finalCommand += '"' + name.replace(/"/g, '\\"') + '"';
+
     try {
-      await sshConnectionManager.ExecuteCommand(
-        sessionId,
-        `${command} "${path}"`
-      );
+      await sshConnectionManager.ExecuteCommand(sessionId, finalCommand);
 
       res.status(response.status_code).json(response);
     } catch (err) {

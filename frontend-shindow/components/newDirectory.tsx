@@ -45,9 +45,7 @@ export default function NewDirectory({ goTo }: NewDirectoryProps) {
   const handleCreate = () => {
     let createDirectoryUrl = `${apiBaseUrl}/resources/new`;
     createDirectoryUrl += `?path=${actualPath}`;
-    createDirectoryUrl +=
-      createDirectoryUrl[createDirectoryUrl.length - 1] === "/" ? "" : "/";
-    createDirectoryUrl += directoryName;
+    createDirectoryUrl += `&name=${directoryName}`;
 
     setIsLoading(true);
 
