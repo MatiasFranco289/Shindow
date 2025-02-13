@@ -43,13 +43,14 @@ const resourcesController = {
     next: NextFunction
   ) => {
     const sessionId = req.sessionID;
-    const path = req.query.path || "/";
+    const path = (req.query.path as string) || "/";
+    const escapedPath = path.replace(/"/g, '\\"');
     const command = "ls -la --full-time";
 
     try {
       const result = await sshConnectionManager.ExecuteCommand(
         sessionId,
-        `${command} "${path}"`
+        `${command} "${escapedPath}"`
       );
 
       const resourcesList: Array<Resource> = fileManager.LsToResource(result);

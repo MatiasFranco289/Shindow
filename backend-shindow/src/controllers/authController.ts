@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import EnvironmentManager from "../utils/EnvironmentManager";
 import { SshConnectionManager } from "../utils/SshConnectionManager";
 import { ApiResponse, CustomError, LoginRequest } from "../interfaces";
-import CryptoJS from "crypto-js";
 import {
   DEFAULT_ERROR_MESSAGE,
   ERROR_TYPE_AUTH,

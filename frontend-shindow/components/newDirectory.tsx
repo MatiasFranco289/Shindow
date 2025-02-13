@@ -7,6 +7,7 @@ import { useNavigation } from "./navigationProvider";
 import { ApiResponse } from "@/interfaces";
 import { AxiosError } from "axios";
 import { CLIENT_DEFAULT_ERROR_MESSAGE } from "@/constants";
+import newDirectoryErrorHandler from "@/errorHandlers/newDirectoryErrorHandler";
 
 interface NewDirectoryProps {
   goTo: (resourceName: string) => void;
@@ -44,7 +45,7 @@ export default function NewDirectory({ goTo }: NewDirectoryProps) {
 
   const handleCreate = () => {
     let createDirectoryUrl = `${apiBaseUrl}/resources/new`;
-    createDirectoryUrl += `?path=${actualPath}`;
+    createDirectoryUrl += `?path=${actualPath.slice(0, -1)}`;
     createDirectoryUrl += `&name=${directoryName}`;
 
     setIsLoading(true);
@@ -55,14 +56,10 @@ export default function NewDirectory({ goTo }: NewDirectoryProps) {
         goTo("");
       })
       .catch((err) => {
-        let errorMessage = CLIENT_DEFAULT_ERROR_MESSAGE;
-
-        if (err instanceof AxiosError && err.response) {
-          const errorResponse: ApiResponse<null> = err.response.data;
-          errorMessage = errorResponse.message;
-        }
-
-        setErrorModalMessage(errorMessage);
+        const errorCode = err.status as number;
+        setErrorModalMessage(
+          newDirectoryErrorHandler(errorCode, err.response.data)
+        );
         setErrorModalOpen(true);
       })
       .finally(() => {

@@ -1,14 +1,10 @@
 import { useExplorer } from "./explorerProvider";
+import { useNavigation } from "./navigationProvider";
 import NewDirectory from "./newDirectory";
 
-interface CustomContextMenuLogic {
-  goTo: (resourceName: string) => void;
-}
-
-export default function CustomContextMenuLogic({
-  goTo,
-}: CustomContextMenuLogic) {
+export default function CustomContextMenuLogic() {
   const { isNewDirectoryMenuOpen } = useExplorer();
+  const { goTo } = useNavigation();
 
   return <div>{isNewDirectoryMenuOpen && <NewDirectory goTo={goTo} />}</div>;
 }

@@ -2,18 +2,11 @@ import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useNavigation } from "./navigationProvider";
 import { normalizePath } from "@/utils/utils";
 
-export interface NavigationHeaderProps {
-  canGoForward: boolean;
-  goBack: () => void;
-  goForward: () => void;
-}
-
-export default function NavigationHeader({
-  goBack,
-  goForward,
-  canGoForward,
-}: NavigationHeaderProps) {
-  const { actualPath } = useNavigation();
+export default function NavigationHeader() {
+  const { actualPath, goBack, goForward, pathHistory, historyActualIndex } =
+    useNavigation();
+  const canGoForward =
+    historyActualIndex.current + 1 < pathHistory.current.length;
 
   return (
     <div className="w-full bg-custom-green-50 flex justify-center p-5 fixed z-20 top-0 left-0">
@@ -22,10 +15,11 @@ export default function NavigationHeader({
         {/* Back btn */}
         <div
           className={`p-1 rounded-md ${
-            actualPath !== "/" &&
-            " hover:bg-white/10 active:bg-white/15 duration-200"
+            actualPath !== "/"
+              ? " hover:bg-white/10 active:bg-white/15 duration-200 pointer-events-auto"
+              : "pointer-events-none"
           }`}
-          onClick={goBack}
+          onClick={() => goBack()}
         >
           <IoChevronBack
             className={`${
@@ -37,7 +31,9 @@ export default function NavigationHeader({
         {/* Next btn */}
         <div
           className={`p-1 rounded-md ${
-            canGoForward && "hover:bg-white/10 active:bg-white/15 duration-200"
+            canGoForward
+              ? "hover:bg-white/10 active:bg-white/15 duration-200 pointer-events-auto"
+              : "pointer-events-none"
           }`}
           onClick={goForward}
         >

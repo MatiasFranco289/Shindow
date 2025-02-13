@@ -28,14 +28,7 @@ export default function FileExplorer() {
   const apiBaseUrl = environmentManager.GetEnvironmentVariable(
     "NEXT_PUBLIC_API_BASE_URL"
   );
-  const {
-    actualPath,
-    setActualPath,
-    pathHistory,
-    setPathHistory,
-    historyActualIndex,
-    setHistoryActualIndex,
-  } = useNavigation();
+  const { actualPath, goBack } = useNavigation();
   const [resourceList, setResourceList] = useState<Array<Resource>>([]);
   const [contextMenuRef, setContextMenuRef] = useState<
     RefObject<HTMLDivElement | null>
@@ -61,97 +54,25 @@ export default function FileExplorer() {
   useEffect(() => {
     // The first time the apps looads i call the goTo function to get the resources passing an empty array to not move from the actualPath
     KeyboardController.GetInstance(window); // Ensures KeyboardController class to be initializated
-    goTo("");
   }, []);
 
-  /**
-   * Receives a string with the name of a directory in the server.
-   * It will append the name of the directory to the current path and try to get the resources in that path.
-   * @param resourceName
-   */
-  async function goTo(resourceName: string) {
-    let newPath = actualPath;
-    let actualPathLastCharacter = actualPath[actualPath.length - 1];
-
-    if (resourceName !== "" && actualPathLastCharacter !== "/") {
-      newPath += "/";
-    }
-
-    newPath += resourceName;
-
+  useEffect(() => {
     setIsLoading(true);
 
-    try {
-      const result = await getResourceListFromApi(newPath);
-      setResourceList(result);
-
-      let newPathHistory = pathHistory;
-
-      if (pathHistory[historyActualIndex]) {
-        newPathHistory = newPathHistory.slice(
-          historyActualIndex - 1,
-          historyActualIndex
-        );
-      }
-
-      setPathHistory([...newPathHistory, newPath]);
-      setHistoryActualIndex(historyActualIndex + 1);
-    } catch (err) {
-      const errorCode = err as number;
-      setErrorModalMessage(resourceListErrorHandler(errorCode));
-      setErrorModalOpen(true);
-    }
-
-    setIsLoading(false);
-  }
-
-  /**
-   * It will try to get the resources in the previous path by modifing actualPath,
-   * removing the text from the end to the first occurence of '/'.
-   */
-  async function goBack() {
-    if (actualPath !== "/") {
-      const newPath = actualPath.slice(0, actualPath.lastIndexOf("/")) || "/";
-
-      setIsLoading(true);
-
-      try {
-        const result = await getResourceListFromApi(newPath);
-        setResourceList(result);
-
-        setHistoryActualIndex(historyActualIndex - 1);
-      } catch (err) {
+    getResourceListFromApi(actualPath)
+      .then((resources) => {
+        setResourceList(resources);
+      })
+      .catch((err) => {
         const errorCode = err as number;
         setErrorModalMessage(resourceListErrorHandler(errorCode));
         setErrorModalOpen(true);
-      }
-
-      setIsLoading(false);
-    }
-  }
-
-  async function goForward() {
-    const forwardPath = pathHistory[historyActualIndex];
-
-    if (!forwardPath) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const result = await getResourceListFromApi(forwardPath);
-      setResourceList(result);
-
-      setHistoryActualIndex(historyActualIndex + 1);
-    } catch (err) {
-      const errorCode = err as number;
-      setErrorModalMessage(resourceListErrorHandler(errorCode));
-      setErrorModalOpen(true);
-    }
-
-    setIsLoading(false);
-  }
+        goBack(true);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [actualPath]);
 
   /**
    * This function returns a promise which calls the endpoint to get the resources of the given path.
@@ -168,8 +89,6 @@ export default function FileExplorer() {
       axiosInstance
         .get(resourceListEndpoint)
         .then((response) => {
-          setActualPath(path);
-
           const resources: Array<Resource> = response.data.data.map(
             (resource: Resource) => {
               return { ...resource, shortName: normalizeName(resource.name) };
@@ -249,11 +168,7 @@ export default function FileExplorer() {
       className={`bg-custom-green-100 w-full min-h-screen flex`}
       onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
     >
-      <NavigationHeader
-        goBack={goBack}
-        goForward={goForward}
-        canGoForward={pathHistory.length > historyActualIndex}
-      />
+      <NavigationHeader />
       <div
         className="flex flex-wrap content-start items-start pt-24 w-full"
         onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
@@ -282,7 +197,6 @@ export default function FileExplorer() {
                 isSelected={Array.from(selectedResourceNames).some(
                   (resourceName) => resourceName === resource.name
                 )}
-                updatePath={(resourceName: string) => goTo(resourceName)}
                 handleAddRef={handleAddRef}
               />
             );
@@ -311,7 +225,7 @@ export default function FileExplorer() {
       />
       <LoadingOverlay isOpen={isLoading} />
 
-      <CustomContextMenuLogic goTo={goTo} />
+      <CustomContextMenuLogic />
     </div>
   );
 }

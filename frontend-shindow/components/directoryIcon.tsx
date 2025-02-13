@@ -2,12 +2,12 @@ import DirectoryDefaultSvg from "@/resources/svg/directoryDefaultSvg";
 import { useExplorer } from "./explorerProvider";
 import { RefObject, useEffect, useRef } from "react";
 import KeyboardController from "@/utils/KeyboardController";
+import { useNavigation } from "./navigationProvider";
 
 interface DirectoryIconProps {
   name: string;
   shortName: string;
   isSelected: boolean;
-  updatePath: (resourceName: string) => void;
   handleAddRef: (ref: RefObject<HTMLDivElement>) => void;
 }
 
@@ -15,7 +15,6 @@ export default function DirectoryIcon({
   name,
   shortName,
   isSelected,
-  updatePath,
   handleAddRef,
 }: DirectoryIconProps) {
   const {
@@ -25,6 +24,8 @@ export default function DirectoryIcon({
     setActiveResourceNames,
     activeResourceNames,
   } = useExplorer();
+  const { goTo } = useNavigation();
+
   // This controls whether any mouse button is held down over the directory.
   const isActive = Array.from(activeResourceNames).find(
     (activeName) => activeName === name
@@ -86,7 +87,7 @@ export default function DirectoryIcon({
     <div
       className={`w-48 rounded-xl cursor-default m-2 p-6 ${bgColor}`}
       onMouseDown={(e) => handleMouseDown(e)}
-      onDoubleClick={() => updatePath(name)}
+      onDoubleClick={() => goTo(name)}
       tabIndex={0}
       ref={iconRef}
     >

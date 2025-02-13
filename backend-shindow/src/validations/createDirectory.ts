@@ -11,7 +11,7 @@ const createDirectoryValidation = [
     .withMessage("path is required.")
     .isString()
     .withMessage("path must be an string.")
-    .matches(/[^/]$/, "i")
+    .custom((value) => (value.length > 1 ? !value.endsWith("/") : true))
     .withMessage("path cannot end with a '/'."),
   query("name")
     .exists()

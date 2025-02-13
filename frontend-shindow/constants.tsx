@@ -10,6 +10,7 @@ export const RESOURCE_LIST_ENDPOINT = "/resources/list";
 export const CLIENT_DEFAULT_ERROR_MESSAGE =
   "An unexpected error has occurred. Please try again later.";
 
+export const HTTP_STATUS_CODE_BAD_REQUEST = 400;
 export const HTTP_STATUS_CODE_CONFLICT = 409;
 export const HTTP_STATUS_CODE_UNAUTHORIZED = 401;
 export const HTTP_STATUS_CODE_FORBIDDEN = 403;
