@@ -14,7 +14,6 @@ const config: Config = {
         "custom-green-50": "#041D20",
         "custom-green-100": "#052529",
         "custom-green-150": "#064851",
-        "custom-green-200": "#1F5A62",
       },
     },
   },

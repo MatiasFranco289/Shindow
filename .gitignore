@@ -5,3 +5,4 @@
 .env*
 **/.next/*
 **/uploads
+**/tests/ssh-test-server/*

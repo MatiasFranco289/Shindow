@@ -1,20 +1,13 @@
 "use client";
 
 import {
-  CLIENT_DEFAULT_ERROR_MESSAGE,
-  contextMenuItemsExplorer,
   HTTP_STATUS_CODE_SERVICE_UNAVAILABLE,
   RESOURCE_LIST_ENDPOINT,
 } from "@/constants";
-import {
-  ApiResponse,
-  ContextMenuItemData,
-  Position2D,
-  Resource,
-} from "@/interfaces";
+import { ApiResponse, Resource } from "@/interfaces";
 import axiosInstance from "@/utils/axiosInstance";
 import EnvironmentManager from "@/utils/EnvironmentManager";
-import { useEffect, useState, useRef } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import DirectoryIcon from "@/components/directoryIcon";
 import FileIcon from "@/components/fileIcon";
 import { normalizeName } from "@/utils/utils";
@@ -23,13 +16,15 @@ import resourceListErrorHandler from "@/errorHandlers/resourceListErrorHandler";
 import CustomModal from "@/components/customModal";
 import LoadingOverlay from "@/components/loadingOverlay";
 import { useNavigation } from "@/components/navigationProvider";
-import ContextMenu from "@/components/contextMenu";
+import CustomContextMenu, {
+  toggleContextMenuState,
+} from "@/components/customContextMenu";
+import { useExplorer } from "@/components/explorerProvider";
+import KeyboardController from "@/utils/KeyboardController";
+import CustomContextMenuLogic from "@/components/customContextMenuLogic";
 
 export default function FileExplorer() {
   const environmentManager = EnvironmentManager.getInstance();
-  const initialPath = environmentManager.GetEnvironmentVariable(
-    "NEXT_PUBLIC_INITIAL_PATH"
-  );
   const apiBaseUrl = environmentManager.GetEnvironmentVariable(
     "NEXT_PUBLIC_API_BASE_URL"
   );
@@ -42,34 +37,31 @@ export default function FileExplorer() {
     setHistoryActualIndex,
   } = useNavigation();
   const [resourceList, setResourceList] = useState<Array<Resource>>([]);
-  const [selectedResourceName, setSelectedResourceName] = useState<string>("/");
-  const [modalMessage, setModalMessage] = useState<string>("");
-  const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
-  const [contextMenuItems, setContextMenuItems] =
-    useState<Array<ContextMenuItemData>>();
-  const [contextMenuPosition, setContextMenuPosition] = useState<Position2D>({
-    x: 0,
-    y: 0,
-  });
-  const contextMenuRef = useRef<HTMLUListElement>(null);
+  const [contextMenuRef, setContextMenuRef] = useState<
+    RefObject<HTMLDivElement | null>
+  >(useRef<HTMLDivElement>(null));
+  const [iconRefs, setIconRefs] = useState<Array<RefObject<HTMLDivElement>>>(
+    []
+  );
+  const {
+    isContextMenuOpen,
+    setContextMenuOpen,
+    setMousePosition,
+    selectedResourceNames,
+    setSelectedResourceNames,
+    setActiveResourceNames,
+    isLoading,
+    setIsLoading,
+    errorModalOpen,
+    setErrorModalOpen,
+    errorModalMessage,
+    setErrorModalMessage,
+  } = useExplorer();
 
   useEffect(() => {
     // The first time the apps looads i call the goTo function to get the resources passing an empty array to not move from the actualPath
+    KeyboardController.GetInstance(window); // Ensures KeyboardController class to be initializated
     goTo("");
-
-    // Listen for the left-click event
-    document.addEventListener("click", hideContextMenu);
-
-    // Listen for the right-click event
-    document.addEventListener("contextmenu", handleContextMenuPosition);
-
-    // Cleanup event listeners
-    return () => {
-      document.removeEventListener("contextmenu", handleContextMenuPosition);
-      document.removeEventListener("click", hideContextMenu);
-    };
   }, []);
 
   /**
@@ -79,8 +71,9 @@ export default function FileExplorer() {
    */
   async function goTo(resourceName: string) {
     let newPath = actualPath;
+    let actualPathLastCharacter = actualPath[actualPath.length - 1];
 
-    if (actualPath !== "/") {
+    if (resourceName !== "" && actualPathLastCharacter !== "/") {
       newPath += "/";
     }
 
@@ -105,7 +98,7 @@ export default function FileExplorer() {
       setHistoryActualIndex(historyActualIndex + 1);
     } catch (err) {
       const errorCode = err as number;
-      setModalMessage(resourceListErrorHandler(errorCode));
+      setErrorModalMessage(resourceListErrorHandler(errorCode));
       setErrorModalOpen(true);
     }
 
@@ -129,7 +122,7 @@ export default function FileExplorer() {
         setHistoryActualIndex(historyActualIndex - 1);
       } catch (err) {
         const errorCode = err as number;
-        setModalMessage(resourceListErrorHandler(errorCode));
+        setErrorModalMessage(resourceListErrorHandler(errorCode));
         setErrorModalOpen(true);
       }
 
@@ -153,7 +146,7 @@ export default function FileExplorer() {
       setHistoryActualIndex(historyActualIndex + 1);
     } catch (err) {
       const errorCode = err as number;
-      setModalMessage(resourceListErrorHandler(errorCode));
+      setErrorModalMessage(resourceListErrorHandler(errorCode));
       setErrorModalOpen(true);
     }
 
@@ -203,95 +196,82 @@ export default function FileExplorer() {
   }
 
   /**
-   * This function makes sure that the context menu closes when a click is detected outside of the context menu itself
-   * @param event - The mouse event
+   * This function is called when any mouse button is pressed inside the explorer div
+   * and updates the coords x, y of the cursor.
+   * It does nothing if the context menu is open
+   *
+   * @param e - The mouse event
    */
-  const hideContextMenu = (event: MouseEvent) => {
-    if (
-      contextMenuRef.current &&
-      !contextMenuRef.current.contains(event.target as Node)
-    ) {
-      setShowContextMenu(false);
+  const updateMousePosition = (e: React.MouseEvent) => {
+    if (isContextMenuOpen) return;
+
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  };
+
+  /**
+   * This function is passed to the icon components.
+   * It is called from the icon component when it is mounted and add the reference
+   * of the component to the iconRefs list.
+   * @param newRef
+   */
+  const handleAddRef = (newRef: RefObject<HTMLDivElement>) => {
+    const newIconRefs = iconRefs;
+    newIconRefs.push(newRef);
+
+    setIconRefs(newIconRefs);
+  };
+
+  /**
+   * This function is called when a click is made.
+   * If the click was outside of any icon and the context menu
+   * is closed, then all icons are deselected.
+   */
+  const deselectResources = (e: React.MouseEvent) => {
+    const iconClicked = iconRefs.some((iconRefs) =>
+      iconRefs.current?.contains(e.target as Node)
+    );
+
+    if (!iconClicked && !isContextMenuOpen) {
+      setSelectedResourceNames(new Set<string>());
     }
   };
 
   /**
-   * This function handles the position of the context menu according to its position on the page. It ensures that the context menu doesn't overflow the page itself.
-   * @param event - The mouse event
+   * This function is called when you release the mouse button and
+   * sets all icons as non active.
    */
-  const handleContextMenuPosition = (event: MouseEvent) => {
-    event.preventDefault();
-
-    const { pageX, pageY, clientX, clientY } = event;
-
-    const menuWidth = contextMenuRef.current?.offsetWidth || 0;
-    const menuHeight = contextMenuRef.current?.offsetHeight || 0;
-
-    const spaceRight = window.innerWidth - clientX;
-    const spaceBottom = window.innerHeight - clientY;
-
-    let newLeft = pageX;
-    let newTop = pageY;
-
-    if (spaceRight < menuWidth) {
-      // If there's not enough space on the right, position the menu to the left
-      newLeft = pageX - menuWidth;
-    }
-
-    if (spaceBottom < menuHeight) {
-      // If there's not enough space below, position the menu above
-      newTop = pageY - menuHeight;
-    }
-
-    setContextMenuPosition({ x: newLeft, y: newTop });
+  const deactiveIcons = () => {
+    setActiveResourceNames(new Set<string>());
   };
-
-  /**
-   * This function takes care of showing the context menu when a right click is detected.
-   * @param event - Mouse event
-   */
-  const handleRightClick = (event: React.MouseEvent) => {
-    event.preventDefault();
-    setShowContextMenu(true);
-    setContextMenuPosition({
-      x: event.pageX,
-      y: event.pageY,
-    });
-  };
-
-  /**
-   * Function that sets the items on the context menu.
-   * @param items - The items that the context menu will show
-   */
-  function getContextMenuItems(items: Array<ContextMenuItemData>): void {
-    setContextMenuItems(items);
-  }
 
   return (
     <div
-      className="bg-custom-green-100 w-full min-h-screen"
-      onContextMenu={(e) => {
-        e.preventDefault();
-      }}
+      className={`bg-custom-green-100 w-full min-h-screen flex`}
+      onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
     >
-      <div onContextMenu={() => setShowContextMenu(false)}>
-        <NavigationHeader
-          goBack={goBack}
-          goForward={goForward}
-          canGoForward={pathHistory.length > historyActualIndex}
-        />
-      </div>
-
+      <NavigationHeader
+        goBack={goBack}
+        goForward={goForward}
+        canGoForward={pathHistory.length > historyActualIndex}
+      />
       <div
-        className="flex flex-wrap content-start items-start pt-24 min-h-screen relative"
-        onContextMenu={handleRightClick}
+        className="flex flex-wrap content-start items-start pt-24 w-full"
+        onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
+        onMouseDown={(e) => {
+          updateMousePosition(e);
+          toggleContextMenuState(
+            e,
+            isContextMenuOpen,
+            setContextMenuOpen,
+            contextMenuRef
+          );
+          deselectResources(e);
+        }}
+        onMouseUp={() => {
+          deactiveIcons();
+        }}
       >
-        <div
-          className=" w-full min-h-screen absolute inset-0"
-          onContextMenu={() => {
-            setContextMenuItems(contextMenuItemsExplorer);
-          }}
-        ></div>
+        <CustomContextMenu setContextMenuRef={setContextMenuRef} />
         {resourceList.map((resource, index) => {
           if (resource.isDirectory) {
             return (
@@ -299,10 +279,11 @@ export default function FileExplorer() {
                 name={resource.name}
                 shortName={resource.shortName}
                 key={`resource_${index}`}
-                isSelected={selectedResourceName === resource.name}
-                setSelectedResourceName={setSelectedResourceName}
+                isSelected={Array.from(selectedResourceNames).some(
+                  (resourceName) => resourceName === resource.name
+                )}
                 updatePath={(resourceName: string) => goTo(resourceName)}
-                setContextMenuItems={getContextMenuItems}
+                handleAddRef={handleAddRef}
               />
             );
           } else {
@@ -311,31 +292,26 @@ export default function FileExplorer() {
                 name={resource.name}
                 shortName={resource.shortName}
                 key={`resource_${index}`}
-                isSelected={selectedResourceName === resource.name}
-                setSelectedResourceName={setSelectedResourceName}
-                setContextMenuItems={getContextMenuItems}
+                isSelected={Array.from(selectedResourceNames).some(
+                  (resourceName) => resourceName === resource.name
+                )}
+                handleAddRef={handleAddRef}
               />
             );
           }
         })}
-        {showContextMenu && (
-          <ContextMenu
-            position={contextMenuPosition}
-            reference={contextMenuRef}
-            items={contextMenuItems}
-          />
-        )}
       </div>
 
       <CustomModal
         isModalOpen={errorModalOpen}
         setModalOpen={setErrorModalOpen}
         title="Error!"
-        message={modalMessage}
+        message={errorModalMessage}
         type="ERROR"
       />
-
       <LoadingOverlay isOpen={isLoading} />
+
+      <CustomContextMenuLogic goTo={goTo} />
     </div>
   );
 }
