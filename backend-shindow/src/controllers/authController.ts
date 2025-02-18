@@ -4,11 +4,14 @@ import { SshConnectionManager } from "../utils/SshConnectionManager";
 import { ApiResponse, CustomError, LoginRequest } from "../interfaces";
 import CryptoJS from "crypto-js";
 import {
+  ACTIVE_CONNECTION_LOGIN_MESSAGE,
   DEFAULT_ERROR_MESSAGE,
   ERROR_TYPE_AUTH,
   HTTP_STATUS_CODE_CONFLICT,
   HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_CODE_OK,
+  NODE_ENVIRONMENT_TEST,
+  SUCCESSFUL_LOGIN_MESSAGE,
 } from "../constants";
 import logger from "../utils/logger";
 import { FileManager } from "../utils/FileManager";
@@ -24,6 +27,8 @@ const connectionMaxAge =
 const serverPort = parseInt(
   environmentManager.getEnvironmentVariable("SERVER_PORT")
 );
+const nodeEnvironment =
+  environmentManager.getEnvironmentVariable("NODE_ENVIRONMENT");
 
 const authController = {
   login: async (
@@ -38,7 +43,7 @@ const authController = {
     const clientIp = req.ip;
     let response: ApiResponse<null> = {
       status_code: HTTP_STATUS_CODE_OK,
-      message: "Successful login",
+      message: SUCCESSFUL_LOGIN_MESSAGE,
       data: [],
     };
 
@@ -49,7 +54,7 @@ const authController = {
 
       if (previousConnection) {
         response.status_code = HTTP_STATUS_CODE_CONFLICT;
-        response.message = "You already have an active connection";
+        response.message = ACTIVE_CONNECTION_LOGIN_MESSAGE;
 
         res.status(response.status_code).json(response);
         return;
@@ -66,8 +71,14 @@ const authController = {
         {
           username: username,
           password: password,
-          privateKey: fileManager.Decode(privateKey, secret),
-          passphrase: fileManager.Decode(passphrase, secret),
+          privateKey:
+            nodeEnvironment === NODE_ENVIRONMENT_TEST
+              ? privateKey
+              : fileManager.Decode(privateKey, secret),
+          passphrase:
+            nodeEnvironment === NODE_ENVIRONMENT_TEST
+              ? passphrase
+              : fileManager.Decode(passphrase, secret),
         }
       );
     } catch (err) {

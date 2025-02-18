@@ -1,0 +1,46 @@
+services:
+  openssh-server:
+    image: lscr.io/linuxserver/openssh-server:latest
+    container_name: openssh-server
+    hostname: test-ssh-server #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - SUDO_ACCESS=false #optional
+      - PASSWORD_ACCESS=true #optional
+      - USER_NAME=test #optional
+      - USER_PASSWORD=test #optional
+    volumes:
+      - ./backend-shindow/tests/ssh-test-server/config:/config
+    ports:
+      - 2222:2222
+    restart: unless-stopped
+    networks:
+      - internal-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "2222"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  jest:
+    container_name: "jest"
+    build:
+      context: ./backend-shindow
+      dockerfile: Dockerfile.jest.test
+    volumes:
+      - ./backend-shindow:/app
+    networks:
+      - internal-network
+    depends_on:
+      openssh-server:
+        condition: service_healthy
+    env_file: "./backend-shindow/.env.test"
+    environment:
+      - FORCE_COLOR=true
+
+networks:
+  internal-network:
+    driver: bridge

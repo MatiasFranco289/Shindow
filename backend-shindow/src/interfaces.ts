@@ -1,3 +1,11 @@
+import {
+  NODE_ENVIRONMENT_TEST,
+  NODE_ENVIRONMENT_DEVELOPMENT,
+  NODE_ENVIRONMENT_PRODUCTION,
+} from "./constants";
+
+export type NodeEnvironmentType = "test" | "development" | "production";
+
 export interface EnvironmentVariables {
   API_PORT: string;
   API_DOMAIN: string;
@@ -7,6 +15,7 @@ export interface EnvironmentVariables {
   SERVER_PORT: string;
   SECRET: string;
   SESSION_MAX_AGE: string;
+  NODE_ENVIRONMENT: NodeEnvironmentType;
 }
 
 export interface ConnectionCredentials {

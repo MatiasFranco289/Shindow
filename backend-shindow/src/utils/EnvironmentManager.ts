@@ -21,6 +21,7 @@ export default class EnvironmentManager {
     SERVER_PORT: DEFAULT_SERVER_PORT,
     SECRET: "",
     SESSION_MAX_AGE: "",
+    NODE_ENVIRONMENT: DEFAULT_NODE_ENVIRONMENT,
   };
 
   private constructor() {}

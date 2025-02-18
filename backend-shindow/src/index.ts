@@ -56,3 +56,5 @@ server.on("error", (err) => {
 });
 
 io.attach(server);
+
+export default app;
