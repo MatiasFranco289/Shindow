@@ -2,9 +2,17 @@ import { useExplorer } from "./explorerProvider";
 import { useNavigation } from "./navigationProvider";
 import NewDirectory from "./newDirectory";
 
-export default function CustomContextMenuLogic() {
+interface CustomContextMenuLogicProps {
+  refresh: () => void; // Function to refresh resources in the current path
+}
+
+export default function CustomContextMenuLogic({
+  refresh,
+}: CustomContextMenuLogicProps) {
   const { isNewDirectoryMenuOpen } = useExplorer();
   const { goTo } = useNavigation();
 
-  return <div>{isNewDirectoryMenuOpen && <NewDirectory goTo={goTo} />}</div>;
+  return (
+    <div>{isNewDirectoryMenuOpen && <NewDirectory refresh={refresh} />}</div>
+  );
 }

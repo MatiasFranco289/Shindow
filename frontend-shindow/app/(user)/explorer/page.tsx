@@ -58,7 +58,14 @@ export default function FileExplorer() {
 
   useEffect(() => {
     setIsLoading(true);
+    refresh();
+  }, [actualPath]);
 
+  /**
+   * This function calls 'getResourceListFromApi' function and manages the
+   * returned promise.
+   */
+  const refresh = () => {
     getResourceListFromApi(actualPath)
       .then((resources) => {
         setResourceList(resources);
@@ -72,7 +79,7 @@ export default function FileExplorer() {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [actualPath]);
+  };
 
   /**
    * This function returns a promise which calls the endpoint to get the resources of the given path.
@@ -225,7 +232,7 @@ export default function FileExplorer() {
       />
       <LoadingOverlay isOpen={isLoading} />
 
-      <CustomContextMenuLogic />
+      <CustomContextMenuLogic refresh={refresh} />
     </div>
   );
 }

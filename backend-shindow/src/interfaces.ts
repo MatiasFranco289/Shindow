@@ -1,3 +1,5 @@
+import { ASD } from "./constants";
+
 export interface EnvironmentVariables {
   API_PORT: string;
   API_DOMAIN: string;
