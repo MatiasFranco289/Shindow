@@ -45,7 +45,7 @@ export default function DirectoryIcon({
    * This function is called when you click the directory using any mouse button.
    * If the context menu is open it does nothing.
    * Updates the selected resource names adding this resource name to the set or overlapping the set
-   * depending if the shift key is pressed or not.
+   * depending if the ctrl key is pressed or not.
    * Add the name of this directory the the set of activeResourceNames.
    */
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -53,11 +53,11 @@ export default function DirectoryIcon({
 
     const alreadySelected = selectedResourceNames.has(name);
     const keyboardController = KeyboardController.GetInstance(window);
-    const shiftPressed = keyboardController.isShiftPressed();
+    const ctrlPressed = keyboardController.isCtrlPressed();
 
     // When more than one resource is selected and you click over an already selected
-    // resource without press the shift then all the selected resources becomes active
-    if (selectedResourceNames.size > 0 && !shiftPressed && alreadySelected) {
+    // resource without press the ctrl then all the selected resources becomes active
+    if (selectedResourceNames.size > 0 && !ctrlPressed && alreadySelected) {
       selectedResourceNames.forEach((selectedResourceNames) => {
         const newActiveResourceNames = activeResourceNames;
         newActiveResourceNames.add(selectedResourceNames);
@@ -69,11 +69,11 @@ export default function DirectoryIcon({
     // it's not necessary to do nothing because it is already selected
     if (alreadySelected && e.button === 2) return;
 
-    // If shift is pressed the name is added to the Set
-    if (shiftPressed) {
+    // If ctrl is pressed the name is added to the Set
+    if (ctrlPressed) {
       setSelectedResourceNames(selectedResourceNames.add(name));
     } else {
-      // If shift isn't pressed the name overlaps the set instead of be added
+      // If ctrl isn't pressed the name overlaps the set instead of be added
       const newSelectedResourceNames = new Set<string>();
       newSelectedResourceNames.add(name);
 

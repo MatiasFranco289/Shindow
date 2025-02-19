@@ -1,5 +1,5 @@
+import CopyResources from "./copyResources";
 import { useExplorer } from "./explorerProvider";
-import { useNavigation } from "./navigationProvider";
 import NewDirectory from "./newDirectory";
 
 interface CustomContextMenuLogicProps {
@@ -9,10 +9,12 @@ interface CustomContextMenuLogicProps {
 export default function CustomContextMenuLogic({
   refresh,
 }: CustomContextMenuLogicProps) {
-  const { isNewDirectoryMenuOpen } = useExplorer();
-  const { goTo } = useNavigation();
+  const { isNewDirectoryMenuOpen, isCopyOpen } = useExplorer();
 
   return (
-    <div>{isNewDirectoryMenuOpen && <NewDirectory refresh={refresh} />}</div>
+    <div>
+      <div>{isNewDirectoryMenuOpen && <NewDirectory refresh={refresh} />}</div>
+      <div>{isCopyOpen && <CopyResources />}</div>
+    </div>
   );
 }

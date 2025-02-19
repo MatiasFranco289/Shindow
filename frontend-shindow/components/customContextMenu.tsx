@@ -9,7 +9,7 @@ import {
 import { useExplorer } from "./explorerProvider";
 import { MdOutlineCreateNewFolder } from "react-icons/md";
 import { clamp, toggleScroll } from "@/utils/utils";
-import { isContext } from "vm";
+import { FaRegCopy } from "react-icons/fa";
 /**
  * This function controls open and closes the customContextMenu.
  * It is called when a click is detected so if the menu is open and the click was not in the menu, it is closed
@@ -60,7 +60,8 @@ export default function CustomContextMenu({
     width: 0,
     height: 0,
   });
-  const { setNewDirectoryMenuOpen, setContextMenuOpen } = useExplorer();
+  const { setNewDirectoryMenuOpen, setContextMenuOpen, setCopyOpen } =
+    useExplorer();
 
   // When the component it's mounted the dimensions in pixels are updated
   // in the provider state
@@ -110,6 +111,15 @@ export default function CustomContextMenu({
       },
       icon: MdOutlineCreateNewFolder,
       disabled: !!selectedResourceNames.size,
+    },
+    {
+      label: "Copy",
+      onClick: () => {
+        setCopyOpen(true);
+        setContextMenuOpen(false);
+      },
+      icon: FaRegCopy,
+      disabled: !selectedResourceNames.size,
     },
   ];
 
