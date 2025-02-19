@@ -11,6 +11,7 @@ import React, {
   useContext,
   useState,
 } from "react";
+import { ClipboardItem } from "@/interfaces";
 
 interface ExplorerContextType {
   isContextMenuOpen: boolean;
@@ -19,8 +20,8 @@ interface ExplorerContextType {
   setMousePosition: Dispatch<SetStateAction<Vector2>>;
   selectedResourceNames: Set<string>;
   setSelectedResourceNames: Dispatch<SetStateAction<Set<string>>>;
-  clipBoard: Set<string>;
-  setClipBoard: Dispatch<SetStateAction<Set<string>>>;
+  clipBoard: Set<ClipboardItem>;
+  setClipBoard: Dispatch<SetStateAction<Set<ClipboardItem>>>;
   activeResourceNames: Set<string>;
   setActiveResourceNames: Dispatch<SetStateAction<Set<string>>>;
   isNewDirectoryMenuOpen: boolean;
@@ -33,6 +34,8 @@ interface ExplorerContextType {
   setErrorModalMessage: Dispatch<SetStateAction<string>>;
   isCopyOpen: boolean;
   setCopyOpen: Dispatch<SetStateAction<boolean>>;
+  isCutOpen: boolean;
+  setCutOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const ExplorerContext = createContext<ExplorerContextType | undefined>(
@@ -54,13 +57,16 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
   const [selectedResourceNames, setSelectedResourceNames] = useState<
     Set<string>
   >(new Set<string>());
-  const [clipBoard, setClipBoard] = useState<Set<string>>(new Set<string>());
+  const [clipBoard, setClipBoard] = useState<Set<ClipboardItem>>(
+    new Set<ClipboardItem>()
+  );
   const [activeResourceNames, setActiveResourceNames] = useState<Set<string>>(
     new Set<string>()
   );
   const [isNewDirectoryMenuOpen, setNewDirectoryMenuOpen] =
     useState<boolean>(false);
   const [isCopyOpen, setCopyOpen] = useState<boolean>(false);
+  const [isCutOpen, setCutOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
   const [errorModalMessage, setErrorModalMessage] = useState<string>("");
@@ -88,6 +94,8 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
         setCopyOpen,
         clipBoard,
         setClipBoard,
+        isCutOpen,
+        setCutOpen,
       }}
     >
       {children}

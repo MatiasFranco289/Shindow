@@ -29,3 +29,8 @@ export interface Vector2 {
   x: number;
   y: number;
 }
+
+export interface ClipboardItem {
+  path: string;
+  method: "copied" | "cut";
+}

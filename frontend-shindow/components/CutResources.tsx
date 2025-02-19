@@ -1,26 +1,26 @@
+import { toggleScroll } from "@/utils/utils";
 import { useEffect } from "react";
 import { useExplorer } from "./explorerProvider";
 import { useNavigation } from "./navigationProvider";
-import { toggleScroll } from "@/utils/utils";
 import { ClipboardItem } from "@/interfaces";
 
-export default function CopyResources() {
-  const { setCopyOpen, selectedResourceNames, setClipBoard } = useExplorer();
+export default function CutResources() {
+  const { setCutOpen, setClipBoard, selectedResourceNames } = useExplorer();
   const { actualPath } = useNavigation();
 
   useEffect(() => {
-    const copiedResourcesPath: Array<ClipboardItem> = Array.from(
+    const cutResourcesPath: Array<ClipboardItem> = Array.from(
       selectedResourceNames
     ).map((resourceName) => {
       return {
         path: actualPath + resourceName,
-        method: "copied",
+        method: "cut",
       };
     });
 
-    setClipBoard(new Set(copiedResourcesPath));
+    setClipBoard(new Set(cutResourcesPath));
     toggleScroll(true);
-    setCopyOpen(false);
+    setCutOpen(false);
   }, []);
 
   return null;

@@ -10,6 +10,7 @@ import { useExplorer } from "./explorerProvider";
 import { MdOutlineCreateNewFolder } from "react-icons/md";
 import { clamp, toggleScroll } from "@/utils/utils";
 import { FaRegCopy } from "react-icons/fa";
+import { IoCutOutline } from "react-icons/io5";
 /**
  * This function controls open and closes the customContextMenu.
  * It is called when a click is detected so if the menu is open and the click was not in the menu, it is closed
@@ -60,8 +61,12 @@ export default function CustomContextMenu({
     width: 0,
     height: 0,
   });
-  const { setNewDirectoryMenuOpen, setContextMenuOpen, setCopyOpen } =
-    useExplorer();
+  const {
+    setNewDirectoryMenuOpen,
+    setContextMenuOpen,
+    setCopyOpen,
+    setCutOpen,
+  } = useExplorer();
 
   // When the component it's mounted the dimensions in pixels are updated
   // in the provider state
@@ -119,6 +124,15 @@ export default function CustomContextMenu({
         setContextMenuOpen(false);
       },
       icon: FaRegCopy,
+      disabled: !selectedResourceNames.size,
+    },
+    {
+      label: "Cut",
+      onClick: () => {
+        setCutOpen(true);
+        setContextMenuOpen(false);
+      },
+      icon: IoCutOutline,
       disabled: !selectedResourceNames.size,
     },
   ];

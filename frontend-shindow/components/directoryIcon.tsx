@@ -23,6 +23,7 @@ export default function DirectoryIcon({
     setSelectedResourceNames,
     setActiveResourceNames,
     activeResourceNames,
+    clipBoard,
   } = useExplorer();
   const { goTo } = useNavigation();
 
