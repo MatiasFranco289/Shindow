@@ -32,10 +32,6 @@ export const ERROR_TYPE_DELETE_RESOURCE = "DELETE_RESOURCE_ERROR";
 export const ERROR_TYPE_COPY_RESOURCE = "COPY_RESOURCE_ERROR";
 export const ERROR_TYPE_MOVE_RESOURCE = "MOVE_RESOURCE_ERROR";
 
-export const SUCCESSFUL_LOGIN_MESSAGE = "Successful login";
-export const ACTIVE_CONNECTION_LOGIN_MESSAGE =
-  "You already have an active connection";
-
 export const NODE_ENVIRONMENT_TEST: NodeEnvironmentType = "test";
 export const NODE_ENVIRONMENT_DEVELOPMENT: NodeEnvironmentType = "development";
 export const NODE_ENVIRONMENT_PRODUCTION: NodeEnvironmentType = "production";
