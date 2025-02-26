@@ -1,8 +1,9 @@
 import DirectoryDefaultSvg from "@/resources/svg/directoryDefaultSvg";
 import { useExplorer } from "./explorerProvider";
-import { RefObject, useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import KeyboardController from "@/utils/KeyboardController";
 import { useNavigation } from "./navigationProvider";
+import { getLastFromPath } from "@/utils/utils";
 
 interface DirectoryIconProps {
   name: string;
@@ -31,7 +32,9 @@ export default function DirectoryIcon({
   const isActive = Array.from(activeResourceNames).find(
     (activeName) => activeName === name
   );
+  const [isCut, setIsCut] = useState<boolean>();
   const iconRef = useRef<HTMLDivElement>(null);
+
   const bgColor = isActive
     ? "bg-white/20"
     : isSelected
@@ -41,6 +44,25 @@ export default function DirectoryIcon({
   useEffect(() => {
     handleAddRef(iconRef);
   }, []);
+
+  useEffect(() => {
+    setIsCut(isResourceCut());
+  }, [clipBoard]);
+
+  /**
+   * Iterates over each item in the clipboard and verify if the name of this resource
+   * is in the clipboard as a cut resource.
+   *
+   * @returns - A boolean, being true if the item was cut.
+   */
+  const isResourceCut = () => {
+    const isCut = Array.from(clipBoard).find((item) => {
+      const filename = getLastFromPath(item.path);
+      return item.method === "cut" && filename === name;
+    });
+
+    return !!isCut;
+  };
 
   /**
    * This function is called when you click the directory using any mouse button.
@@ -92,7 +114,11 @@ export default function DirectoryIcon({
       tabIndex={0}
       ref={iconRef}
     >
-      <div className="text-center flex justify-center h-36 w-36">
+      <div
+        className={`text-center flex justify-center h-36 w-36 ${
+          isCut ? "opacity-60" : "opacity-100"
+        }`}
+      >
         <DirectoryDefaultSvg />
       </div>
 

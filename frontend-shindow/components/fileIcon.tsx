@@ -1,7 +1,8 @@
 import FileDefaultSvg from "@/resources/svg/fileDefaultSvg";
-import { RefObject, useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { useExplorer } from "./explorerProvider";
 import KeyboardController from "@/utils/KeyboardController";
+import { getLastFromPath } from "@/utils/utils";
 
 interface FileIconProps {
   name: string;
@@ -22,12 +23,15 @@ export default function FileIcon({
     setSelectedResourceNames,
     setActiveResourceNames,
     activeResourceNames,
+    clipBoard,
   } = useExplorer();
   // This controls whether any mouse button is held down over the directory.
   const isActive = Array.from(activeResourceNames).find(
     (activeName) => activeName === name
   );
+  const [isCut, setIsCut] = useState<boolean>();
   const iconRef = useRef<HTMLDivElement>(null);
+
   const bgColor = isActive
     ? "bg-white/20"
     : isSelected
@@ -37,6 +41,25 @@ export default function FileIcon({
   useEffect(() => {
     handleAddRef(iconRef);
   }, []);
+
+  useEffect(() => {
+    setIsCut(isResourceCut());
+  }, [clipBoard]);
+
+  /**
+   * Iterates over each item in the clipboard and verify if the name of this resource
+   * is in the clipboard as a cut resource.
+   *
+   * @returns - A boolean, being true if the item was cut.
+   */
+  const isResourceCut = () => {
+    const isCut = Array.from(clipBoard).find((item) => {
+      const filename = getLastFromPath(item.path);
+      return item.method === "cut" && filename === name;
+    });
+
+    return !!isCut;
+  };
 
   /**
    * This function is called when you click the directory using any mouse button.
@@ -82,12 +105,16 @@ export default function FileIcon({
 
   return (
     <div
-      className={`w-48 rounded-xl cursor-default m-2 p-6 ${bgColor}`}
+      className={`w-48 rounded-xl cursor-default m-2 p-6 ${bgColor} `}
       onMouseDown={handleMouseDown}
       tabIndex={0}
       ref={iconRef}
     >
-      <div className="text-center flex justify-center h-36 w-36">
+      <div
+        className={`text-center flex justify-center h-36 w-36 ${
+          isCut ? "opacity-60" : "opacity-100"
+        }`}
+      >
         <FileDefaultSvg />
       </div>
 

@@ -291,7 +291,7 @@ const resourcesController = {
   ) => {
     const sessionId = req.sessionID;
     const { originPath, destinationPath, recursive } = req.body;
-    const command = `cp${recursive ? " -r" : ""}`;
+    const command = `cp${recursive ? " -rT" : ""}`;
     const response: ApiResponse<null> = {
       status_code: HTTP_STATUS_CODE_OK,
       message: "Resource successfully copied.",

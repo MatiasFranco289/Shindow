@@ -60,3 +60,17 @@ export function clamp(value: number, min: number, max: number) {
 export function toggleScroll(enable: boolean) {
   document.body.style.overflow = enable ? "auto" : "hidden";
 }
+
+/**
+ * Given a path, for example /home/users/some-folder it will return
+ * the last item of the path "some-folder".
+ *
+ * @param path - A path
+ * @returns - The last item of the path as a string
+ */
+export function getLastFromPath(path: string) {
+  const splittedPath = path.split("/");
+  const last = splittedPath[splittedPath.length - 1];
+
+  return last;
+}

@@ -232,7 +232,7 @@ export default function FileExplorer() {
       />
       <LoadingOverlay isOpen={isLoading} />
 
-      <CustomContextMenuLogic refresh={refresh} />
+      <CustomContextMenuLogic refresh={refresh} resourceList={resourceList} />
     </div>
   );
 }

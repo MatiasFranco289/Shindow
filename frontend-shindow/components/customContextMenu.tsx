@@ -11,6 +11,7 @@ import { MdOutlineCreateNewFolder } from "react-icons/md";
 import { clamp, toggleScroll } from "@/utils/utils";
 import { FaRegCopy } from "react-icons/fa";
 import { IoCutOutline } from "react-icons/io5";
+import { FaRegPaste } from "react-icons/fa6";
 /**
  * This function controls open and closes the customContextMenu.
  * It is called when a click is detected so if the menu is open and the click was not in the menu, it is closed
@@ -66,6 +67,8 @@ export default function CustomContextMenu({
     setContextMenuOpen,
     setCopyOpen,
     setCutOpen,
+    setPasteOpen,
+    clipBoard,
   } = useExplorer();
 
   // When the component it's mounted the dimensions in pixels are updated
@@ -134,6 +137,15 @@ export default function CustomContextMenu({
       },
       icon: IoCutOutline,
       disabled: !selectedResourceNames.size,
+    },
+    {
+      label: "Paste",
+      onClick: () => {
+        setPasteOpen(true);
+        setContextMenuOpen(false);
+      },
+      icon: FaRegPaste,
+      disabled: !clipBoard.size || selectedResourceNames.size,
     },
   ];
 

@@ -36,6 +36,8 @@ interface ExplorerContextType {
   setCopyOpen: Dispatch<SetStateAction<boolean>>;
   isCutOpen: boolean;
   setCutOpen: Dispatch<SetStateAction<boolean>>;
+  isPasteOpen: boolean;
+  setPasteOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const ExplorerContext = createContext<ExplorerContextType | undefined>(
@@ -67,6 +69,7 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
     useState<boolean>(false);
   const [isCopyOpen, setCopyOpen] = useState<boolean>(false);
   const [isCutOpen, setCutOpen] = useState<boolean>(false);
+  const [isPasteOpen, setPasteOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
   const [errorModalMessage, setErrorModalMessage] = useState<string>("");
@@ -96,6 +99,8 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
         setClipBoard,
         isCutOpen,
         setCutOpen,
+        isPasteOpen,
+        setPasteOpen,
       }}
     >
       {children}
