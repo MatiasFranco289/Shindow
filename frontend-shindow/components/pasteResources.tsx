@@ -1,4 +1,8 @@
-import { getLastFromPath, toggleScroll } from "@/utils/utils";
+import {
+  getLastFromPath,
+  removeFromClipboard,
+  toggleScroll,
+} from "@/utils/utils";
 import { useEffect } from "react";
 import { useExplorer } from "./explorerProvider";
 import { useNavigation } from "./navigationProvider";
@@ -18,10 +22,16 @@ export default function PasteResources({
   refresh,
 }: PasteResourcesProps) {
   const environmentManager = EnvironmentManager.getInstance();
-  const { setPasteOpen, clipBoard, setErrorModalMessage, setErrorModalOpen } =
-    useExplorer();
+  const {
+    setPasteOpen,
+    clipBoard,
+    setClipBoard,
+    setErrorModalMessage,
+    setErrorModalOpen,
+  } = useExplorer();
   const { actualPath } = useNavigation();
-
+  const { selectedResourceNames, setSelectedResourceNames } = useExplorer();
+  const resourceListAux: Array<Partial<Resource>> = resourceList;
   const apiBaseUrl = environmentManager.GetEnvironmentVariable(
     "NEXT_PUBLIC_API_BASE_URL"
   );
@@ -34,15 +44,18 @@ export default function PasteResources({
 
   const paste = () => {
     const pasteRequests = buildRequests();
+
     Promise.all(pasteRequests)
-      .then(() => {
-        refresh();
-      })
       .catch((err) => {
+        if (!err) return;
+
         const statusCode: number = err.response.status;
         const message = copyErrorHandler(statusCode);
         setErrorModalMessage(message);
         setErrorModalOpen(true);
+      })
+      .finally(() => {
+        refresh();
       });
   };
 
@@ -60,13 +73,17 @@ export default function PasteResources({
       const urlMethod = item.method === "copied" ? "copy" : "move";
       const requestUrl = `${apiBaseUrl}/resources/${urlMethod}`;
 
-      if (sameNameCutValidation()) {
-        // TODO: Remover los items del clipboard que esten cortados y coincidan
+      const validationResult = validations(item.path, actualPath, urlMethod);
+
+      if (!validationResult) {
+        return new Promise((resolve, reject) => {
+          reject();
+        });
       }
 
       const bodyRequest = {
         originPath: item.path,
-        destinationPath: actualPath + manageSameNameCopy(item.path, actualPath),
+        destinationPath: actualPath + manageSameNameCopy(item.path),
         recursive: true,
       };
 
@@ -74,6 +91,11 @@ export default function PasteResources({
         axiosInstance
           .post(requestUrl, bodyRequest)
           .then((response) => {
+            if (urlMethod === "move") {
+              removeFromClipboard(clipBoard, item, setClipBoard);
+            }
+
+            /*  selectedResourceNames(selectedResourceNames.app) */
             resolve(response);
           })
           .catch((err) => {
@@ -107,17 +129,14 @@ export default function PasteResources({
    *
    * @returns - A string being the correct name of the resource.
    */
-  const manageSameNameCopy = (
-    originalPath: string,
-    destinationPath: string
-  ) => {
-    let sameNameResource: Resource | undefined = undefined;
+  const manageSameNameCopy = (originalPath: string) => {
+    let sameNameResource: Partial<Resource> | undefined = undefined;
     let resourceName: string = getLastFromPath(originalPath);
     let count = findNameIndex(resourceName);
 
     do {
       // Find if there already is another file with the same name in the curren path
-      sameNameResource = resourceList.find(
+      sameNameResource = resourceListAux.find(
         (resource) => resource.name === resourceName
       );
 
@@ -130,16 +149,66 @@ export default function PasteResources({
       count++;
     } while (sameNameResource);
 
+    resourceListAux.push({
+      name: resourceName,
+    });
+
     return resourceName;
   };
 
-  const sameNameCutValidation = (originalPath: string) => {
-    let resourceName: string = getLastFromPath(originalPath);
+  // TODO: Move this validations somewhere else
+  // TODO: When you paste or create a new resource the resource should be selected by default
+  const validations = (
+    origin: string,
+    destination: string,
+    method: "move" | "copy"
+  ) => {
+    const resourceName: string = getLastFromPath(origin);
 
-    // Find if there already is another file with the same name in the curren path
-    const sameNameResource = resourceList.find(
-      (resource) => resource.name === resourceName
-    );
+    const validations = [
+      {
+        validate: () => {
+          if (origin === destination + resourceName) {
+            setClipBoard(new Set());
+            return false;
+          }
+
+          return true;
+        },
+        message: "Destination path cannot be the same as the origin path.",
+        method: "move",
+      },
+      {
+        validate: () => {
+          const resourceName = getLastFromPath(origin);
+          const nameInsideSource = destination
+            .split("/")
+            .find((item) => item === resourceName);
+
+          if (nameInsideSource) {
+            return false;
+          }
+
+          return true;
+        },
+        message: "The destination directory is inside the source directory.",
+        method: "copy",
+      },
+    ];
+
+    for (const validation of validations) {
+      if (method !== validation.method) continue;
+
+      const result = validation.validate();
+
+      if (!result) {
+        setErrorModalMessage(validation.message);
+        setErrorModalOpen(true);
+        return false;
+      }
+    }
+
+    return true;
   };
 
   return null;

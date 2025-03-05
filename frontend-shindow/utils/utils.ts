@@ -1,3 +1,6 @@
+import { Dispatch, SetStateAction } from "react";
+import { ClipboardItem } from "@/interfaces";
+
 /**
  * This function receives an string. If the length of the given string is larger than 'nameCharacterLimit'
  * the string will be splitted and '...' will be added in the middle.
@@ -73,4 +76,24 @@ export function getLastFromPath(path: string) {
   const last = splittedPath[splittedPath.length - 1];
 
   return last;
+}
+
+/**
+ * Receives an item and removes it from the clipboard if exists.
+ * Updates the clipboard.
+ *
+ * @param clipboard - The current clipboad
+ * @param itemToRemove - Item to be removed from the clipboard
+ * @param update - Setter for the clipboard
+ */
+export function removeFromClipboard(
+  clipboard: Set<ClipboardItem>,
+  itemToRemove: ClipboardItem,
+  update: Dispatch<SetStateAction<Set<ClipboardItem>>>
+) {
+  const newClipBoard = Array.from(clipboard).filter(
+    (item) => JSON.stringify(item) !== JSON.stringify(itemToRemove)
+  );
+
+  update(new Set(newClipBoard));
 }

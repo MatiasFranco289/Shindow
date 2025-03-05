@@ -12,6 +12,7 @@ import { clamp, toggleScroll } from "@/utils/utils";
 import { FaRegCopy } from "react-icons/fa";
 import { IoCutOutline } from "react-icons/io5";
 import { FaRegPaste } from "react-icons/fa6";
+import { MdDeleteOutline } from "react-icons/md";
 /**
  * This function controls open and closes the customContextMenu.
  * It is called when a click is detected so if the menu is open and the click was not in the menu, it is closed
@@ -68,6 +69,7 @@ export default function CustomContextMenu({
     setCopyOpen,
     setCutOpen,
     setPasteOpen,
+    setDeleteOpen,
     clipBoard,
   } = useExplorer();
 
@@ -146,6 +148,15 @@ export default function CustomContextMenu({
       },
       icon: FaRegPaste,
       disabled: !clipBoard.size || selectedResourceNames.size,
+    },
+    {
+      label: "Delete",
+      onClick: () => {
+        setDeleteOpen(true);
+        setContextMenuOpen(false);
+      },
+      icon: MdDeleteOutline,
+      disabled: !selectedResourceNames.size,
     },
   ];
 

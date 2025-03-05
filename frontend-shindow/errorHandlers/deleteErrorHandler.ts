@@ -5,17 +5,15 @@ import {
 } from "@/constants";
 
 /**
- * Handles the paste errors and returns a message for the client.
+ * Handles the delete errors and returns a message for the client.
  *
  * @param statusCode - The HTTP code in the response.
  * @returns - A string with a message for the client.
  */
-export default function pasteErrorHandler(statusCode: number) {
+export default function deleteErrorHandler(statusCode: number) {
   switch (statusCode) {
     case HTTP_STATUS_CODE_FORBIDDEN:
-      return "Some resources could not be pasted because your permissions are insufficient.";
-    case HTTP_STATUS_CODE_BAD_REQUEST:
-      return "The resource could not be pasted because the origin or destination path is invalid.";
+      return "The resource could not be deleted because your permissions are insufficient.";
     default:
       return CLIENT_DEFAULT_ERROR_MESSAGE;
   }

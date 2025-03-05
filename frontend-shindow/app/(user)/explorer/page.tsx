@@ -92,15 +92,19 @@ export default function FileExplorer() {
   function getResourceListFromApi(path: string): Promise<Array<Resource>> {
     return new Promise((resolve, reject) => {
       const resourceListEndpoint = `${apiBaseUrl}${RESOURCE_LIST_ENDPOINT}?path=${path}`;
+      const hiddenResourceNames = [".", ".."];
 
       axiosInstance
         .get(resourceListEndpoint)
         .then((response) => {
-          const resources: Array<Resource> = response.data.data.map(
-            (resource: Resource) => {
+          const resources: Array<Resource> = response.data.data
+            .filter(
+              (resource: Resource) =>
+                !hiddenResourceNames.includes(resource.name)
+            )
+            .map((resource: Resource) => {
               return { ...resource, shortName: normalizeName(resource.name) };
-            }
-          );
+            });
 
           resolve(resources);
         })

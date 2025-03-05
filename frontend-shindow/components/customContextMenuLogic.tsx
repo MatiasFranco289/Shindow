@@ -4,6 +4,7 @@ import CutResources from "./CutResources";
 import { useExplorer } from "./explorerProvider";
 import NewDirectory from "./newDirectory";
 import PasteResources from "./pasteResources";
+import DeleteResources from "./deleteResource";
 
 interface CustomContextMenuLogicProps {
   refresh: () => void; // Function to refresh resources in the current path
@@ -14,8 +15,13 @@ export default function CustomContextMenuLogic({
   refresh,
   resourceList,
 }: CustomContextMenuLogicProps) {
-  const { isNewDirectoryMenuOpen, isCopyOpen, isCutOpen, isPasteOpen } =
-    useExplorer();
+  const {
+    isNewDirectoryMenuOpen,
+    isCopyOpen,
+    isCutOpen,
+    isPasteOpen,
+    isDeleteOpen,
+  } = useExplorer();
 
   return (
     <div>
@@ -27,6 +33,7 @@ export default function CustomContextMenuLogic({
           <PasteResources resourceList={resourceList} refresh={refresh} />
         )}
       </div>
+      <div>{isDeleteOpen && <DeleteResources refresh={refresh} />}</div>
     </div>
   );
 }
