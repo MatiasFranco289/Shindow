@@ -44,7 +44,7 @@ const resourcesController = {
   ) => {
     const sessionId = req.sessionID;
     const path = (req.query.path as string) || "/";
-    const escapedPath = path.replace(/"/g, '\\"');
+    const escapedPath = path.replace(/["\\]/g, "\\$&");
     const command = "ls -la --full-time";
 
     try {
@@ -216,7 +216,7 @@ const resourcesController = {
     };
 
     let finalCommand = `${command} ${path}/`;
-    finalCommand += '"' + name.replace(/"/g, '\\"') + '"';
+    finalCommand += '"' + name.replace(/["\\]/g, "\\$&") + '"';
 
     try {
       await sshConnectionManager.ExecuteCommand(sessionId, finalCommand);
@@ -248,7 +248,8 @@ const resourcesController = {
     next: NextFunction
   ) => {
     const sessionId = req.sessionID;
-    const { path } = req.query;
+    const path = req.query.path as string;
+    const escapedPath = path.replace(/["\\]/g, "\\$&");
     const { recursive, force } = req.body;
     const command = `rm${recursive ? " -r" : ""}${force ? " -f" : ""}`;
     const response: ApiResponse<null> = {
@@ -260,7 +261,7 @@ const resourcesController = {
     try {
       await sshConnectionManager.ExecuteCommand(
         sessionId,
-        `${command} "${path}"`
+        `${command} "${escapedPath}"`
       );
 
       res.status(response.status_code).json(response);
@@ -298,8 +299,8 @@ const resourcesController = {
       data: [],
     };
 
-    const escapedOriginPath = originPath.replace(/"/g, '\\"');
-    const escapedDestinationPath = destinationPath.replace(/"/g, '\\"');
+    const escapedOriginPath = originPath.replace(/["\\]/g, "\\$&");
+    const escapedDestinationPath = destinationPath.replace(/["\\]/g, "\\$&");
 
     try {
       await sshConnectionManager.ExecuteCommand(
@@ -330,8 +331,8 @@ const resourcesController = {
   moveResource: async (req: Request, res: Response, next: NextFunction) => {
     const sessionId = req.sessionID;
     const { originPath, destinationPath } = req.body;
-    const escapedOriginPath = originPath.replace(/"/g, '\\"');
-    const escapedDestinationPath = destinationPath.replace(/"/g, '\\"');
+    const escapedOriginPath = originPath.replace(/["\\]/g, "\\$&");
+    const escapedDestinationPath = destinationPath.replace(/["\\]/g, "\\$&");
 
     const command = "mv";
     const response: ApiResponse<null> = {
