@@ -46,7 +46,7 @@ export default function NewDirectory({ refresh }: NewDirectoryProps) {
     let createDirectoryUrl = `${apiBaseUrl}/resources/new`;
     createDirectoryUrl += `?path=${actualPath.slice(0, -1)}`;
     createDirectoryUrl += `&name=${directoryName}`;
-
+    createDirectoryUrl = createDirectoryUrl.replace(/#/g, "%23");
     setIsLoading(true);
 
     axiosInstance
