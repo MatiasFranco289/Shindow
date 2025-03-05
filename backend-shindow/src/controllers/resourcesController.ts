@@ -215,8 +215,9 @@ const resourcesController = {
       data: [],
     };
 
-    let finalCommand = `${command} ${path}/`;
-    finalCommand += '"' + name.replace(/["\\]/g, "\\$&") + '"';
+    let finalPath = `${path}/${name}`;
+    finalPath = finalPath.replace(/["\\]/g, "\\$&");
+    let finalCommand = `${command} "${finalPath}"`;
 
     try {
       await sshConnectionManager.ExecuteCommand(sessionId, finalCommand);
