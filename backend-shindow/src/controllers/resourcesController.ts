@@ -298,10 +298,13 @@ const resourcesController = {
       data: [],
     };
 
+    const escapedOriginPath = originPath.replace(/"/g, '\\"');
+    const escapedDestinationPath = destinationPath.replace(/"/g, '\\"');
+
     try {
       await sshConnectionManager.ExecuteCommand(
         sessionId,
-        `${command} "${originPath}" "${destinationPath}"`
+        `${command} "${escapedOriginPath}" "${escapedDestinationPath}"`
       );
 
       res.status(response.status_code).json(response);
@@ -327,6 +330,9 @@ const resourcesController = {
   moveResource: async (req: Request, res: Response, next: NextFunction) => {
     const sessionId = req.sessionID;
     const { originPath, destinationPath } = req.body;
+    const escapedOriginPath = originPath.replace(/"/g, '\\"');
+    const escapedDestinationPath = destinationPath.replace(/"/g, '\\"');
+
     const command = "mv";
     const response: ApiResponse<null> = {
       status_code: HTTP_STATUS_CODE_OK,
@@ -337,7 +343,7 @@ const resourcesController = {
     try {
       await sshConnectionManager.ExecuteCommand(
         sessionId,
-        `${command} "${originPath}" "${destinationPath}"`
+        `${command} "${escapedOriginPath}" "${escapedDestinationPath}"`
       );
 
       res.status(response.status_code).json(response);

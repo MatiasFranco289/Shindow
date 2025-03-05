@@ -95,7 +95,6 @@ export default function PasteResources({
               removeFromClipboard(clipBoard, item, setClipBoard);
             }
 
-            /*  selectedResourceNames(selectedResourceNames.app) */
             resolve(response);
           })
           .catch((err) => {
