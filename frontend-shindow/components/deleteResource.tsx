@@ -50,6 +50,7 @@ export default function DeleteResources({ refresh }: DeleteResourcesProps) {
     const deleteRequests = Array.from(selectedResourceNames).map((name) => {
       let finalUrl = `${apiBaseUrl}/${deleteResourceUrl}`;
       finalUrl += `?path=${actualPath}${name}`;
+      finalUrl = finalUrl.replace(/#/g, "%23");
 
       return new Promise((resolve, reject) => {
         axiosInstance

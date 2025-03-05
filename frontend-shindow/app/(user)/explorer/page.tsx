@@ -91,7 +91,10 @@ export default function FileExplorer() {
    */
   function getResourceListFromApi(path: string): Promise<Array<Resource>> {
     return new Promise((resolve, reject) => {
-      const resourceListEndpoint = `${apiBaseUrl}${RESOURCE_LIST_ENDPOINT}?path=${path}`;
+      const resourceListEndpoint = `${apiBaseUrl}${RESOURCE_LIST_ENDPOINT}?path=${path.replace(
+        /#/g,
+        "%23"
+      )}`;
       const hiddenResourceNames = [".", ".."];
 
       axiosInstance
