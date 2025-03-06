@@ -52,7 +52,6 @@ export default function FileExplorer() {
   } = useExplorer();
 
   useEffect(() => {
-    // The first time the apps looads i call the goTo function to get the resources passing an empty array to not move from the actualPath
     KeyboardController.GetInstance(window); // Ensures KeyboardController class to be initializated
   }, []);
 

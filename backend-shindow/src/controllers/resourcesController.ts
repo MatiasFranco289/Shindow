@@ -251,6 +251,7 @@ const resourcesController = {
     const sessionId = req.sessionID;
     const path = req.query.path as string;
     const escapedPath = path.replace(/["\\]/g, "\\$&");
+
     const { recursive, force } = req.body;
     const command = `rm${recursive ? " -r" : ""}${force ? " -f" : ""}`;
     const response: ApiResponse<null> = {

@@ -118,7 +118,9 @@ export default function FileIcon({
         <FileDefaultSvg />
       </div>
 
-      <p className="text-xl text-center break-all select-none">{shortName}</p>
+      <p className="text-xl text-center break-all select-none whitespace-pre-wrap">
+        {shortName}
+      </p>
     </div>
   );
 }

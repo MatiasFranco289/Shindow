@@ -157,6 +157,7 @@ export default function PasteResources({
 
   // TODO: Move this validations somewhere else
   // TODO: When you paste or create a new resource the resource should be selected by default
+  // TODO: If you cut one resource and go back then the first resource is always cut
   const validations = (
     origin: string,
     destination: string,
