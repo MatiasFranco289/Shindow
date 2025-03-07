@@ -2,7 +2,7 @@
  * This provider is to save information that needs to be shared
  * between the diferent components involved in the explorer
  */
-import { Vector2 } from "@/interfaces";
+import { Resource, Vector2 } from "@/interfaces";
 import React, {
   Dispatch,
   ReactNode,
@@ -18,12 +18,12 @@ interface ExplorerContextType {
   setContextMenuOpen: Dispatch<SetStateAction<boolean>>;
   mousePosition: Vector2;
   setMousePosition: Dispatch<SetStateAction<Vector2>>;
-  selectedResourceNames: Set<string>;
-  setSelectedResourceNames: Dispatch<SetStateAction<Set<string>>>;
+  selectedResources: Set<Resource>;
+  setSelectedResources: Dispatch<SetStateAction<Set<Resource>>>;
   clipBoard: Set<ClipboardItem>;
   setClipBoard: Dispatch<SetStateAction<Set<ClipboardItem>>>;
-  activeResourceNames: Set<string>;
-  setActiveResourceNames: Dispatch<SetStateAction<Set<string>>>;
+  activeResources: Set<Resource>;
+  setActiveResources: Dispatch<SetStateAction<Set<Resource>>>;
   isNewDirectoryMenuOpen: boolean;
   setNewDirectoryMenuOpen: Dispatch<SetStateAction<boolean>>;
   isLoading: boolean;
@@ -58,14 +58,14 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
     x: 0,
     y: 0,
   });
-  const [selectedResourceNames, setSelectedResourceNames] = useState<
-    Set<string>
-  >(new Set<string>());
+  const [selectedResources, setSelectedResources] = useState<Set<Resource>>(
+    new Set<Resource>()
+  );
   const [clipBoard, setClipBoard] = useState<Set<ClipboardItem>>(
     new Set<ClipboardItem>()
   );
-  const [activeResourceNames, setActiveResourceNames] = useState<Set<string>>(
-    new Set<string>()
+  const [activeResources, setActiveResources] = useState<Set<Resource>>(
+    new Set<Resource>()
   );
   const [isNewDirectoryMenuOpen, setNewDirectoryMenuOpen] =
     useState<boolean>(false);
@@ -84,10 +84,10 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
         setContextMenuOpen,
         mousePosition,
         setMousePosition,
-        selectedResourceNames,
-        setSelectedResourceNames,
-        activeResourceNames,
-        setActiveResourceNames,
+        selectedResources,
+        setSelectedResources,
+        activeResources,
+        setActiveResources,
         isNewDirectoryMenuOpen,
         setNewDirectoryMenuOpen,
         isLoading,

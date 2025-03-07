@@ -32,5 +32,6 @@ export interface Vector2 {
 
 export interface ClipboardItem {
   path: string;
+  resource: Resource;
   method: "copied" | "cut";
 }

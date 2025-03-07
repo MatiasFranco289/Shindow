@@ -1,3 +1,4 @@
+import { Resource } from "@/interfaces";
 import EnvironmentManager from "@/utils/EnvironmentManager";
 import React, {
   createContext,
@@ -15,7 +16,8 @@ interface NavigationContextType {
   setActualPath: Dispatch<SetStateAction<string>>;
   pathHistory: MutableRefObject<Array<string>>;
   historyActualIndex: MutableRefObject<number>;
-  goTo: (directoryName: string) => void;
+  currentDirectory: Resource | undefined;
+  goTo: (directory: Resource) => void;
   goBack: (deleteFromHistory?: boolean) => void;
   goForward: () => void;
 }
@@ -37,6 +39,8 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({
   );
 
   const [actualPath, setActualPath] = useState<string>(initialPath);
+  const [currentDirectory, setCurrentDirectory] = useState<Resource>();
+
   const pathHistory = useRef<Array<string>>([initialPath]);
   let historyActualIndex = useRef<number>(0);
 
@@ -45,9 +49,9 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({
    * Calls updateHistory function to update the history.
    * @param directoryName
    */
-  const goTo = (directoryName: string) => {
+  const goTo = (directory: Resource) => {
     let newPath = actualPath;
-    newPath += directoryName + "/";
+    newPath += directory.name + "/";
 
     setActualPath(newPath);
     updateHistory(newPath);
@@ -109,6 +113,7 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({
         goTo,
         goBack,
         goForward,
+        currentDirectory,
       }}
     >
       {children}

@@ -5,20 +5,21 @@ import { useNavigation } from "./navigationProvider";
 import { ClipboardItem } from "@/interfaces";
 
 export default function CutResources() {
-  const { setCutOpen, setClipBoard, selectedResourceNames } = useExplorer();
+  const { setCutOpen, setClipBoard, selectedResources } = useExplorer();
   const { actualPath } = useNavigation();
 
   useEffect(() => {
-    const cutResourcesPath: Array<ClipboardItem> = Array.from(
-      selectedResourceNames
-    ).map((resourceName) => {
+    const cutResources: Array<ClipboardItem> = Array.from(
+      selectedResources
+    ).map((resource) => {
       return {
-        path: actualPath + resourceName,
+        path: actualPath + resource.name,
         method: "cut",
+        resource: resource,
       };
     });
 
-    setClipBoard(new Set(cutResourcesPath));
+    setClipBoard(new Set(cutResources));
     toggleScroll(true);
     setCutOpen(false);
   }, []);

@@ -30,7 +30,6 @@ export default function PasteResources({
     setErrorModalOpen,
   } = useExplorer();
   const { actualPath } = useNavigation();
-  const { selectedResourceNames, setSelectedResourceNames } = useExplorer();
   const resourceListAux: Array<Partial<Resource>> = resourceList;
   const apiBaseUrl = environmentManager.GetEnvironmentVariable(
     "NEXT_PUBLIC_API_BASE_URL"
@@ -157,7 +156,6 @@ export default function PasteResources({
 
   // TODO: Move this validations somewhere else
   // TODO: When you paste or create a new resource the resource should be selected by default
-  // TODO: If you cut one resource and go back then the first resource is always cut
   const validations = (
     origin: string,
     destination: string,

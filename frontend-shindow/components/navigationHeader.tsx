@@ -1,10 +1,13 @@
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useNavigation } from "./navigationProvider";
 import { normalizePath } from "@/utils/utils";
+import { useExplorer } from "./explorerProvider";
 
 export default function NavigationHeader() {
   const { actualPath, goBack, goForward, pathHistory, historyActualIndex } =
     useNavigation();
+  const { setSelectedResources } = useExplorer();
+
   const canGoForward =
     historyActualIndex.current + 1 < pathHistory.current.length;
 
@@ -19,7 +22,10 @@ export default function NavigationHeader() {
               ? " hover:bg-white/10 active:bg-white/15 duration-200 pointer-events-auto"
               : "pointer-events-none"
           }`}
-          onClick={() => goBack()}
+          onClick={() => {
+            setSelectedResources(new Set([]));
+            goBack();
+          }}
         >
           <IoChevronBack
             className={`${
@@ -35,7 +41,10 @@ export default function NavigationHeader() {
               ? "hover:bg-white/10 active:bg-white/15 duration-200 pointer-events-auto"
               : "pointer-events-none"
           }`}
-          onClick={goForward}
+          onClick={() => {
+            setSelectedResources(new Set([]));
+            goForward();
+          }}
         >
           <IoChevronForward
             className={`${

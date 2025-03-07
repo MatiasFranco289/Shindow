@@ -5,20 +5,21 @@ import { toggleScroll } from "@/utils/utils";
 import { ClipboardItem } from "@/interfaces";
 
 export default function CopyResources() {
-  const { setCopyOpen, selectedResourceNames, setClipBoard } = useExplorer();
+  const { setCopyOpen, selectedResources, setClipBoard } = useExplorer();
   const { actualPath } = useNavigation();
 
   useEffect(() => {
-    const copiedResourcesPath: Array<ClipboardItem> = Array.from(
-      selectedResourceNames
-    ).map((resourceName) => {
+    const copiedResources: Array<ClipboardItem> = Array.from(
+      selectedResources
+    ).map((resource) => {
       return {
-        path: actualPath + resourceName,
+        path: actualPath + resource.name,
+        resource: resource,
         method: "copied",
       };
     });
 
-    setClipBoard(new Set(copiedResourcesPath));
+    setClipBoard(new Set(copiedResources));
     toggleScroll(true);
     setCopyOpen(false);
   }, []);

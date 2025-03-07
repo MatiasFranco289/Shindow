@@ -3,34 +3,33 @@ import { useExplorer } from "./explorerProvider";
 import { RefObject, useEffect, useRef, useState } from "react";
 import KeyboardController from "@/utils/KeyboardController";
 import { useNavigation } from "./navigationProvider";
-import { getLastFromPath } from "@/utils/utils";
+import { compareResources, getLastFromPath } from "@/utils/utils";
+import { Resource } from "@/interfaces";
 
 interface DirectoryIconProps {
-  name: string;
-  shortName: string;
+  resourceData: Resource;
   isSelected: boolean;
   handleAddRef: (ref: RefObject<HTMLDivElement>) => void;
 }
 
 export default function DirectoryIcon({
-  name,
-  shortName,
+  resourceData,
   isSelected,
   handleAddRef,
 }: DirectoryIconProps) {
   const {
     isContextMenuOpen,
-    selectedResourceNames,
-    setSelectedResourceNames,
-    setActiveResourceNames,
-    activeResourceNames,
+    selectedResources,
+    setSelectedResources,
+    setActiveResources,
+    activeResources,
     clipBoard,
   } = useExplorer();
   const { goTo } = useNavigation();
 
   // This controls whether any mouse button is held down over the directory.
-  const isActive = Array.from(activeResourceNames).find(
-    (activeName) => activeName === name
+  const isActive = Array.from(activeResources).find((activeResource) =>
+    compareResources(activeResource, resourceData)
   );
   const [isCut, setIsCut] = useState<boolean>();
   const iconRef = useRef<HTMLDivElement>(null);
@@ -47,7 +46,7 @@ export default function DirectoryIcon({
 
   useEffect(() => {
     setIsCut(isResourceCut());
-  }, [clipBoard]);
+  }, [clipBoard, resourceData.name]);
 
   /**
    * Iterates over each item in the clipboard and verify if the name of this resource
@@ -58,7 +57,7 @@ export default function DirectoryIcon({
   const isResourceCut = () => {
     const isCut = Array.from(clipBoard).find((item) => {
       const filename = getLastFromPath(item.path);
-      return item.method === "cut" && filename === name;
+      return item.method === "cut" && filename === resourceData.name;
     });
 
     return !!isCut;
@@ -74,17 +73,19 @@ export default function DirectoryIcon({
   const handleMouseDown = (e: React.MouseEvent) => {
     if (isContextMenuOpen) return;
 
-    const alreadySelected = selectedResourceNames.has(name);
+    const alreadySelected = Array.from(selectedResources).find((resource) =>
+      compareResources(resource, resourceData)
+    );
     const keyboardController = KeyboardController.GetInstance(window);
     const ctrlPressed = keyboardController.isCtrlPressed();
 
     // When more than one resource is selected and you click over an already selected
     // resource without press the ctrl then all the selected resources becomes active
-    if (selectedResourceNames.size > 0 && !ctrlPressed && alreadySelected) {
-      selectedResourceNames.forEach((selectedResourceNames) => {
-        const newActiveResourceNames = activeResourceNames;
-        newActiveResourceNames.add(selectedResourceNames);
-        setActiveResourceNames(newActiveResourceNames);
+    if (selectedResources.size > 0 && !ctrlPressed && alreadySelected) {
+      selectedResources.forEach((selectedResource) => {
+        const newActiveResources = activeResources;
+        newActiveResources.add(selectedResource);
+        setActiveResources(newActiveResources);
       });
     }
 
@@ -94,23 +95,23 @@ export default function DirectoryIcon({
 
     // If ctrl is pressed the name is added to the Set
     if (ctrlPressed) {
-      setSelectedResourceNames(selectedResourceNames.add(name));
+      setSelectedResources(selectedResources.add(resourceData));
     } else {
       // If ctrl isn't pressed the name overlaps the set instead of be added
-      const newSelectedResourceNames = new Set<string>();
-      newSelectedResourceNames.add(name);
 
-      setSelectedResourceNames(newSelectedResourceNames);
+      const newSelectedResources = new Set<Resource>();
+      newSelectedResources.add(resourceData);
+      setSelectedResources(newSelectedResources);
     }
 
-    setActiveResourceNames(activeResourceNames.add(name));
+    setActiveResources(activeResources.add(resourceData));
   };
 
   return (
     <div
       className={`w-48 rounded-xl cursor-default m-2 p-6 ${bgColor}`}
       onMouseDown={(e) => handleMouseDown(e)}
-      onDoubleClick={() => goTo(name)}
+      onDoubleClick={() => goTo(resourceData)}
       tabIndex={0}
       ref={iconRef}
     >
@@ -123,7 +124,7 @@ export default function DirectoryIcon({
       </div>
 
       <p className="text-xl text-center break-all select-none whitespace-pre-wrap">
-        {shortName}
+        {resourceData.shortName}
       </p>
     </div>
   );

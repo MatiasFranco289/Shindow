@@ -53,8 +53,7 @@ interface CustomContextMenuProps {
 export default function CustomContextMenu({
   setContextMenuRef,
 }: CustomContextMenuProps) {
-  const { isContextMenuOpen, mousePosition, selectedResourceNames } =
-    useExplorer();
+  const { isContextMenuOpen, mousePosition, selectedResources } = useExplorer();
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
   const [contextMenuDimensions, setContextMenuDimensions] = useState<{
     width: number;
@@ -120,7 +119,7 @@ export default function CustomContextMenu({
         setContextMenuOpen(false);
       },
       icon: MdOutlineCreateNewFolder,
-      disabled: !!selectedResourceNames.size,
+      disabled: !!selectedResources.size,
     },
     {
       label: "Copy",
@@ -129,7 +128,7 @@ export default function CustomContextMenu({
         setContextMenuOpen(false);
       },
       icon: FaRegCopy,
-      disabled: !selectedResourceNames.size,
+      disabled: !selectedResources.size,
     },
     {
       label: "Cut",
@@ -138,7 +137,7 @@ export default function CustomContextMenu({
         setContextMenuOpen(false);
       },
       icon: IoCutOutline,
-      disabled: !selectedResourceNames.size,
+      disabled: !selectedResources.size,
     },
     {
       label: "Paste",
@@ -147,7 +146,7 @@ export default function CustomContextMenu({
         setContextMenuOpen(false);
       },
       icon: FaRegPaste,
-      disabled: !clipBoard.size || selectedResourceNames.size,
+      disabled: !clipBoard.size || selectedResources.size,
     },
     {
       label: "Delete",
@@ -156,7 +155,7 @@ export default function CustomContextMenu({
         setContextMenuOpen(false);
       },
       icon: MdDeleteOutline,
-      disabled: !selectedResourceNames.size,
+      disabled: !selectedResources.size,
     },
   ];
 

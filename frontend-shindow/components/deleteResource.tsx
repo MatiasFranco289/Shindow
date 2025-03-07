@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useExplorer } from "./explorerProvider";
-import { toggleScroll } from "@/utils/utils";
+import { removeFromClipboard, toggleScroll } from "@/utils/utils";
 import axiosInstance from "@/utils/axiosInstance";
 import EnvironmentManager from "@/utils/EnvironmentManager";
 import { useNavigation } from "./navigationProvider";
 import deleteErrorHandler from "@/errorHandlers/deleteErrorHandler";
+import { ClipboardItem, Resource } from "@/interfaces";
 
 interface DeleteResourcesProps {
   refresh: () => void;
@@ -12,12 +13,14 @@ interface DeleteResourcesProps {
 
 export default function DeleteResources({ refresh }: DeleteResourcesProps) {
   const {
-    selectedResourceNames,
+    selectedResources,
     setDeleteOpen,
     isLoading,
     setIsLoading,
     setErrorModalOpen,
     setErrorModalMessage,
+    clipBoard,
+    setClipBoard,
   } = useExplorer();
   const { actualPath } = useNavigation();
 
@@ -39,6 +42,27 @@ export default function DeleteResources({ refresh }: DeleteResourcesProps) {
     toggleScroll(true);
   };
 
+  /**
+   * Creates a clipboard item from a resource
+   *
+   * @param resource - A resource
+   * @param method - The method by which the item reach the clipboard (copied or cut)
+   *
+   * @returns - A clipboard item
+   */
+  const clipboardItemFromResource = (
+    resource: Resource,
+    method: "copied" | "cut"
+  ) => {
+    const clipboardItem: ClipboardItem = {
+      path: actualPath + resource.name,
+      resource: resource,
+      method: method,
+    };
+
+    return clipboardItem;
+  };
+
   const deleteResources = () => {
     setIsLoading(true);
 
@@ -47,23 +71,39 @@ export default function DeleteResources({ refresh }: DeleteResourcesProps) {
       force: true,
     };
 
-    const deleteRequests = Array.from(selectedResourceNames).map((name) => {
-      let finalUrl = `${apiBaseUrl}/${deleteResourceUrl}`;
-      finalUrl += `?path= ${encodeURIComponent(actualPath + name)}`;
+    const deleteRequests = Array.from(selectedResources).map(
+      (selectedResource) => {
+        let finalUrl = `${apiBaseUrl}/${deleteResourceUrl}`;
+        finalUrl += `?path= ${encodeURIComponent(
+          actualPath + selectedResource.name
+        )}`;
 
-      return new Promise((resolve, reject) => {
-        axiosInstance
-          .delete(finalUrl, {
-            data: bodyRequest,
-          })
-          .then((response) => {
-            resolve(response);
-          })
-          .catch((err) => {
-            reject(err);
-          });
-      });
-    });
+        return new Promise((resolve, reject) => {
+          axiosInstance
+            .delete(finalUrl, {
+              data: bodyRequest,
+            })
+            .then((response) => {
+              // When the resource is deleted i remove from the clipboard the deleted resource if exists
+              // whatever the item method (cut, copied)
+              removeFromClipboard(
+                removeFromClipboard(
+                  clipBoard,
+                  clipboardItemFromResource(selectedResource, "cut"),
+                  setClipBoard
+                ),
+                clipboardItemFromResource(selectedResource, "copied"),
+                setClipBoard
+              );
+
+              resolve(response);
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        });
+      }
+    );
 
     Promise.all(deleteRequests)
       .then(() => {
@@ -83,9 +123,7 @@ export default function DeleteResources({ refresh }: DeleteResourcesProps) {
     <div className="w-screen h-screen bg-black/10 fixed top-0 left-0 flex justify-center items-center">
       <div className="bg-custom-green-150 p-4 rounded-lg text-center space-y-3">
         <h2 className="text-lg font-semibold">Are you sure?</h2>
-        <p>
-          {selectedResourceNames.size} resource(s) will be permanently deleted.
-        </p>
+        <p>{selectedResources.size} resource(s) will be permanently deleted.</p>
 
         <div className="flex justify-between" onClick={onModalClose}>
           <button className={btnStyles} type="button">

@@ -10,7 +10,7 @@ import EnvironmentManager from "@/utils/EnvironmentManager";
 import { RefObject, useEffect, useRef, useState } from "react";
 import DirectoryIcon from "@/components/directoryIcon";
 import FileIcon from "@/components/fileIcon";
-import { normalizeName } from "@/utils/utils";
+import { compareResources, normalizeName } from "@/utils/utils";
 import NavigationHeader from "@/components/navigationHeader";
 import resourceListErrorHandler from "@/errorHandlers/resourceListErrorHandler";
 import CustomModal from "@/components/customModal";
@@ -40,9 +40,9 @@ export default function FileExplorer() {
     isContextMenuOpen,
     setContextMenuOpen,
     setMousePosition,
-    selectedResourceNames,
-    setSelectedResourceNames,
-    setActiveResourceNames,
+    selectedResources,
+    setSelectedResources,
+    setActiveResources,
     isLoading,
     setIsLoading,
     errorModalOpen,
@@ -164,7 +164,7 @@ export default function FileExplorer() {
     );
 
     if (!iconClicked && !isContextMenuOpen) {
-      setSelectedResourceNames(new Set<string>());
+      setSelectedResources(new Set<Resource>());
     }
   };
 
@@ -173,7 +173,7 @@ export default function FileExplorer() {
    * sets all icons as non active.
    */
   const deactiveIcons = () => {
-    setActiveResourceNames(new Set<string>());
+    setActiveResources(new Set<Resource>());
   };
 
   return (
@@ -204,11 +204,11 @@ export default function FileExplorer() {
           if (resource.isDirectory) {
             return (
               <DirectoryIcon
-                name={resource.name}
-                shortName={resource.shortName}
+                resourceData={resource}
                 key={`resource_${index}`}
-                isSelected={Array.from(selectedResourceNames).some(
-                  (resourceName) => resourceName === resource.name
+                isSelected={Array.from(selectedResources).some(
+                  (selectedResource) =>
+                    compareResources(selectedResource, resource)
                 )}
                 handleAddRef={handleAddRef}
               />
@@ -216,11 +216,11 @@ export default function FileExplorer() {
           } else {
             return (
               <FileIcon
-                name={resource.name}
-                shortName={resource.shortName}
+                resourceData={resource}
                 key={`resource_${index}`}
-                isSelected={Array.from(selectedResourceNames).some(
-                  (resourceName) => resourceName === resource.name
+                isSelected={Array.from(selectedResources).some(
+                  (selectedResource) =>
+                    compareResources(selectedResource, resource)
                 )}
                 handleAddRef={handleAddRef}
               />
