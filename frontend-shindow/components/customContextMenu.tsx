@@ -9,7 +9,10 @@ import {
 import { useExplorer } from "./explorerProvider";
 import { MdOutlineCreateNewFolder } from "react-icons/md";
 import { clamp, toggleScroll } from "@/utils/utils";
-import { isContext } from "vm";
+import { FaRegCopy } from "react-icons/fa";
+import { IoCutOutline } from "react-icons/io5";
+import { FaRegPaste } from "react-icons/fa6";
+import { MdDeleteOutline } from "react-icons/md";
 /**
  * This function controls open and closes the customContextMenu.
  * It is called when a click is detected so if the menu is open and the click was not in the menu, it is closed
@@ -50,8 +53,7 @@ interface CustomContextMenuProps {
 export default function CustomContextMenu({
   setContextMenuRef,
 }: CustomContextMenuProps) {
-  const { isContextMenuOpen, mousePosition, selectedResourceNames } =
-    useExplorer();
+  const { isContextMenuOpen, mousePosition, selectedResources } = useExplorer();
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
   const [contextMenuDimensions, setContextMenuDimensions] = useState<{
     width: number;
@@ -60,7 +62,15 @@ export default function CustomContextMenu({
     width: 0,
     height: 0,
   });
-  const { setNewDirectoryMenuOpen, setContextMenuOpen } = useExplorer();
+  const {
+    setNewDirectoryMenuOpen,
+    setContextMenuOpen,
+    setCopyOpen,
+    setCutOpen,
+    setPasteOpen,
+    setDeleteOpen,
+    clipBoard,
+  } = useExplorer();
 
   // When the component it's mounted the dimensions in pixels are updated
   // in the provider state
@@ -109,7 +119,43 @@ export default function CustomContextMenu({
         setContextMenuOpen(false);
       },
       icon: MdOutlineCreateNewFolder,
-      disabled: !!selectedResourceNames.size,
+      disabled: !!selectedResources.size,
+    },
+    {
+      label: "Copy",
+      onClick: () => {
+        setCopyOpen(true);
+        setContextMenuOpen(false);
+      },
+      icon: FaRegCopy,
+      disabled: !selectedResources.size,
+    },
+    {
+      label: "Cut",
+      onClick: () => {
+        setCutOpen(true);
+        setContextMenuOpen(false);
+      },
+      icon: IoCutOutline,
+      disabled: !selectedResources.size,
+    },
+    {
+      label: "Paste",
+      onClick: () => {
+        setPasteOpen(true);
+        setContextMenuOpen(false);
+      },
+      icon: FaRegPaste,
+      disabled: !clipBoard.size || selectedResources.size,
+    },
+    {
+      label: "Delete",
+      onClick: () => {
+        setDeleteOpen(true);
+        setContextMenuOpen(false);
+      },
+      icon: MdDeleteOutline,
+      disabled: !selectedResources.size,
     },
   ];
 

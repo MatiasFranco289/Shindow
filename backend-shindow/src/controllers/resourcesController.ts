@@ -43,16 +43,20 @@ const resourcesController = {
     next: NextFunction
   ) => {
     const sessionId = req.sessionID;
-    const path = req.query.path || "/";
+    const path = (req.query.path as string) || "/";
+    const escapedPath = path.replace(/["\\]/g, "\\$&");
     const command = "ls -la --full-time";
 
     try {
       const result = await sshConnectionManager.ExecuteCommand(
         sessionId,
-        `${command} "${path}"`
+        `${command} "${escapedPath}"`
       );
 
-      const resourcesList: Array<Resource> = fileManager.LsToResource(result);
+      const resourcesList: Array<Resource> = fileManager.LsToResource(
+        result,
+        path
+      );
       const response: ApiResponse<Resource> = {
         status_code: HTTP_STATUS_CODE_OK,
         message: "Resources successfully retrieved.",
@@ -203,19 +207,23 @@ const resourcesController = {
     next: NextFunction
   ) => {
     const sessionId = req.sessionID;
-    const { path } = req.query;
+    const path = req.query.path;
+    const name = req.query.name as string;
+
     const command = `mkdir`;
+
     const response: ApiResponse<null> = {
       status_code: HTTP_STATUS_CODE_CREATED,
       message: "Resource successfully created.",
       data: [],
     };
 
+    let finalPath = `${path}/${name}`;
+    finalPath = finalPath.replace(/["\\]/g, "\\$&");
+    let finalCommand = `${command} "${finalPath}"`;
+
     try {
-      await sshConnectionManager.ExecuteCommand(
-        sessionId,
-        `${command} "${path}"`
-      );
+      await sshConnectionManager.ExecuteCommand(sessionId, finalCommand);
 
       res.status(response.status_code).json(response);
     } catch (err) {
@@ -244,7 +252,9 @@ const resourcesController = {
     next: NextFunction
   ) => {
     const sessionId = req.sessionID;
-    const { path } = req.query;
+    const path = req.query.path as string;
+    const escapedPath = path.replace(/["\\]/g, "\\$&");
+
     const { recursive, force } = req.body;
     const command = `rm${recursive ? " -r" : ""}${force ? " -f" : ""}`;
     const response: ApiResponse<null> = {
@@ -256,7 +266,7 @@ const resourcesController = {
     try {
       await sshConnectionManager.ExecuteCommand(
         sessionId,
-        `${command} "${path}"`
+        `${command} "${escapedPath}"`
       );
 
       res.status(response.status_code).json(response);
@@ -287,17 +297,20 @@ const resourcesController = {
   ) => {
     const sessionId = req.sessionID;
     const { originPath, destinationPath, recursive } = req.body;
-    const command = `cp${recursive ? " -r" : ""}`;
+    const command = `cp${recursive ? " -rT" : ""}`;
     const response: ApiResponse<null> = {
       status_code: HTTP_STATUS_CODE_OK,
       message: "Resource successfully copied.",
       data: [],
     };
 
+    const escapedOriginPath = originPath.replace(/["\\]/g, "\\$&");
+    const escapedDestinationPath = destinationPath.replace(/["\\]/g, "\\$&");
+
     try {
       await sshConnectionManager.ExecuteCommand(
         sessionId,
-        `${command} "${originPath}" "${destinationPath}"`
+        `${command} "${escapedOriginPath}" "${escapedDestinationPath}"`
       );
 
       res.status(response.status_code).json(response);
@@ -323,6 +336,9 @@ const resourcesController = {
   moveResource: async (req: Request, res: Response, next: NextFunction) => {
     const sessionId = req.sessionID;
     const { originPath, destinationPath } = req.body;
+    const escapedOriginPath = originPath.replace(/["\\]/g, "\\$&");
+    const escapedDestinationPath = destinationPath.replace(/["\\]/g, "\\$&");
+
     const command = "mv";
     const response: ApiResponse<null> = {
       status_code: HTTP_STATUS_CODE_OK,
@@ -333,7 +349,7 @@ const resourcesController = {
     try {
       await sshConnectionManager.ExecuteCommand(
         sessionId,
-        `${command} "${originPath}" "${destinationPath}"`
+        `${command} "${escapedOriginPath}" "${escapedDestinationPath}"`
       );
 
       res.status(response.status_code).json(response);

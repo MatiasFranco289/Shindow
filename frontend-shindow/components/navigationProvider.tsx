@@ -1,3 +1,4 @@
+import { Resource } from "@/interfaces";
 import EnvironmentManager from "@/utils/EnvironmentManager";
 import React, {
   createContext,
@@ -6,15 +7,18 @@ import React, {
   ReactNode,
   SetStateAction,
   Dispatch,
+  useRef,
+  MutableRefObject,
 } from "react";
 
 interface NavigationContextType {
-  actualPath: string;
-  setActualPath: Dispatch<SetStateAction<string>>;
-  pathHistory: Array<string>;
-  setPathHistory: Dispatch<SetStateAction<Array<string>>>;
-  historyActualIndex: number;
-  setHistoryActualIndex: Dispatch<SetStateAction<number>>;
+  history: Array<Resource>;
+  setHistory: Dispatch<SetStateAction<Array<Resource>>>;
+  historyIndex: number;
+  goTo: (directory: Resource) => void;
+  goBack: (deleteFromHistory?: boolean) => void;
+  goForward: () => void;
+  restoreHistory: () => void;
 }
 
 const NavigationContext = createContext<NavigationContextType | undefined>(
@@ -28,24 +32,64 @@ interface NavigationProviderProps {
 export const NavigationProvider: React.FC<NavigationProviderProps> = ({
   children,
 }) => {
-  const environmentManager = EnvironmentManager.getInstance();
-  const initialPath = environmentManager.GetEnvironmentVariable(
-    "NEXT_PUBLIC_INITIAL_PATH"
-  );
+  const [history, setHistory] = useState<Array<Resource>>([]);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
 
-  const [actualPath, setActualPath] = useState<string>(initialPath);
-  const [pathHistory, setPathHistory] = useState<Array<string>>([]);
-  const [historyActualIndex, setHistoryActualIndex] = useState<number>(0);
+  const historyPrev = useRef<Array<Resource>>(history);
+  const historyPrevIndex = useRef<number>(historyIndex);
+
+  /**
+   * Appends a new directory to the history array and updates the current
+   * history index.
+   * It will cut the history array before if it is needed.
+   * This function also saves a copy of the previous value of the history and index
+   *
+   * @param directory - The directory where you want to go.
+   */
+  const goTo = (directory: Resource) => {
+    historyPrev.current = history;
+    historyPrevIndex.current = historyIndex;
+
+    const updatedHistory = history.slice(0, historyIndex + 1);
+    updatedHistory.push(directory);
+    setHistory(updatedHistory);
+    setHistoryIndex((prev) => prev + 1);
+  };
+
+  /**
+   * Moves the history index back one item and updates it.
+   */
+  const goBack = () => {
+    setHistoryIndex((prev) => prev - 1);
+  };
+
+  /**
+   * Moves the history index one item forwards and updates
+   */
+  const goForward = () => {
+    setHistoryIndex((prev) => prev + 1);
+  };
+
+  /**
+   * Restore the index to its previous value.
+   * This function is useful when you attempt to acced a folder
+   * and some error happens.
+   */
+  const restoreHistory = () => {
+    setHistory(historyPrev.current);
+    setHistoryIndex(historyPrevIndex.current);
+  };
 
   return (
     <NavigationContext.Provider
       value={{
-        actualPath,
-        setActualPath,
-        pathHistory,
-        setPathHistory,
-        historyActualIndex,
-        setHistoryActualIndex,
+        goTo,
+        goBack,
+        goForward,
+        history,
+        setHistory,
+        historyIndex,
+        restoreHistory,
       }}
     >
       {children}

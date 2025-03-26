@@ -27,9 +27,10 @@ export class FileManager {
    * an object folowing the 'Resource' interface for each resource in the string.
    *
    * @param ls - The output of a 'ls -lh --full-time' command.
+   * @param path - The path where the ls command was executed.
    * @returns - An array of Resource.
    */
-  public LsToResource(ls: string): Array<Resource> {
+  public LsToResource(ls: string, path: string): Array<Resource> {
     const result: Array<Resource> = [];
     const resourceList: Array<string> = ls.split("\n");
 
@@ -37,6 +38,10 @@ export class FileManager {
       const lsLineData = lsLine.split(" ").filter(Boolean);
 
       if (lsLineData.length > 2) {
+        const resourceName = this.IsSymbolicLink(lsLineData[0])
+          ? this.GetResourceNameFromSymbolicLink(lsLine)
+          : this.GetResourceNameFromResource(lsLine);
+
         result.push({
           isDirectory: this.IsDirectory(lsLine[0]),
           hardLinks: parseInt(lsLineData[1]),
@@ -45,7 +50,8 @@ export class FileManager {
           size: parseInt(lsLineData[4]),
           date: lsLineData[5],
           time: lsLineData[6],
-          name: lsLineData.slice(8, lsLineData.length).join(" ").split("->")[0],
+          name: resourceName,
+          path: path + (path !== "/" ? "/" : "") + resourceName,
         });
       }
     });
@@ -62,6 +68,50 @@ export class FileManager {
    */
   public IsDirectory(permissions: string) {
     return permissions[0] === "d";
+  }
+
+  /**
+   * Receives the first part of a "ls" command (Which have information about permissions) and
+   * determines if a resource is or not a symbolic link.
+   *
+   * @param permissions - A string of permissions.
+   * @returns - A boolean, being true if the resource is a symbolic link.
+   */
+  public IsSymbolicLink(permissions: string) {
+    return permissions[0] === "l";
+  }
+
+  /**
+   * Receives a line from the command 'ls' representing a symbolic link resource.
+   * Separates and return the name of the resource from the rest of the information.
+   *
+   * @param lsLine - A line from ls command.
+   * @returns - The name of the resource if is possible, otherwise it will return the original string.
+   */
+  public GetResourceNameFromSymbolicLink(lsLine: string) {
+    lsLine = lsLine.slice(0, -1);
+    const lastIndex = lsLine.lastIndexOf("/");
+
+    if (lastIndex !== -1) {
+      return lsLine.slice(lastIndex).replace("/", "");
+    }
+
+    return lsLine;
+  }
+
+  /**
+   * Receives a line from the command 'ls' representing a normal resource.
+   * Separates and return the name of the resource from the rest of the information.
+   *
+   * @param lsLine - A line from ls command.
+   * @returns - The name of the resource.
+   */
+  public GetResourceNameFromResource(lsLine: string) {
+    const regex = /-(\d{4})/;
+    const splittedLine = lsLine.split(regex);
+    const result = splittedLine.slice(2).join();
+
+    return result.substring(1);
   }
 
   /**

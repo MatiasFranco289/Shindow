@@ -1,7 +1,7 @@
 export default class KeyboardController {
   private static instance: KeyboardController;
   private window: (Window & typeof globalThis) | undefined;
-  private shiftPressed: boolean = false;
+  private ctrlPressed: boolean = false;
 
   private constructor() {}
 
@@ -11,14 +11,14 @@ export default class KeyboardController {
       this.instance.window = window;
 
       window.addEventListener("keydown", (e) => {
-        if (e.shiftKey) {
-          this.instance.shiftPressed = true;
+        if (e.ctrlKey) {
+          this.instance.ctrlPressed = true;
         }
       });
 
       window.addEventListener("keyup", (e) => {
-        if (!e.shiftKey) {
-          this.instance.shiftPressed = false;
+        if (!e.ctrlKey) {
+          this.instance.ctrlPressed = false;
         }
       });
     }
@@ -26,7 +26,7 @@ export default class KeyboardController {
     return this.instance;
   }
 
-  public isShiftPressed(): boolean {
-    return this.shiftPressed;
+  public isCtrlPressed(): boolean {
+    return this.ctrlPressed;
   }
 }
