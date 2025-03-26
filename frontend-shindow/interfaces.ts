@@ -23,6 +23,7 @@ export interface Resource {
   size: number;
   time: string;
   shortName: string;
+  path: string;
 }
 
 export interface Vector2 {
@@ -31,7 +32,6 @@ export interface Vector2 {
 }
 
 export interface ClipboardItem {
-  path: string;
   resource: Resource;
   method: "copied" | "cut";
 }

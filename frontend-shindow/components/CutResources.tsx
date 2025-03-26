@@ -6,14 +6,12 @@ import { ClipboardItem } from "@/interfaces";
 
 export default function CutResources() {
   const { setCutOpen, setClipBoard, selectedResources } = useExplorer();
-  const { actualPath } = useNavigation();
 
   useEffect(() => {
     const cutResources: Array<ClipboardItem> = Array.from(
       selectedResources
     ).map((resource) => {
       return {
-        path: actualPath + resource.name,
         method: "cut",
         resource: resource,
       };

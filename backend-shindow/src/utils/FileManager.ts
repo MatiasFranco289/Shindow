@@ -27,9 +27,10 @@ export class FileManager {
    * an object folowing the 'Resource' interface for each resource in the string.
    *
    * @param ls - The output of a 'ls -lh --full-time' command.
+   * @param path - The path where the ls command was executed.
    * @returns - An array of Resource.
    */
-  public LsToResource(ls: string): Array<Resource> {
+  public LsToResource(ls: string, path: string): Array<Resource> {
     const result: Array<Resource> = [];
     const resourceList: Array<string> = ls.split("\n");
 
@@ -50,6 +51,7 @@ export class FileManager {
           date: lsLineData[5],
           time: lsLineData[6],
           name: resourceName,
+          path: path + (path !== "/" ? "/" : "") + resourceName,
         });
       }
     });

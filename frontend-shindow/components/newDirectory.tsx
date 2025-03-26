@@ -17,7 +17,7 @@ export default function NewDirectory({ refresh }: NewDirectoryProps) {
     setErrorModalMessage,
     setErrorModalOpen,
   } = useExplorer();
-  const { actualPath } = useNavigation();
+  const { history, historyIndex } = useNavigation();
   const [directoryName, setDirectoryName] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -45,7 +45,7 @@ export default function NewDirectory({ refresh }: NewDirectoryProps) {
   const handleCreate = () => {
     let createDirectoryUrl = `${apiBaseUrl}/resources/new`;
     createDirectoryUrl += `?path=${encodeURIComponent(
-      actualPath.slice(0, -1)
+      history[historyIndex].path
     )}`;
     createDirectoryUrl += `&name=${encodeURIComponent(directoryName)}`;
 

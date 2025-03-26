@@ -53,7 +53,10 @@ const resourcesController = {
         `${command} "${escapedPath}"`
       );
 
-      const resourcesList: Array<Resource> = fileManager.LsToResource(result);
+      const resourcesList: Array<Resource> = fileManager.LsToResource(
+        result,
+        path
+      );
       const response: ApiResponse<Resource> = {
         status_code: HTTP_STATUS_CODE_OK,
         message: "Resources successfully retrieved.",

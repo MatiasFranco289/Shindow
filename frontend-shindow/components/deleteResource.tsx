@@ -22,7 +22,6 @@ export default function DeleteResources({ refresh }: DeleteResourcesProps) {
     clipBoard,
     setClipBoard,
   } = useExplorer();
-  const { actualPath } = useNavigation();
 
   const environmentManager = EnvironmentManager.getInstance();
   const apiBaseUrl = environmentManager.GetEnvironmentVariable(
@@ -55,7 +54,6 @@ export default function DeleteResources({ refresh }: DeleteResourcesProps) {
     method: "copied" | "cut"
   ) => {
     const clipboardItem: ClipboardItem = {
-      path: actualPath + resource.name,
       resource: resource,
       method: method,
     };
@@ -74,9 +72,7 @@ export default function DeleteResources({ refresh }: DeleteResourcesProps) {
     const deleteRequests = Array.from(selectedResources).map(
       (selectedResource) => {
         let finalUrl = `${apiBaseUrl}/${deleteResourceUrl}`;
-        finalUrl += `?path= ${encodeURIComponent(
-          actualPath + selectedResource.name
-        )}`;
+        finalUrl += `?path= ${encodeURIComponent(selectedResource.path)}`;
 
         return new Promise((resolve, reject) => {
           axiosInstance

@@ -8,7 +8,7 @@ import { useExplorer } from "./explorerProvider";
 import { useNavigation } from "./navigationProvider";
 import axiosInstance from "@/utils/axiosInstance";
 import EnvironmentManager from "@/utils/EnvironmentManager";
-import { Resource } from "@/interfaces";
+import { ClipboardItem, Resource } from "@/interfaces";
 import { AxiosResponse } from "axios";
 import copyErrorHandler from "@/errorHandlers/pasteErrorHandler";
 
@@ -29,11 +29,12 @@ export default function PasteResources({
     setErrorModalMessage,
     setErrorModalOpen,
   } = useExplorer();
-  const { actualPath } = useNavigation();
+  const { history, historyIndex } = useNavigation();
   const resourceListAux: Array<Partial<Resource>> = resourceList;
   const apiBaseUrl = environmentManager.GetEnvironmentVariable(
     "NEXT_PUBLIC_API_BASE_URL"
   );
+  const currentDirectory = history[historyIndex];
 
   useEffect(() => {
     paste();
@@ -72,7 +73,7 @@ export default function PasteResources({
       const urlMethod = item.method === "copied" ? "copy" : "move";
       const requestUrl = `${apiBaseUrl}/resources/${urlMethod}`;
 
-      const validationResult = validations(item.path, actualPath, urlMethod);
+      const validationResult = validations(item, currentDirectory, urlMethod);
 
       if (!validationResult) {
         return new Promise((resolve, reject) => {
@@ -81,8 +82,9 @@ export default function PasteResources({
       }
 
       const bodyRequest = {
-        originPath: item.path,
-        destinationPath: actualPath + manageSameNameCopy(item.path),
+        originPath: item.resource.path,
+        destinationPath:
+          currentDirectory.path + "/" + manageSameNameCopy(item.resource.path),
         recursive: true,
       };
 
@@ -156,17 +158,19 @@ export default function PasteResources({
 
   // TODO: Move this validations somewhere else
   // TODO: When you paste or create a new resource the resource should be selected by default
+  // TODO: Probar que esto ande bien en root (por el '/')
   const validations = (
-    origin: string,
-    destination: string,
+    origin: ClipboardItem,
+    destination: Resource,
     method: "move" | "copy"
   ) => {
-    const resourceName: string = getLastFromPath(origin);
-
     const validations = [
       {
         validate: () => {
-          if (origin === destination + resourceName) {
+          if (
+            origin.resource.path ===
+            destination.path + "/" + origin.resource.name
+          ) {
             setClipBoard(new Set());
             return false;
           }
@@ -178,10 +182,7 @@ export default function PasteResources({
       },
       {
         validate: () => {
-          const resourceName = getLastFromPath(origin);
-          const nameInsideSource = destination
-            .split("/")
-            .find((item) => item === resourceName);
+          const nameInsideSource = origin.resource.path === destination.path;
 
           if (nameInsideSource) {
             return false;

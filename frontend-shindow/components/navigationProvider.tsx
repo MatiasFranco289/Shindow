@@ -12,14 +12,13 @@ import React, {
 } from "react";
 
 interface NavigationContextType {
-  actualPath: string;
-  setActualPath: Dispatch<SetStateAction<string>>;
-  pathHistory: MutableRefObject<Array<string>>;
-  historyActualIndex: MutableRefObject<number>;
-  currentDirectory: Resource | undefined;
+  history: Array<Resource>;
+  setHistory: Dispatch<SetStateAction<Array<Resource>>>;
+  historyIndex: number;
   goTo: (directory: Resource) => void;
   goBack: (deleteFromHistory?: boolean) => void;
   goForward: () => void;
+  restoreHistory: () => void;
 }
 
 const NavigationContext = createContext<NavigationContextType | undefined>(
@@ -33,87 +32,64 @@ interface NavigationProviderProps {
 export const NavigationProvider: React.FC<NavigationProviderProps> = ({
   children,
 }) => {
-  const environmentManager = EnvironmentManager.getInstance();
-  const initialPath = environmentManager.GetEnvironmentVariable(
-    "NEXT_PUBLIC_INITIAL_PATH"
-  );
+  const [history, setHistory] = useState<Array<Resource>>([]);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
 
-  const [actualPath, setActualPath] = useState<string>(initialPath);
-  const [currentDirectory, setCurrentDirectory] = useState<Resource>();
-
-  const pathHistory = useRef<Array<string>>([initialPath]);
-  let historyActualIndex = useRef<number>(0);
+  const historyPrev = useRef<Array<Resource>>(history);
+  const historyPrevIndex = useRef<number>(historyIndex);
 
   /**
-   * Updates the current path by appending the name of a directory.
-   * Calls updateHistory function to update the history.
-   * @param directoryName
+   * Appends a new directory to the history array and updates the current
+   * history index.
+   * It will cut the history array before if it is needed.
+   * This function also saves a copy of the previous value of the history and index
+   *
+   * @param directory - The directory where you want to go.
    */
   const goTo = (directory: Resource) => {
-    let newPath = actualPath;
-    newPath += directory.name + "/";
+    historyPrev.current = history;
+    historyPrevIndex.current = historyIndex;
 
-    setActualPath(newPath);
-    updateHistory(newPath);
+    const updatedHistory = history.slice(0, historyIndex + 1);
+    updatedHistory.push(directory);
+    setHistory(updatedHistory);
+    setHistoryIndex((prev) => prev + 1);
   };
 
   /**
-   * Add a new path to the history array and cuts the history
-   * before add it if it is needed.
-   * @param newPath
+   * Moves the history index back one item and updates it.
    */
-  const updateHistory = (newPath: string) => {
-    const newPathHistory = pathHistory.current.slice(
-      0,
-      historyActualIndex.current + 1
-    );
-
-    newPathHistory.push(newPath);
-    historyActualIndex.current++;
-    pathHistory.current = newPathHistory;
-  };
-
-  /**
-   * Moves the history index one item back and updated the
-   * current path with the path stored in that index of the pathHistory
-   * variable.
-   * It can also delete the last item stored in the history if @deleteFromHistory is true.
-   * @param deleteFromHistory - If true, the last item stored in the history will be removed. It is useful when
-   * the user attemps to acced a path and fails.
-   */
-  const goBack = (deleteFromHistory: boolean = false) => {
-    historyActualIndex.current--;
-    const newPath = pathHistory.current[historyActualIndex.current];
-
-    if (deleteFromHistory) {
-      pathHistory.current.pop();
-    }
-
-    setActualPath(newPath);
+  const goBack = () => {
+    setHistoryIndex((prev) => prev - 1);
   };
 
   /**
    * Moves the history index one item forwards and updates
-   * the current path with the path stored in that index of the pathHistory
-   * variable
    */
   const goForward = () => {
-    historyActualIndex.current++;
-    const newPath = pathHistory.current[historyActualIndex.current];
-    setActualPath(newPath);
+    setHistoryIndex((prev) => prev + 1);
+  };
+
+  /**
+   * Restore the index to its previous value.
+   * This function is useful when you attempt to acced a folder
+   * and some error happens.
+   */
+  const restoreHistory = () => {
+    setHistory(historyPrev.current);
+    setHistoryIndex(historyPrevIndex.current);
   };
 
   return (
     <NavigationContext.Provider
       value={{
-        actualPath,
-        setActualPath,
-        pathHistory,
-        historyActualIndex,
         goTo,
         goBack,
         goForward,
-        currentDirectory,
+        history,
+        setHistory,
+        historyIndex,
+        restoreHistory,
       }}
     >
       {children}

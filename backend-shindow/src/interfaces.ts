@@ -1,5 +1,3 @@
-import { ASD } from "./constants";
-
 export interface EnvironmentVariables {
   API_PORT: string;
   API_DOMAIN: string;
@@ -45,4 +43,5 @@ export interface Resource {
   hardLinks: number;
   date: string;
   time: string;
+  path: string;
 }

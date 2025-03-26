@@ -49,15 +49,14 @@ export default function DirectoryIcon({
   }, [clipBoard, resourceData.name]);
 
   /**
-   * Iterates over each item in the clipboard and verify if the name of this resource
+   * Iterates over each item in the clipboard and verify if the path of this resource
    * is in the clipboard as a cut resource.
    *
    * @returns - A boolean, being true if the item was cut.
    */
   const isResourceCut = () => {
     const isCut = Array.from(clipBoard).find((item) => {
-      const filename = getLastFromPath(item.path);
-      return item.method === "cut" && filename === resourceData.name;
+      return item.method === "cut" && item.resource.path === resourceData.path;
     });
 
     return !!isCut;

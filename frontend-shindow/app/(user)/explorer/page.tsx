@@ -28,7 +28,7 @@ export default function FileExplorer() {
   const apiBaseUrl = environmentManager.GetEnvironmentVariable(
     "NEXT_PUBLIC_API_BASE_URL"
   );
-  const { actualPath, goBack } = useNavigation();
+  const { history, historyIndex, goTo, restoreHistory } = useNavigation();
   const [resourceList, setResourceList] = useState<Array<Resource>>([]);
   const [contextMenuRef, setContextMenuRef] = useState<
     RefObject<HTMLDivElement | null>
@@ -53,19 +53,42 @@ export default function FileExplorer() {
 
   useEffect(() => {
     KeyboardController.GetInstance(window); // Ensures KeyboardController class to be initializated
+
+    // The first time i need to go to the initial path to load the resources in it, but since i have no
+    // real data of the initial path i use this mocked data.
+    const initialPath = environmentManager.GetEnvironmentVariable(
+      "NEXT_PUBLIC_INITIAL_PATH"
+    );
+
+    goTo({
+      date: "",
+      group: "",
+      hardLinks: 0,
+      isDirectory: true,
+      name: "",
+      owner: "",
+      size: 0,
+      time: "",
+      shortName: "",
+      path: initialPath,
+    });
   }, []);
 
   useEffect(() => {
+    if (historyIndex === -1) return;
+
     setIsLoading(true);
     refresh();
-  }, [actualPath]);
+  }, [historyIndex]);
 
   /**
    * This function calls 'getResourceListFromApi' function and manages the
    * returned promise.
    */
   const refresh = () => {
-    getResourceListFromApi(actualPath)
+    const path = history[historyIndex].path;
+
+    getResourceListFromApi(path)
       .then((resources) => {
         setResourceList(resources);
       })
@@ -73,7 +96,7 @@ export default function FileExplorer() {
         const errorCode = err as number;
         setErrorModalMessage(resourceListErrorHandler(errorCode));
         setErrorModalOpen(true);
-        goBack(true);
+        restoreHistory();
       })
       .finally(() => {
         setIsLoading(false);
@@ -90,9 +113,8 @@ export default function FileExplorer() {
    */
   function getResourceListFromApi(path: string): Promise<Array<Resource>> {
     return new Promise((resolve, reject) => {
-      const resourceListEndpoint = `${apiBaseUrl}${RESOURCE_LIST_ENDPOINT}?path=${path.replace(
-        /#/g,
-        "%23"
+      const resourceListEndpoint = `${apiBaseUrl}${RESOURCE_LIST_ENDPOINT}?path=${encodeURIComponent(
+        path
       )}`;
       const hiddenResourceNames = [".", ".."];
 
@@ -181,7 +203,7 @@ export default function FileExplorer() {
       className={`bg-custom-green-100 w-full min-h-screen flex`}
       onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
     >
-      <NavigationHeader />
+      {historyIndex !== -1 && <NavigationHeader />}
       <div
         className="flex flex-wrap content-start items-start pt-24 w-full"
         onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
