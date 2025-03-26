@@ -16,6 +16,7 @@ export default function NewDirectory({ refresh }: NewDirectoryProps) {
     setIsLoading,
     setErrorModalMessage,
     setErrorModalOpen,
+    setSelectedResources,
   } = useExplorer();
   const { history, historyIndex } = useNavigation();
   const [directoryName, setDirectoryName] = useState<string>("");

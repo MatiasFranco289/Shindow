@@ -156,9 +156,6 @@ export default function PasteResources({
     return resourceName;
   };
 
-  // TODO: Move this validations somewhere else
-  // TODO: When you paste or create a new resource the resource should be selected by default
-  // TODO: Probar que esto ande bien en root (por el '/')
   const validations = (
     origin: ClipboardItem,
     destination: Resource,
