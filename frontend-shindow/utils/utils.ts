@@ -93,9 +93,6 @@ export function removeFromClipboard(
   itemToRemove: ClipboardItem,
   update: Dispatch<SetStateAction<Set<ClipboardItem>>>
 ) {
-  console.log(clipboard);
-  console.log(itemToRemove);
-
   const newClipBoard = Array.from(clipboard).filter(
     (item) => JSON.stringify(item) !== JSON.stringify(itemToRemove)
   );
