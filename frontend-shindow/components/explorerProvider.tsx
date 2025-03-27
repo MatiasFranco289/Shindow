@@ -22,6 +22,8 @@ interface ExplorerContextType {
   setSelectedResources: Dispatch<SetStateAction<Set<Resource>>>;
   clipBoard: Set<ClipboardItem>;
   setClipBoard: Dispatch<SetStateAction<Set<ClipboardItem>>>;
+  uploadClipboard: FileList | undefined;
+  setUploadClipboad: Dispatch<SetStateAction<FileList | undefined>>;
   activeResources: Set<Resource>;
   setActiveResources: Dispatch<SetStateAction<Set<Resource>>>;
   isNewDirectoryMenuOpen: boolean;
@@ -40,6 +42,8 @@ interface ExplorerContextType {
   setPasteOpen: Dispatch<SetStateAction<boolean>>;
   isDeleteOpen: boolean;
   setDeleteOpen: Dispatch<SetStateAction<boolean>>;
+  isFileManagerOpen: boolean;
+  setFileManagerOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const ExplorerContext = createContext<ExplorerContextType | undefined>(
@@ -76,6 +80,8 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
   const [errorModalMessage, setErrorModalMessage] = useState<string>("");
+  const [isFileManagerOpen, setFileManagerOpen] = useState<boolean>(false);
+  const [uploadClipboard, setUploadClipboad] = useState<FileList>();
 
   return (
     <ExplorerContext.Provider
@@ -106,6 +112,10 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
         setPasteOpen,
         isDeleteOpen,
         setDeleteOpen,
+        isFileManagerOpen,
+        setFileManagerOpen,
+        uploadClipboard,
+        setUploadClipboad,
       }}
     >
       {children}

@@ -1,7 +1,8 @@
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useNavigation } from "./navigationProvider";
-import { normalizePath } from "@/utils/utils";
 import { useExplorer } from "./explorerProvider";
+import { MdOutlineFileUpload } from "react-icons/md";
+import UploadMenu from "./uploadMenu";
 
 export default function NavigationHeader() {
   const { goBack, goForward, history, historyIndex } = useNavigation();
@@ -12,9 +13,9 @@ export default function NavigationHeader() {
   const canGoBack = actualPath !== "/";
 
   return (
-    <div className="w-full bg-custom-green-50 flex justify-center p-5 fixed z-20 top-0 left-0">
-      {/* Buttons */}
-      <div className="absolute left-6 flex text-3xl space-x-4">
+    <div className="w-full bg-custom-green-50 flex justify-between p-5 fixed z-20 top-0 left-0">
+      {/* Left buttons */}
+      <div className="flex text-3xl space-x-4">
         {/* Back btn */}
         <div
           className={`p-1 rounded-md ${
@@ -56,6 +57,11 @@ export default function NavigationHeader() {
 
       <div className="bg-custom-green-100 w-3/6 p-1 pl-2 rounded-lg">
         <p>{actualPath}</p>
+      </div>
+
+      {/* Right buttons */}
+      <div className="flex justify-center items-center ">
+        <UploadMenu />
       </div>
     </div>
   );

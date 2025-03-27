@@ -5,6 +5,8 @@ import { useExplorer } from "./explorerProvider";
 import NewDirectory from "./newDirectory";
 import PasteResources from "./pasteResources";
 import DeleteResources from "./deleteResource";
+import UploadResources from "./uploadResources";
+import FileManager from "./fileManager";
 
 interface CustomContextMenuLogicProps {
   refresh: () => void; // Function to refresh resources in the current path
@@ -21,6 +23,8 @@ export default function CustomContextMenuLogic({
     isCutOpen,
     isPasteOpen,
     isDeleteOpen,
+    isFileManagerOpen,
+    uploadClipboard,
   } = useExplorer();
 
   return (
@@ -34,6 +38,8 @@ export default function CustomContextMenuLogic({
         )}
       </div>
       <div>{isDeleteOpen && <DeleteResources refresh={refresh} />}</div>
+      <div>{isFileManagerOpen && <FileManager />}</div>
+      <div>{uploadClipboard?.length && <UploadResources />}</div>
     </div>
   );
 }

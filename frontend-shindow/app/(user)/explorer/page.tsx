@@ -36,6 +36,8 @@ export default function FileExplorer() {
   const [iconRefs, setIconRefs] = useState<Array<RefObject<HTMLDivElement>>>(
     []
   );
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+
   const {
     isContextMenuOpen,
     setContextMenuOpen,
@@ -49,6 +51,8 @@ export default function FileExplorer() {
     setErrorModalOpen,
     errorModalMessage,
     setErrorModalMessage,
+    setUploadClipboad,
+    setFileManagerOpen,
   } = useExplorer();
 
   useEffect(() => {
@@ -200,12 +204,14 @@ export default function FileExplorer() {
 
   return (
     <div
-      className={`bg-custom-green-100 w-full min-h-screen flex`}
+      className={`${
+        isDragging ? "bg-custom-green-150" : "bg-custom-green-100"
+      } w-full min-h-screen flex`}
       onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
     >
       {historyIndex !== -1 && <NavigationHeader />}
       <div
-        className="flex flex-wrap content-start items-start pt-24 w-full"
+        className="flex flex-wrap content-start items-start pt-24 w-full "
         onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
         onMouseDown={(e) => {
           updateMousePosition(e);
@@ -216,9 +222,21 @@ export default function FileExplorer() {
             contextMenuRef
           );
           deselectResources(e);
+          setFileManagerOpen(false);
         }}
         onMouseUp={() => {
           deactiveIcons();
+        }}
+        onDragEnter={() => setIsDragging(true)}
+        onDragExit={() => setIsDragging(false)}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsDragging(false);
+
+          const files = e.dataTransfer.files;
+          setUploadClipboad(files);
         }}
       >
         <CustomContextMenu setContextMenuRef={setContextMenuRef} />
