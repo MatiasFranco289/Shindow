@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useExplorer } from "./explorerProvider";
+import { UploadClipboardItem } from "@/interfaces";
 
 export default function FileManager() {
   const { setUploadClipboad } = useExplorer();
@@ -15,7 +16,19 @@ export default function FileManager() {
     const files = event.target.files;
 
     if (files) {
-      setUploadClipboad(files);
+      const filesToUpload: Array<UploadClipboardItem> = Array.from(files).map(
+        (file) => {
+          return {
+            id: crypto.randomUUID(),
+            file: file,
+            enterAnimationPlayed: false,
+            status: "queued",
+            progress: 0,
+          };
+        }
+      );
+
+      setUploadClipboad(filesToUpload);
     }
   }
 

@@ -9,9 +9,11 @@ import { ClipboardItem, Resource } from "@/interfaces";
  * @param name - The string to normalize.
  * @returns - The normalized string.
  */
-export function normalizeName(name: string) {
-  const nameCharacterLimit = 35;
-  const maxCharactersBeforeCut = 26;
+export function normalizeName(
+  name: string,
+  nameCharacterLimit: number = 35,
+  maxCharactersBeforeCut: number = 26
+) {
   const maxCharactersAfterCut = nameCharacterLimit - maxCharactersBeforeCut;
 
   if (name.length <= nameCharacterLimit) {

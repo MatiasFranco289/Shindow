@@ -2,7 +2,7 @@
  * This provider is to save information that needs to be shared
  * between the diferent components involved in the explorer
  */
-import { Resource, Vector2 } from "@/interfaces";
+import { Resource, UploadClipboardItem, Vector2 } from "@/interfaces";
 import React, {
   Dispatch,
   ReactNode,
@@ -22,8 +22,8 @@ interface ExplorerContextType {
   setSelectedResources: Dispatch<SetStateAction<Set<Resource>>>;
   clipBoard: Set<ClipboardItem>;
   setClipBoard: Dispatch<SetStateAction<Set<ClipboardItem>>>;
-  uploadClipboard: FileList | undefined;
-  setUploadClipboad: Dispatch<SetStateAction<FileList | undefined>>;
+  uploadClipboard: Array<UploadClipboardItem>;
+  setUploadClipboad: Dispatch<SetStateAction<Array<UploadClipboardItem>>>;
   activeResources: Set<Resource>;
   setActiveResources: Dispatch<SetStateAction<Set<Resource>>>;
   isNewDirectoryMenuOpen: boolean;
@@ -44,6 +44,8 @@ interface ExplorerContextType {
   setDeleteOpen: Dispatch<SetStateAction<boolean>>;
   isFileManagerOpen: boolean;
   setFileManagerOpen: Dispatch<SetStateAction<boolean>>;
+  isUploadMenuOpen: boolean;
+  setUploadMenuOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const ExplorerContext = createContext<ExplorerContextType | undefined>(
@@ -81,8 +83,10 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
   const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false);
   const [errorModalMessage, setErrorModalMessage] = useState<string>("");
   const [isFileManagerOpen, setFileManagerOpen] = useState<boolean>(false);
-  const [uploadClipboard, setUploadClipboad] = useState<FileList>();
-
+  const [uploadClipboard, setUploadClipboad] = useState<
+    Array<UploadClipboardItem>
+  >([]);
+  const [isUploadMenuOpen, setUploadMenuOpen] = useState<boolean>(false);
   return (
     <ExplorerContext.Provider
       value={{
@@ -116,6 +120,8 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
         setFileManagerOpen,
         uploadClipboard,
         setUploadClipboad,
+        isUploadMenuOpen,
+        setUploadMenuOpen,
       }}
     >
       {children}

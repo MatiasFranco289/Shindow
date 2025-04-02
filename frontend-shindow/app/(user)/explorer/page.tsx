@@ -4,7 +4,7 @@ import {
   HTTP_STATUS_CODE_SERVICE_UNAVAILABLE,
   RESOURCE_LIST_ENDPOINT,
 } from "@/constants";
-import { ApiResponse, Resource } from "@/interfaces";
+import { ApiResponse, Resource, UploadClipboardItem } from "@/interfaces";
 import axiosInstance from "@/utils/axiosInstance";
 import EnvironmentManager from "@/utils/EnvironmentManager";
 import { RefObject, useEffect, useRef, useState } from "react";
@@ -53,6 +53,7 @@ export default function FileExplorer() {
     setErrorModalMessage,
     setUploadClipboad,
     setFileManagerOpen,
+    setUploadMenuOpen,
   } = useExplorer();
 
   useEffect(() => {
@@ -223,6 +224,7 @@ export default function FileExplorer() {
           );
           deselectResources(e);
           setFileManagerOpen(false);
+          setUploadMenuOpen(false);
         }}
         onMouseUp={() => {
           deactiveIcons();
@@ -236,7 +238,20 @@ export default function FileExplorer() {
           setIsDragging(false);
 
           const files = e.dataTransfer.files;
-          setUploadClipboad(files);
+
+          const filesToUpload: Array<UploadClipboardItem> = Array.from(
+            files
+          ).map((file) => {
+            return {
+              id: crypto.randomUUID(),
+              file: file,
+              enterAnimationPlayed: false,
+              status: "queued",
+              progress: 0,
+            };
+          });
+
+          setUploadClipboad(filesToUpload);
         }}
       >
         <CustomContextMenu setContextMenuRef={setContextMenuRef} />
