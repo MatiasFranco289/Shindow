@@ -1,19 +1,15 @@
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useNavigation } from "./navigationProvider";
 import { normalizePath } from "@/utils/utils";
+import { useExplorer } from "./explorerProvider";
 
-export interface NavigationHeaderProps {
-  canGoForward: boolean;
-  goBack: () => void;
-  goForward: () => void;
-}
+export default function NavigationHeader() {
+  const { goBack, goForward, history, historyIndex } = useNavigation();
+  const { setSelectedResources } = useExplorer();
 
-export default function NavigationHeader({
-  goBack,
-  goForward,
-  canGoForward,
-}: NavigationHeaderProps) {
-  const { actualPath } = useNavigation();
+  const actualPath = history[historyIndex].path;
+  const canGoForward = historyIndex + 1 < history.length;
+  const canGoBack = actualPath !== "/";
 
   return (
     <div className="w-full bg-custom-green-50 flex justify-center p-5 fixed z-20 top-0 left-0">
@@ -22,14 +18,18 @@ export default function NavigationHeader({
         {/* Back btn */}
         <div
           className={`p-1 rounded-md ${
-            actualPath !== "/" &&
-            " hover:bg-white/10 active:bg-white/15 duration-200"
+            canGoBack
+              ? " hover:bg-white/10 active:bg-white/15 duration-200 pointer-events-auto"
+              : "pointer-events-none"
           }`}
-          onClick={goBack}
+          onClick={() => {
+            setSelectedResources(new Set([]));
+            goBack();
+          }}
         >
           <IoChevronBack
             className={`${
-              actualPath !== "/" ? "text-white" : "text-white/25"
+              canGoBack ? "text-white" : "text-white/25"
             } rounded-md`}
           />
         </div>
@@ -37,9 +37,14 @@ export default function NavigationHeader({
         {/* Next btn */}
         <div
           className={`p-1 rounded-md ${
-            canGoForward && "hover:bg-white/10 active:bg-white/15 duration-200"
+            canGoForward
+              ? "hover:bg-white/10 active:bg-white/15 duration-200 pointer-events-auto"
+              : "pointer-events-none"
           }`}
-          onClick={goForward}
+          onClick={() => {
+            setSelectedResources(new Set([]));
+            goForward();
+          }}
         >
           <IoChevronForward
             className={`${
@@ -50,7 +55,7 @@ export default function NavigationHeader({
       </div>
 
       <div className="bg-custom-green-100 w-3/6 p-1 pl-2 rounded-lg">
-        <p>{normalizePath(actualPath)}</p>
+        <p>{actualPath}</p>
       </div>
     </div>
   );

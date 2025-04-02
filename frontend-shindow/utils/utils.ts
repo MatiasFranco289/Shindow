@@ -1,3 +1,6 @@
+import { Dispatch, SetStateAction } from "react";
+import { ClipboardItem, Resource } from "@/interfaces";
+
 /**
  * This function receives an string. If the length of the given string is larger than 'nameCharacterLimit'
  * the string will be splitted and '...' will be added in the middle.
@@ -59,4 +62,57 @@ export function clamp(value: number, min: number, max: number) {
  */
 export function toggleScroll(enable: boolean) {
   document.body.style.overflow = enable ? "auto" : "hidden";
+}
+
+/**
+ * Given a path, for example /home/users/some-folder it will return
+ * the last item of the path "some-folder".
+ *
+ * @param path - A path
+ * @returns - The last item of the path as a string
+ */
+export function getLastFromPath(path: string) {
+  const splittedPath = path.split("/");
+  const last = splittedPath[splittedPath.length - 1];
+
+  return last;
+}
+
+/**
+ * Receives an item and removes it from the clipboard if exists.
+ * Updates the clipboard.
+ *
+ * @param clipboard - The current clipboad
+ * @param itemToRemove - Item to be removed from the clipboard
+ * @param update - Setter for the clipboard
+ *
+ * @returns - The updated clipboard
+ */
+export function removeFromClipboard(
+  clipboard: Set<ClipboardItem>,
+  itemToRemove: ClipboardItem,
+  update: Dispatch<SetStateAction<Set<ClipboardItem>>>
+) {
+  const newClipBoard = Array.from(clipboard).filter(
+    (item) => JSON.stringify(item) !== JSON.stringify(itemToRemove)
+  );
+
+  const updatedClipboard = new Set(newClipBoard);
+
+  update(updatedClipboard);
+  return updatedClipboard;
+}
+
+/**
+ * Compares if two resources are equal
+ *
+ * @param firstResource - A resource.
+ * @param secondResource - Another resource.
+ * @returns - A boolean being true if resources are equal.
+ */
+export function compareResources(
+  firstResource: Resource,
+  secondResource: Resource
+) {
+  return JSON.stringify(firstResource) === JSON.stringify(secondResource);
 }

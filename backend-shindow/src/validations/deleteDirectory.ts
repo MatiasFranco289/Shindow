@@ -8,7 +8,7 @@ const deleteDirectoryValidation = [
     .withMessage("path is required.")
     .isString()
     .withMessage("path must be an string.")
-    .customSanitizer((value) => value.replace(/["]/g, "")),
+    .customSanitizer((value) => value.trimStart()),
   (req: Request, res: Response, next: NextFunction) => {
     validateResult(req, res, next);
   },

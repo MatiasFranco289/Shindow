@@ -4,23 +4,24 @@ import { toggleScroll } from "@/utils/utils";
 import axiosInstance from "@/utils/axiosInstance";
 import EnvironmentManager from "@/utils/EnvironmentManager";
 import { useNavigation } from "./navigationProvider";
-import { ApiResponse } from "@/interfaces";
-import { AxiosError } from "axios";
-import { CLIENT_DEFAULT_ERROR_MESSAGE } from "@/constants";
+import newDirectoryErrorHandler from "@/errorHandlers/newDirectoryErrorHandler";
 
 interface NewDirectoryProps {
-  goTo: (resourceName: string) => void;
+  refresh: () => void;
 }
 
-export default function NewDirectory({ goTo }: NewDirectoryProps) {
+export default function NewDirectory({ refresh }: NewDirectoryProps) {
   const {
     setNewDirectoryMenuOpen,
     setIsLoading,
     setErrorModalMessage,
     setErrorModalOpen,
+    setSelectedResources,
   } = useExplorer();
-  const { actualPath } = useNavigation();
+  const { history, historyIndex } = useNavigation();
   const [directoryName, setDirectoryName] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
   const environmentManager = EnvironmentManager.getInstance();
   const inputRef = useRef<HTMLInputElement>(null);
   const apiBaseUrl = environmentManager.GetEnvironmentVariable(
@@ -44,33 +45,94 @@ export default function NewDirectory({ goTo }: NewDirectoryProps) {
 
   const handleCreate = () => {
     let createDirectoryUrl = `${apiBaseUrl}/resources/new`;
-    createDirectoryUrl += `?path=${actualPath}`;
-    createDirectoryUrl +=
-      createDirectoryUrl[createDirectoryUrl.length - 1] === "/" ? "" : "/";
-    createDirectoryUrl += directoryName;
+    createDirectoryUrl += `?path=${encodeURIComponent(
+      history[historyIndex].path
+    )}`;
+    createDirectoryUrl += `&name=${encodeURIComponent(directoryName)}`;
 
     setIsLoading(true);
 
     axiosInstance
       .post(createDirectoryUrl)
       .then(() => {
-        goTo("");
+        refresh();
       })
       .catch((err) => {
-        let errorMessage = CLIENT_DEFAULT_ERROR_MESSAGE;
-
-        if (err instanceof AxiosError && err.response) {
-          const errorResponse: ApiResponse<null> = err.response.data;
-          errorMessage = errorResponse.message;
-        }
-
-        setErrorModalMessage(errorMessage);
+        const errorCode = err.status as number;
+        setErrorModalMessage(newDirectoryErrorHandler(errorCode));
         setErrorModalOpen(true);
       })
       .finally(() => {
         setIsLoading(false);
         closeModal();
       });
+  };
+
+  const handleInputChange = (newInputValue: string) => {
+    setDirectoryName(newInputValue);
+    validate(newInputValue);
+  };
+
+  /** Each validation is an object with a method 'validate'. The validate
+  method returns true if the validations succed, otherwise it return false
+  and set the error message in the state 'errorMessage'. */
+  const validate = (inputValue: string) => {
+    const validations = [
+      {
+        validate: () => {
+          const invalidDirectoryNames = [".", ".."];
+
+          const invalidName = invalidDirectoryNames.find(
+            (invalidName) => inputValue === invalidName
+          );
+
+          if (invalidName) {
+            setErrorMessage(`A directory cannot be called "${invalidName}"`);
+            return false;
+          }
+
+          return true;
+        },
+      },
+      {
+        validate: () => {
+          const invalidDirectoryCharacters = ["/"];
+
+          const invalidCharacter = invalidDirectoryCharacters.find(
+            (invalidChar) => inputValue.includes(invalidChar)
+          );
+
+          if (invalidCharacter) {
+            setErrorMessage(
+              `Directory names cannot contain "${invalidCharacter}"`
+            );
+            return false;
+          }
+
+          return true;
+        },
+      },
+      {
+        validate: () => {
+          const isNameTooLong = inputValue.length > 255;
+
+          if (isNameTooLong) {
+            setErrorMessage("Directory name is too long");
+            return false;
+          }
+
+          return true;
+        },
+      },
+    ];
+
+    const validationsSucced = validations.find(
+      (validation) => validation.validate() === false
+    );
+
+    if (validationsSucced) return;
+
+    setErrorMessage("");
   };
 
   return (
@@ -84,7 +146,7 @@ export default function NewDirectory({ goTo }: NewDirectoryProps) {
           <button
             className={btnStyles}
             type="button"
-            disabled={!directoryName}
+            disabled={!directoryName || !!errorMessage}
             onClick={handleCreate}
           >
             Create
@@ -99,9 +161,11 @@ export default function NewDirectory({ goTo }: NewDirectoryProps) {
             border rounded-lg pl-3 text-xl font-normal focus:outline-none
              focus:border-gray-400 placeholder-gray-500"
             value={directoryName}
-            onChange={(e) => setDirectoryName(e.target.value)}
+            onChange={(e) => handleInputChange(e.target.value)}
             ref={inputRef}
           />
+
+          <p>{errorMessage}</p>
         </div>
       </div>
     </div>

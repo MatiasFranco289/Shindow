@@ -52,6 +52,7 @@ export interface Resource {
   hardLinks: number;
   date: string;
   time: string;
+  path: string;
 }
 
 export interface ValidationError {
