@@ -6,6 +6,8 @@ import { UPLOAD_RESOURCE_ENDPOINT } from "@/constants";
 import { useNavigation } from "./navigationProvider";
 import io from "socket.io-client";
 import { UploadClipboardItem } from "@/interfaces";
+import { toast } from "react-toastify";
+import { customToastStyles } from "@/customToastSyles";
 
 interface UploadResourcesProps {
   refresh: () => void;
@@ -22,7 +24,6 @@ export default function UploadResources({ refresh }: UploadResourcesProps) {
   const backBaseUrl = environmentManager.GetEnvironmentVariable(
     "NEXT_PUBLIC_BACK_BASE_URL"
   );
-  const currentUploadItemIndex = useRef<number>(0);
   const socket = io(backBaseUrl, { autoConnect: false });
 
   useEffect(() => {
@@ -33,18 +34,23 @@ export default function UploadResources({ refresh }: UploadResourcesProps) {
     trackUploadProgress();
 
     return () => {
+      socket.off("upload-start");
       socket.off("upload-progress");
       socket.off("upload-complete");
       socket.disconnect();
     };
   }, []);
 
-  const clearUploadFromClipboard = (index: number) => {
-    setTimeout(() => {
-      const newUploadClipboard = uploadClipboard;
-      newUploadClipboard.splice(index, 1);
-      setUploadClipboad(newUploadClipboard);
-    }, 1000);
+  const clearUploadFromClipboard = (): Promise<null> => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const newUploadClipboard = uploadClipboard;
+        newUploadClipboard.splice(0, 1);
+        setUploadClipboad(newUploadClipboard);
+
+        resolve(null);
+      }, 1000);
+    });
   };
 
   /**
@@ -56,30 +62,38 @@ export default function UploadResources({ refresh }: UploadResourcesProps) {
   const trackUploadProgress = () => {
     let lastProgress = 0;
     let resourceInServer = false;
+    let complete = false;
+
+    socket.on("upload-start", () => {
+      lastProgress = 0;
+      resourceInServer = false;
+      complete = false;
+    });
 
     socket.on("upload-progress", (data) => {
-      if (lastProgress !== data.progress) {
-        if (!resourceInServer && data.progress >= 50) {
-          resourceInServer = true;
-        }
+      if (complete) return;
+      if (lastProgress === data.progress) return;
 
-        updateUploadClipboard(
-          currentUploadItemIndex.current,
-          resourceInServer ? "sshUpload" : "serverUpload",
-          data.progress
-        );
-
-        lastProgress = data.progress;
+      if (!resourceInServer && data.progress >= 50) {
+        resourceInServer = true;
       }
+
+      updateUploadClipboard(
+        resourceInServer ? "sshUpload" : "serverUpload",
+        data.progress
+      );
+
+      lastProgress = data.progress;
     });
 
     socket.on("upload-complete", () => {
-      updateUploadClipboard(currentUploadItemIndex.current, "complete", 100);
-      clearUploadFromClipboard(currentUploadItemIndex.current);
+      complete = true;
+      updateUploadClipboard("complete", 100);
 
-      lastProgress = 0;
-      resourceInServer = false;
-      refresh();
+      toast.success(
+        `The upload of the resource ${uploadClipboard[0].file.name} has finished successfully.`,
+        customToastStyles.success
+      );
     });
   };
 
@@ -92,16 +106,13 @@ export default function UploadResources({ refresh }: UploadResourcesProps) {
    */
   const uploadResourcesFromClipboard = async () => {
     for (let _i = 0; uploadClipboard.length > 0; _i++) {
-      currentUploadItemIndex.current = i;
-      const resourceToUpload = uploadClipboard[currentUploadItemIndex.current];
-
-      if (resourceToUpload.status === "complete") continue;
-
-      updateUploadClipboard(currentUploadItemIndex.current, "serverUpload", 0);
+      const resourceToUpload = uploadClipboard[0];
+      updateUploadClipboard("serverUpload", 0);
 
       try {
         const response = await getUploadRequest(resourceToUpload);
-        console.log(response);
+        refresh();
+        await clearUploadFromClipboard();
       } catch (err) {
         console.log(err);
       }
@@ -132,22 +143,20 @@ export default function UploadResources({ refresh }: UploadResourcesProps) {
   };
 
   /**
-   * Given a index changes the properties of the element in the uploadClipboard
-   * which has the same index and then updates the uploadClipboard status.
+   * Changes the properties of the first element in the uploadClipboard
+   * and then updates the uploadClipboard status.
    *
-   * @param index - Numeric index of the element to update.
    * @param status - The new status for the UploadClipboardItem.
    * @param progress: - The new progress for the UploadClipboardItem.
    */
   const updateUploadClipboard = (
-    index: number,
     status: UploadClipboardItem["status"],
     progress: number
   ) => {
     const updatedUploadClipboard = [...uploadClipboard];
 
-    updatedUploadClipboard[index] = {
-      ...updatedUploadClipboard[index],
+    updatedUploadClipboard[0] = {
+      ...updatedUploadClipboard[0],
       status: status,
       progress: progress,
     };

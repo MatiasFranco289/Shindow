@@ -22,6 +22,7 @@ import {
 } from "../errorHandlers/uploadResourceErrorHandler";
 import logger from "../utils/logger";
 import upload from "../utils/multer";
+import { throttle } from "lodash";
 
 const sshConnectionManager = SshConnectionManager.getInstance();
 const fileManager = FileManager.getInstance();
@@ -129,6 +130,8 @@ const resourcesController = {
           `The client with id '${sessionId}' has initiated the upload of the resource '${fileName}'.`
         );
 
+        io.emit("upload-start");
+
         // Emit progress of the upload in realtime
         const fileStream = fs.createReadStream(filePath);
 
@@ -139,7 +142,7 @@ const resourcesController = {
 
           // The progress is calculated in a range between 0% and 50% max
           const progress = Math.floor((uploaded / fileSize) * 50);
-          io.emit("upload-progress", { progress });
+          emitProgress(progress);
         });
 
         // When the tranfer is complete and the file is in the backend server i start the tranfer from this server
@@ -176,7 +179,7 @@ const resourcesController = {
 
                   io.emit("upload-complete", { fileName });
                 } else {
-                  io.emit("upload-progress", { progress });
+                  emitProgress(progress);
                 }
               }
             )
@@ -190,6 +193,10 @@ const resourcesController = {
             });
         });
       });
+
+      const emitProgress = throttle((progress) => {
+        io.emit("upload-progress", { progress });
+      }, 500);
     },
   /**
    * Creates a new directory in the given path.
