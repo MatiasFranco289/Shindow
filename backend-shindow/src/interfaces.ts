@@ -54,3 +54,11 @@ export interface Resource {
   time: string;
   path: string;
 }
+
+export interface ValidationError {
+  location: string;
+  msg: string;
+  path: string;
+  type: string;
+  value: string;
+}

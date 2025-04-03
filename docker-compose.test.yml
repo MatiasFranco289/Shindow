@@ -1,18 +1,20 @@
 services:
   openssh-server:
     image: lscr.io/linuxserver/openssh-server:latest
-    container_name: openssh-server
+    container_name: shindow-openssh-server
     hostname: test-ssh-server #optional
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
+      - PUBLIC_KEY_DIR=/keys
       - SUDO_ACCESS=false #optional
       - PASSWORD_ACCESS=true #optional
       - USER_NAME=test #optional
       - USER_PASSWORD=test #optional
     volumes:
       - ./backend-shindow/tests/ssh-test-server/config:/config
+      - ./backend-shindow/tests/keys/pub:/keys
     ports:
       - 2222:2222
     restart: unless-stopped
