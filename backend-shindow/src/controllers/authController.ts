@@ -71,7 +71,7 @@ const authController = {
         connectionMaxAge,
         {
           username: username,
-          password: password,
+          ...(password && { password: password }),
           privateKey:
             nodeEnvironment === NODE_ENVIRONMENT_TEST
               ? privateKey
