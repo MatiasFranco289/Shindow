@@ -6,6 +6,7 @@ import {
   HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_CODE_NOT_FOUND,
 } from "../constants";
+import logger from "../utils/logger";
 
 const BAD_PERMISSIONS_ERROR = "Permission denied";
 const BAD_PATH_ERROR = "No such file or directory";

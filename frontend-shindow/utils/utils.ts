@@ -118,3 +118,35 @@ export function compareResources(
 ) {
   return JSON.stringify(firstResource) === JSON.stringify(secondResource);
 }
+
+/**
+ * Given an array of strings with the name of resources in the current path
+ * it will check if there are any resources with the same name as the given one.
+ * If there are, it will return the name of the resource with a number at the end
+ * indicating how many resources with the same name are in the current path.
+ *
+ * If there are no resources with the same name, it will return the original name.
+ * @param resourceName
+ * @param currentPathResourceNames
+ * @returns - The original name or the name with a number at the end.
+ */
+export const manageSameNameResource = (
+  resourceName: string,
+  currentPathResourceNames: Array<string>
+) => {
+  const resourcesWithSameName = currentPathResourceNames.filter((name) => {
+    const extension = name.split(".").pop();
+    const nameWithoutExtension = name.split(".").slice(0, -1).join(".");
+    const nameWithoutNumber =
+      nameWithoutExtension.replace(/\(\d+\)$/, "") + "." + extension;
+
+    return nameWithoutNumber === resourceName;
+  });
+
+  if (!resourcesWithSameName.length) return resourceName;
+
+  const extension = resourceName.split(".").pop();
+  const nameWithoutExtension = resourceName.split(".").slice(0, -1).join(".");
+
+  return `${nameWithoutExtension}(${resourcesWithSameName.length}).${extension}`;
+};

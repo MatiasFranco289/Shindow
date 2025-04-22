@@ -5,15 +5,21 @@ import EnvironmentManager from "@/utils/EnvironmentManager";
 import { UPLOAD_RESOURCE_ENDPOINT } from "@/constants";
 import { useNavigation } from "./navigationProvider";
 import io from "socket.io-client";
-import { UploadClipboardItem } from "@/interfaces";
+import { Resource, UploadClipboardItem } from "@/interfaces";
 import { toast } from "react-toastify";
 import { customToastStyles } from "@/customToastSyles";
+import uploadErrorHandler from "@/errorHandlers/uploadErrorHandler";
+import { manageSameNameResource } from "@/utils/utils";
 
 interface UploadResourcesProps {
   refresh: () => void;
+  resourceList: Array<Resource>;
 }
 
-export default function UploadResources({ refresh }: UploadResourcesProps) {
+export default function UploadResources({
+  refresh,
+  resourceList,
+}: UploadResourcesProps) {
   const { uploadClipboard, setUploadMenuOpen, setUploadClipboad } =
     useExplorer();
   const { history, historyIndex } = useNavigation();
@@ -25,6 +31,11 @@ export default function UploadResources({ refresh }: UploadResourcesProps) {
     "NEXT_PUBLIC_BACK_BASE_URL"
   );
   const socket = io(backBaseUrl, { autoConnect: false });
+  const currentUploadStatus = {
+    lastProgress: 0,
+    resourceInServer: false,
+    complete: false,
+  };
 
   useEffect(() => {
     socket.connect();
@@ -60,34 +71,30 @@ export default function UploadResources({ refresh }: UploadResourcesProps) {
    * delete the completed upload from the uplaod clipboard.
    */
   const trackUploadProgress = () => {
-    let lastProgress = 0;
-    let resourceInServer = false;
-    let complete = false;
-
     socket.on("upload-start", () => {
-      lastProgress = 0;
-      resourceInServer = false;
-      complete = false;
+      currentUploadStatus.lastProgress = 0;
+      currentUploadStatus.resourceInServer = false;
+      currentUploadStatus.complete = false;
     });
 
     socket.on("upload-progress", (data) => {
-      if (complete) return;
-      if (lastProgress === data.progress) return;
+      if (currentUploadStatus.complete) return;
+      if (currentUploadStatus.lastProgress === data.progress) return;
 
-      if (!resourceInServer && data.progress >= 50) {
-        resourceInServer = true;
+      if (!currentUploadStatus.resourceInServer && data.progress >= 50) {
+        currentUploadStatus.resourceInServer = true;
       }
 
       updateUploadClipboard(
-        resourceInServer ? "sshUpload" : "serverUpload",
+        currentUploadStatus.resourceInServer ? "sshUpload" : "serverUpload",
         data.progress
       );
 
-      lastProgress = data.progress;
+      currentUploadStatus.lastProgress = data.progress;
     });
 
     socket.on("upload-complete", () => {
-      complete = true;
+      currentUploadStatus.complete = true;
       updateUploadClipboard("complete", 100);
 
       toast.success(
@@ -95,6 +102,16 @@ export default function UploadResources({ refresh }: UploadResourcesProps) {
         customToastStyles.success
       );
     });
+  };
+
+  const onUploadError = (message: string) => {
+    currentUploadStatus.complete = true;
+    updateUploadClipboard("complete", 100);
+
+    toast.error(
+      `The upload of the resource ${uploadClipboard[0].file.name} has failed because "${message}"`,
+      customToastStyles.success
+    );
   };
 
   /**
@@ -128,18 +145,32 @@ export default function UploadResources({ refresh }: UploadResourcesProps) {
    */
   const getUploadRequest = async (resourceToUpload: UploadClipboardItem) => {
     const formData = new FormData();
+    const normalizedName = manageSameNameResource(
+      resourceToUpload.file.name,
+      resourceList.map((resources) => resources.name)
+    );
+    resourceToUpload.file = new File([resourceToUpload.file], normalizedName, {
+      type: resourceToUpload.file.type,
+    });
     formData.append("file", resourceToUpload.file);
 
     const currentPath = history[historyIndex].path;
     const queryParam = "?remotePath=" + currentPath;
     const url = apiBaseUrl + UPLOAD_RESOURCE_ENDPOINT + queryParam;
 
-    return axiosInstance.post(url, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      timeout: Infinity,
-    });
+    return axiosInstance
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        timeout: Infinity,
+      })
+      .catch((err) => {
+        const errorCode = err.response.data.status_code || (err.code as number);
+        const errorMessage = uploadErrorHandler(errorCode);
+
+        onUploadError(errorMessage);
+      });
   };
 
   /**

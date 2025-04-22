@@ -22,7 +22,7 @@ export const customToastStyles = {
       </div>
     ),
     onOpen: () => {
-      const audio = new Audio("/audio/notification.mp3");
+      const audio = new Audio("/audio/notification.wav");
       audio.play();
     },
   },

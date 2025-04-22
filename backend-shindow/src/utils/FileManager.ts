@@ -107,10 +107,13 @@ export class FileManager {
    * @returns - The name of the resource.
    */
   public GetResourceNameFromResource(lsLine: string) {
+    console.log("lsLine", lsLine);
+
     const regex = /-(\d{4})/;
     const splittedLine = lsLine.split(regex);
     const result = splittedLine.slice(2).join();
 
+    console.log("output", result);
     return result.substring(1);
   }
 

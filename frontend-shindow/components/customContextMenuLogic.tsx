@@ -40,7 +40,9 @@ export default function CustomContextMenuLogic({
       <div>{isDeleteOpen && <DeleteResources refresh={refresh} />}</div>
       <div>{isFileManagerOpen && <FileManager />}</div>
       <div>
-        {uploadClipboard.length && <UploadResources refresh={refresh} />}
+        {uploadClipboard.length && (
+          <UploadResources refresh={refresh} resourceList={resourceList} />
+        )}
       </div>
     </div>
   );
