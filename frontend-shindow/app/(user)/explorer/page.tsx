@@ -22,6 +22,9 @@ import CustomContextMenu, {
 import { useExplorer } from "@/components/explorerProvider";
 import KeyboardController from "@/utils/KeyboardController";
 import CustomContextMenuLogic from "@/components/customContextMenuLogic";
+import HelpMenu from "@/components/helpMenu";
+import Panel from "@/components/lateralPanel";
+import LateralPanel from "@/components/lateralPanel";
 
 export default function FileExplorer() {
   const environmentManager = EnvironmentManager.getInstance();
@@ -294,6 +297,7 @@ export default function FileExplorer() {
       <LoadingOverlay isOpen={isLoading} />
 
       <CustomContextMenuLogic refresh={refresh} resourceList={resourceList} />
+      <HelpMenu />
     </div>
   );
 }

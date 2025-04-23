@@ -1,19 +1,20 @@
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useNavigation } from "./navigationProvider";
 import { useExplorer } from "./explorerProvider";
-import { MdOutlineFileUpload } from "react-icons/md";
+import { MdOutlineHelpOutline } from "react-icons/md";
 import UploadMenu from "./uploadMenu";
+import LateralPanel from "./lateralPanel";
 
 export default function NavigationHeader() {
   const { goBack, goForward, history, historyIndex } = useNavigation();
-  const { setSelectedResources } = useExplorer();
+  const { setSelectedResources, setHelpMenuOpen } = useExplorer();
 
   const actualPath = history[historyIndex].path;
   const canGoForward = historyIndex + 1 < history.length;
   const canGoBack = actualPath !== "/";
 
   return (
-    <div className="w-full bg-custom-green-50 flex justify-between p-5 fixed z-20 top-0 left-0">
+    <div className="w-full bg-custom-green-50 flex justify-between p-5 fixed z-20 top-0 left-0 h-20">
       {/* Left buttons */}
       <div className="flex text-3xl space-x-4">
         {/* Back btn */}
@@ -61,8 +62,18 @@ export default function NavigationHeader() {
 
       {/* Right buttons */}
       <div className="flex justify-center items-center ">
+        <div
+          className="p-1 hover:bg-white/10 rounded-md cursor-pointer mr-1 active:bg-white/20"
+          onClick={() => {
+            setHelpMenuOpen(true);
+          }}
+        >
+          <MdOutlineHelpOutline className="text-3xl text-white" />
+        </div>
         <UploadMenu />
       </div>
+
+      <LateralPanel />
     </div>
   );
 }
