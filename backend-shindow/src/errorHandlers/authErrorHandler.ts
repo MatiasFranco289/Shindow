@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import { ApiResponse } from "../interfaces";
 import {
   DEFAULT_ERROR_MESSAGE,
+  HTTP_STATUS_CODE_BAD_REQUEST,
   HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_CODE_UNAUTHORIZED,
 } from "../constants";
@@ -12,6 +13,11 @@ const BAD_PASSPHRASE_MESSAGE =
 const BAD_PRIVATE_KEY_MESSAGE =
   "Cannot parse privateKey: Unsupported key format";
 const BAD_CREDENTIALS_MESSAGE = "All configured authentication methods failed";
+const NO_PASSPHRASE_GIVEN_MESSAGE =
+  "Cannot parse privateKey: Encrypted private OpenSSH key detected, but no passphrase given";
+
+export const INCORRECT_CREDENTIALS_MESSAGE = "Incorrect credentials";
+export const KEY_NEEDS_PASSPHRASE_MESSAGE = "Key needs a passphrase";
 
 /** This function handles the different error cases for the auth controller.
  *
@@ -37,7 +43,7 @@ export default function authErrorHandler(
     switch (err.message) {
       case BAD_PASSPHRASE_MESSAGE:
         response.status_code = HTTP_STATUS_CODE_UNAUTHORIZED;
-        response.message = "Incorrect credentials";
+        response.message = INCORRECT_CREDENTIALS_MESSAGE;
 
         logger.warn(
           `Failed login attempt from IP: '${clientIp}' for user ${username}. Invalid passphrase.`
@@ -45,7 +51,7 @@ export default function authErrorHandler(
         break;
       case BAD_PRIVATE_KEY_MESSAGE:
         response.status_code = HTTP_STATUS_CODE_UNAUTHORIZED;
-        response.message = "Incorrect credentials";
+        response.message = INCORRECT_CREDENTIALS_MESSAGE;
 
         logger.warn(
           `Failed login attempt from IP: '${clientIp}' for user ${username}. Invalid private key.`
@@ -53,10 +59,19 @@ export default function authErrorHandler(
         break;
       case BAD_CREDENTIALS_MESSAGE:
         response.status_code = HTTP_STATUS_CODE_UNAUTHORIZED;
-        response.message = "Incorrect credentials";
+        response.message = INCORRECT_CREDENTIALS_MESSAGE;
 
         logger.warn(
           `Failed login attempt from IP: '${clientIp}' for user ${username}. Invalid credentials.`
+        );
+        break;
+      case NO_PASSPHRASE_GIVEN_MESSAGE:
+        response.status_code = HTTP_STATUS_CODE_BAD_REQUEST;
+        response.message = KEY_NEEDS_PASSPHRASE_MESSAGE;
+
+        logger.warn(
+          `Failed login attempt from IP: '${clientIp}' for user ${username}. ` +
+            KEY_NEEDS_PASSPHRASE_MESSAGE
         );
         break;
       default:

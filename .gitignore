@@ -6,3 +6,5 @@
 **/.next/*
 **/uploads
 **/tests/ssh-test-server/*
+*.key
+*.key.pub

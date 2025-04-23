@@ -3,14 +3,12 @@ import EnvironmentManager from "../utils/EnvironmentManager";
 import { SshConnectionManager } from "../utils/SshConnectionManager";
 import { ApiResponse, CustomError, LoginRequest } from "../interfaces";
 import {
-  ACTIVE_CONNECTION_LOGIN_MESSAGE,
   DEFAULT_ERROR_MESSAGE,
   ERROR_TYPE_AUTH,
   HTTP_STATUS_CODE_CONFLICT,
   HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_CODE_OK,
   NODE_ENVIRONMENT_TEST,
-  SUCCESSFUL_LOGIN_MESSAGE,
 } from "../constants";
 import logger from "../utils/logger";
 import { FileManager } from "../utils/FileManager";
@@ -28,6 +26,10 @@ const serverPort = parseInt(
 );
 const nodeEnvironment =
   environmentManager.getEnvironmentVariable("NODE_ENVIRONMENT");
+
+export const ACTIVE_CONNECTION_LOGIN_MESSAGE =
+  "You already have an active connection";
+export const SUCCESSFUL_LOGIN_MESSAGE = "Successful login";
 
 const authController = {
   login: async (
@@ -69,7 +71,7 @@ const authController = {
         connectionMaxAge,
         {
           username: username,
-          password: password,
+          ...(password && { password: password }),
           privateKey:
             nodeEnvironment === NODE_ENVIRONMENT_TEST
               ? privateKey

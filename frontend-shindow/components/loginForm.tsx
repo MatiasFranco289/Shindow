@@ -122,7 +122,7 @@ export default function LoginForm({
 
     const bodyRequest = {
       username: formValues.username,
-      password: formValues.password,
+      ...(formValues.password.length && { password: formValues.password }),
       privateKey: formValues.keyContent,
       passphrase: CryptoJS.AES.encrypt(
         formValues.passphrase,
