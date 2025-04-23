@@ -1,14 +1,7 @@
-import {
-  NODE_ENVIRONMENT_TEST,
-  NODE_ENVIRONMENT_DEVELOPMENT,
-  NODE_ENVIRONMENT_PRODUCTION,
-} from "./constants";
-
 export type NodeEnvironmentType = "test" | "development" | "production";
 
 export interface EnvironmentVariables {
   API_PORT: string;
-  API_DOMAIN: string;
   CLIENT_DOMAIN: string;
   TZ: string;
   SERVER_IP: string;

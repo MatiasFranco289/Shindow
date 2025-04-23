@@ -246,6 +246,13 @@ export class SshConnectionManager {
     try {
       await new Promise<void>((resolve, reject) => {
         connection.sftp((_err, sftp) => {
+          // TODO: Borrar esto
+          if (_err) {
+            logger.error(`ME ESTOY VOLVIENDO PERUANO: ${_err.message}`);
+            reject(_err);
+            return;
+          }
+
           sftp.fastPut(
             localPath,
             path.join(remotePath, resourceName),
@@ -258,6 +265,8 @@ export class SshConnectionManager {
               },
             },
             (err) => {
+              sftp.end();
+
               if (err) {
                 logger.error(
                   `The tranfer of the resource '${resourceName}' to the SSH server has finished with the following error: ${err}`

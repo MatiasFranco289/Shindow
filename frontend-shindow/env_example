@@ -1,3 +1,0 @@
-NEXT_PUBLIC_SECRET="same-secret-as-api"
-NEXT_PUBLIC_KEY_FILE_MAX_SIZE=1024
-NEXT_PUBLIC_TZ="America/Argentina/Buenos_Aires"

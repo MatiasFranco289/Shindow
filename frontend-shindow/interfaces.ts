@@ -5,6 +5,7 @@ export interface EnvironmentVariables {
   NEXT_PUBLIC_API_BASE_URL: string;
   NEXT_PUBLIC_CLIENT_BASE_URL: string;
   NEXT_PUBLIC_INITIAL_PATH: string;
+  NEXT_PUBLIC_BACK_BASE_URL: string;
 }
 
 export interface ApiResponse<T> {
@@ -34,4 +35,12 @@ export interface Vector2 {
 export interface ClipboardItem {
   resource: Resource;
   method: "copied" | "cut";
+}
+
+export interface UploadClipboardItem {
+  id: string;
+  file: File;
+  enterAnimationPlayed: boolean;
+  status: "queued" | "serverUpload" | "sshUpload" | "complete";
+  progress: number;
 }

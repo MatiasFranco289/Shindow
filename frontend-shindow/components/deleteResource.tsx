@@ -72,6 +72,7 @@ export default function DeleteResources({ refresh }: DeleteResourcesProps) {
     const deleteRequests = Array.from(selectedResources).map(
       (selectedResource) => {
         let finalUrl = `${apiBaseUrl}/${deleteResourceUrl}`;
+
         finalUrl += `?path= ${encodeURIComponent(selectedResource.path)}`;
 
         return new Promise((resolve, reject) => {

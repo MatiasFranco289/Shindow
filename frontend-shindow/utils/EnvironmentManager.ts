@@ -4,6 +4,7 @@ import {
   DEFAULT_MAX_KEY_SIZE,
   DEFAULT_TZ,
   DEFAULT_INITIAL_PATH,
+  DEFAULT_BACK_BASE_URL,
 } from "@/constants";
 import { EnvironmentVariables } from "@/interfaces";
 
@@ -16,6 +17,7 @@ export default class EnvironmentManager {
     NEXT_PUBLIC_API_BASE_URL: DEFAULT_API_BASE_URL,
     NEXT_PUBLIC_CLIENT_BASE_URL: DEFAULT_CLIENT_BASE_URL,
     NEXT_PUBLIC_INITIAL_PATH: DEFAULT_INITIAL_PATH,
+    NEXT_PUBLIC_BACK_BASE_URL: DEFAULT_BACK_BASE_URL,
   };
 
   private constructor() {}

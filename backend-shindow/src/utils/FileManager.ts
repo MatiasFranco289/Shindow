@@ -101,17 +101,16 @@ export class FileManager {
 
   /**
    * Receives a line from the command 'ls' representing a normal resource.
-   * Separates and return the name of the resource from the rest of the information.
-   *
+   * Separates and return the name of the resource from the rest of the information.*
    * @param lsLine - A line from ls command.
    * @returns - The name of the resource.
    */
   public GetResourceNameFromResource(lsLine: string) {
-    const regex = /-(\d{4})/;
-    const splittedLine = lsLine.split(regex);
-    const result = splittedLine.slice(2).join();
+    const regex = /[-+](\d{4})/;
+    const match = lsLine.match(regex);
+    const splitIndex = match.index;
 
-    return result.substring(1);
+    return lsLine.substring(splitIndex).replace(regex, "").substring(1);
   }
 
   /**

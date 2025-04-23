@@ -13,6 +13,8 @@ import { FaRegCopy } from "react-icons/fa";
 import { IoCutOutline } from "react-icons/io5";
 import { FaRegPaste } from "react-icons/fa6";
 import { MdDeleteOutline } from "react-icons/md";
+import { IoCloudUploadOutline } from "react-icons/io5";
+
 /**
  * This function controls open and closes the customContextMenu.
  * It is called when a click is detected so if the menu is open and the click was not in the menu, it is closed
@@ -69,6 +71,7 @@ export default function CustomContextMenu({
     setCutOpen,
     setPasteOpen,
     setDeleteOpen,
+    setFileManagerOpen,
     clipBoard,
   } = useExplorer();
 
@@ -156,6 +159,15 @@ export default function CustomContextMenu({
       },
       icon: MdDeleteOutline,
       disabled: !selectedResources.size,
+    },
+    {
+      label: "Upload",
+      onClick: () => {
+        setFileManagerOpen(true);
+        setContextMenuOpen(false);
+      },
+      icon: IoCloudUploadOutline,
+      disabled: false,
     },
   ];
 

@@ -4,7 +4,7 @@ import {
   HTTP_STATUS_CODE_SERVICE_UNAVAILABLE,
   RESOURCE_LIST_ENDPOINT,
 } from "@/constants";
-import { ApiResponse, Resource } from "@/interfaces";
+import { ApiResponse, Resource, UploadClipboardItem } from "@/interfaces";
 import axiosInstance from "@/utils/axiosInstance";
 import EnvironmentManager from "@/utils/EnvironmentManager";
 import { RefObject, useEffect, useRef, useState } from "react";
@@ -36,6 +36,8 @@ export default function FileExplorer() {
   const [iconRefs, setIconRefs] = useState<Array<RefObject<HTMLDivElement>>>(
     []
   );
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+
   const {
     isContextMenuOpen,
     setContextMenuOpen,
@@ -49,6 +51,9 @@ export default function FileExplorer() {
     setErrorModalOpen,
     errorModalMessage,
     setErrorModalMessage,
+    setUploadClipboad,
+    setFileManagerOpen,
+    setUploadMenuOpen,
   } = useExplorer();
 
   useEffect(() => {
@@ -200,12 +205,14 @@ export default function FileExplorer() {
 
   return (
     <div
-      className={`bg-custom-green-100 w-full min-h-screen flex`}
+      className={`${
+        isDragging ? "bg-custom-green-150" : "bg-custom-green-100"
+      } w-full min-h-screen flex`}
       onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
     >
       {historyIndex !== -1 && <NavigationHeader />}
       <div
-        className="flex flex-wrap content-start items-start pt-24 w-full"
+        className="flex flex-wrap content-start items-start pt-24 w-full "
         onContextMenu={(e: React.MouseEvent) => e.preventDefault()}
         onMouseDown={(e) => {
           updateMousePosition(e);
@@ -216,9 +223,35 @@ export default function FileExplorer() {
             contextMenuRef
           );
           deselectResources(e);
+          setFileManagerOpen(false);
+          setUploadMenuOpen(false);
         }}
         onMouseUp={() => {
           deactiveIcons();
+        }}
+        onDragEnter={() => setIsDragging(true)}
+        onDragExit={() => setIsDragging(false)}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsDragging(false);
+
+          const files = e.dataTransfer.files;
+
+          const filesToUpload: Array<UploadClipboardItem> = Array.from(
+            files
+          ).map((file) => {
+            return {
+              id: crypto.randomUUID(),
+              file: file,
+              enterAnimationPlayed: false,
+              status: "queued",
+              progress: 0,
+            };
+          });
+
+          setUploadClipboad(filesToUpload);
         }}
       >
         <CustomContextMenu setContextMenuRef={setContextMenuRef} />

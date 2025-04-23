@@ -1,15 +1,34 @@
 # Shindow
 
-## Running the Back-End tests
+## Development mode
 
-To run the back-end tests it is necessary to create two pairs of keys, one without passphrase, and another with the passphrase in `PRIVATE_KEY_PASSPHRASE` in `login.test.ts`, which right now is `testing software is not easy`.
+### Previous configurations
 
-The public keys must be stored inside the directory `tests/keys/pub`.
+Before attempt to run the project you must configure some environment variables. <br>
+The project is divided in three folders:
 
-The name and path of the private keys must be the same as the values of `PRIVATE_KEY_WITHOUT_PASSPHRASE_PATH` and `PRIVATE_KEY_WITH_PASSPHRASE_PATH` in `login.test.ts`
+- backend-shindow: This folder is for the API.
+- frontend-shindow: This folder is for the frontend.
+- server: This folder is the ubuntu server to which the API will connect.
 
-Once all that's done, go to the backend directory and run the following command
+In the `backend-shindow` there is a file `env_example.txt`. Copy the content of the file and paste it in a new file in the same directory and name it `.env.development`.
+You will need to change the variable `SERVER_IP` with your own local ip.
 
-```bash
-npm run test
+In the `frontend-shindow` there is also a file `env_example.txt`. Copy the content of the file and paste it in a new file in the same directory and name it `.env.local`.
+
+### Running the project
+
+In order to run the project just execute the following command in the root directory of the project.
+
 ```
+npm run dev
+```
+
+If you did not modify it in the environment file the client should be running now in `http://localhost:3000`.
+
+You can attempt to login from `http://localhost:3000/login`. The default credentials are:
+
+- user: root
+- password: root
+
+You can modify this by changing the Dockerfile in the `server` folder.
