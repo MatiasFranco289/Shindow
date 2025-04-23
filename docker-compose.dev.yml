@@ -24,3 +24,16 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend-shindow:/shindow/frontend-shindow
+
+  ubuntu-ssh:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    image: ubuntu:rolling
+    container_name: ubuntu-shindow
+    ports:
+      - "22:22"
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./server/volumes:/home

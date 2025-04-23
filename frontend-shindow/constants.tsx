@@ -1,5 +1,5 @@
 export const DEFAULT_TZ = "UTC";
-export const DEFAULT_MAX_KEY_SIZE = "10240";
+export const DEFAULT_MAX_KEY_SIZE = "1024";
 export const DEFAULT_API_BASE_URL = "http://localhost:5000/api";
 export const DEFAULT_BACK_BASE_URL = "http://localhost:5000";
 export const DEFAULT_CLIENT_BASE_URL = "http://localhost:3000";

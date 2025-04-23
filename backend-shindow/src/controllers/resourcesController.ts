@@ -58,6 +58,7 @@ const resourcesController = {
         result,
         path
       );
+
       const response: ApiResponse<Resource> = {
         status_code: HTTP_STATUS_CODE_OK,
         message: "Resources successfully retrieved.",

@@ -13,7 +13,6 @@ import logger from "./logger";
 export default class EnvironmentManager {
   public static instance: EnvironmentManager;
   private static environmentVariables: EnvironmentVariables = {
-    API_DOMAIN: "",
     CLIENT_DOMAIN: DEFAULT_CLIENT_DOMAIN,
     API_PORT: "",
     TZ: "",

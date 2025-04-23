@@ -1,0 +1,8 @@
+
+API_PORT=5000 # The port on which the API server will run
+TZ="America/Argentina/Buenos_Aires" # The timezone for the server
+SERVER_IP="182.113.221.69" # the IP of the server to which the API will connect via SSH
+SERVER_PORT="22" # The ssh port of the server
+SECRET="my-secret" # Secret used to encrypt sensitive data. Must be the same in the frontend and backend
+SESSION_MAX_AGE=86400000 # The maximum age of the session in milliseconds
+CLIENT_DOMAIN="http://localhost:3000" # The domain in which the frontend is running

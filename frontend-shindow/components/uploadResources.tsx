@@ -110,7 +110,7 @@ export default function UploadResources({
 
     toast.error(
       `The upload of the resource ${uploadClipboard[0].file.name} has failed because "${message}"`,
-      customToastStyles.success
+      customToastStyles.error
     );
   };
 
