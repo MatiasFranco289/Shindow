@@ -3,12 +3,12 @@ FROM node:slim
 
 WORKDIR /shindow/frontend-shindow
 
-COPY package*.json ./
+COPY package.json .
 
 RUN npm install
 
-COPY . .
+COPY .next ./.next
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]

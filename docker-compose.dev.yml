@@ -3,7 +3,8 @@ services:
     build:
       context: ./backend-shindow
       dockerfile: Dockerfile.dev
-    container_name: backend-shindow
+    container_name: backend-shindow-dev
+    image: backend-shindow-dev
     env_file: ./backend-shindow/.env.development
     environment:
       - NODE_ENV=development
@@ -16,8 +17,9 @@ services:
     build:
       context: ./frontend-shindow
       dockerfile: Dockerfile.dev
-    container_name: frontend-shindow
-    env_file: ./frontend-shindow/.env.local
+    container_name: frontend-shindow-dev
+    image: frontend-shindow-dev
+    env_file: ./frontend-shindow/.env.development
     environment:
       - NODE_ENV=development
     ports:
