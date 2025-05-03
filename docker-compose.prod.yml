@@ -1,0 +1,24 @@
+services:
+  back:
+    build:
+      context: ./backend-shindow
+      dockerfile: Dockerfile.prod
+    container_name: backend-shindow
+    image: backend-shindow
+    env_file: ./backend-shindow/.env.production
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "5000:5000"
+
+  front:
+    build:
+      context: ./frontend-shindow
+      dockerfile: Dockerfile.prod
+    container_name: frontend-shindow
+    image: frontend-shindow
+    env_file: ./frontend-shindow/.env.production
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"

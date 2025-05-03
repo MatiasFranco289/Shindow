@@ -46,6 +46,10 @@ interface ExplorerContextType {
   setFileManagerOpen: Dispatch<SetStateAction<boolean>>;
   isUploadMenuOpen: boolean;
   setUploadMenuOpen: Dispatch<SetStateAction<boolean>>;
+  isHelpMenuOpen: boolean;
+  setHelpMenuOpen: Dispatch<SetStateAction<boolean>>;
+  isLateralPanelOpen: boolean;
+  setLateralPanelOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const ExplorerContext = createContext<ExplorerContextType | undefined>(
@@ -87,6 +91,9 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
     Array<UploadClipboardItem>
   >([]);
   const [isUploadMenuOpen, setUploadMenuOpen] = useState<boolean>(false);
+  const [isHelpMenuOpen, setHelpMenuOpen] = useState<boolean>(false);
+  const [isLateralPanelOpen, setLateralPanelOpen] = useState<boolean>(false);
+
   return (
     <ExplorerContext.Provider
       value={{
@@ -122,6 +129,10 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({
         setUploadClipboad,
         isUploadMenuOpen,
         setUploadMenuOpen,
+        isHelpMenuOpen,
+        setHelpMenuOpen,
+        isLateralPanelOpen,
+        setLateralPanelOpen,
       }}
     >
       {children}

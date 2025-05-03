@@ -8,3 +8,4 @@
 **/tests/ssh-test-server/*
 *.key
 *.key.pub
+server/volumes

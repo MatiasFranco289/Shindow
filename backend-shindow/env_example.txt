@@ -6,3 +6,4 @@ SERVER_PORT="22" # The ssh port of the server
 SECRET="my-secret" # Secret used to encrypt sensitive data. Must be the same in the frontend and backend
 SESSION_MAX_AGE=86400000 # The maximum age of the session in milliseconds
 CLIENT_DOMAIN="http://localhost:3000" # The domain in which the frontend is running
+NODE_ENV="production" # The current environment
