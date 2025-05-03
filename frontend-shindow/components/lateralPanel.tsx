@@ -1,22 +1,65 @@
-import { useRef } from "react";
 import { useExplorer } from "./explorerProvider";
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from "react-icons/md";
+import { BiWorld } from "react-icons/bi";
+import { BiDonateHeart } from "react-icons/bi";
+import { IoMailOpenOutline } from "react-icons/io5";
+import { MdLogout } from "react-icons/md";
+import {
+  LOGOUT_ENDPOINT,
+  SHINDOW_CONTACT_MAIL,
+  SHINDOW_DONATIONS_URL,
+  SHINDOW_WEBSITE_URL,
+} from "@/constants";
+import axiosInstance from "@/utils/axiosInstance";
+import EnvironmentManager from "@/utils/EnvironmentManager";
+import logoutErrorHandler from "@/errorHandlers/logoutErrorHandler";
+import { useRouter } from "next/navigation";
 
 export default function LateralPanel() {
   const { isLateralPanelOpen, setLateralPanelOpen } = useExplorer();
+  const { setIsLoading, setErrorModalMessage, setErrorModalOpen } =
+    useExplorer();
+  const environmentManager = EnvironmentManager.getInstance();
+  const apiBaseUrl = environmentManager.GetEnvironmentVariable(
+    "NEXT_PUBLIC_API_BASE_URL"
+  );
+  const router = useRouter();
 
   const logout = () => {
-    //
+    setIsLoading(true);
+
+    axiosInstance
+      .post(`${apiBaseUrl}${LOGOUT_ENDPOINT}`)
+      .then((res) => {
+        localStorage.clear();
+        router.push("/");
+      })
+      .catch((err) => {
+        console.error(
+          `The following error has occurred while trying to logout: `
+        );
+        console.error(err);
+
+        setErrorModalMessage(logoutErrorHandler(err));
+        setErrorModalOpen(true);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const redirectTo = (url: string) => {
+    window.open(url, "_blank");
   };
 
   return isLateralPanelOpen ? (
     <div
-      className="bg-custom-green-50 absolute left-0 top-full w-80 flex flex-col justify-between"
+      className="bg-custom-green-50 absolute left-0 top-full w-80 p-4 flex flex-col"
       style={{ height: "calc(100vh - 80px)" }}
     >
       <div
-        className="absolute right-[-30px] bg-custom-green-150 py-3 rounded-r-xl cursor-pointer
-      hover:scale-105 duration-200"
+        className="absolute right-[-32px] top-0 bg-custom-green-150 py-4 rounded-r-xl 
+        w-8 flex justify-end cursor-pointer z-50"
         onClick={() => {
           setLateralPanelOpen(false);
         }}
@@ -24,74 +67,72 @@ export default function LateralPanel() {
         <MdKeyboardArrowLeft className="text-3xl" />
       </div>
 
-      <div className="p-4">
-        <div className="mt-2">
-          <p>Currently logged as</p>
-          <p className="text-2xl font-semibold ">root</p>
-        </div>
-
-        <div className="space-y-1 flex flex-col p-4">
-          <a
-            href="https://www.shindow.mfranco289.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/80 hover:text-white hover:scale-[101%] duration-200 cursor-pointer"
-          >
-            Website
-          </a>
-          <a
-            href="https://www.paypal.com/donate/?hosted_button_id=MQZ3SCHEFD9HC"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/80 hover:text-white hover:scale-[101%] duration-200 cursor-pointer"
-          >
-            Help with your donation
-          </a>
-          <a
-            href="mailto:matias.franco289@gmail.com"
-            className="text-white/80 hover:text-white hover:scale-[101%] duration-200 cursor-pointer"
-          >
-            Contact
-          </a>
-          <p className="text-white/80 hover:text-white hover:scale-[101%] duration-200 cursor-pointer">
-            Logout
-          </p>
-        </div>
-
-        <div className="max-h-48 h-48">
-          <p className="text-xl font-semibold">Changelog</p>
-
-          <ul className="list-disc p-4 overflow-y-scroll overflow-x-clip space-y-1 break-words h-full w-full">
-            <li>Shindow was just released!</li>
-          </ul>
-        </div>
-
-        <div className="max-h-48 h-48">
-          <p className="text-xl font-semibold">Next version features</p>
-
-          <ul className="list-disc p-4 overflow-y-scroll overflow-x-clip space-y-1 break-words h-full w-full">
-            <li>Download resources</li>
-            <li>Another things</li>
-            <li>Cositas se vienen</li>
-            <li>Icon personalization</li>
-            <li>Icon personalization</li>
-            <li>Icon personalization</li>
-            <li>Icon personalization</li>
-            <li>Icon personalization</li>
-            <li>Icon personalization</li>
-            <li>Icon personalization</li>
-          </ul>
-        </div>
+      {/* User info */}
+      <div className="bg-custom-green-100 rounded-xl p-4">
+        <p className="text-white/50">Currently logged as</p>
+        <h2 className="text-2xl font-bold">
+          {localStorage.getItem("username")}
+        </h2>
       </div>
 
-      <div className="p-4 text-sm">
-        <h2 className="text-3xl font-bold">SHINDOW</h2>
-        <p>Version 1.0</p>
+      <div className="flex flex-col justify-between flex-1">
+        {/* Superior */}
+        <div className="mt-4 ">
+          <div
+            className="flex items-center cursor-pointer hover:bg-white/20 p-4 rounded-lg duration-200"
+            onClick={() => {
+              redirectTo(SHINDOW_WEBSITE_URL);
+            }}
+          >
+            <BiWorld className="text-2xl" />
+            <p className="ml-3">Website</p>
+          </div>
+
+          <div
+            className="flex items-center cursor-pointer hover:bg-white/20 p-4 rounded-lg duration-200"
+            onClick={() => {
+              redirectTo(SHINDOW_DONATIONS_URL);
+            }}
+          >
+            <BiDonateHeart className="text-2xl" />
+            <p className="ml-3">Donations</p>
+          </div>
+
+          <div
+            className="flex items-center cursor-pointer hover:bg-white/20 p-4 rounded-lg duration-200"
+            onClick={() => {
+              window.location.href = `mailto:${SHINDOW_CONTACT_MAIL}`;
+            }}
+          >
+            <IoMailOpenOutline className="text-2xl" />
+            <p className="ml-3">Contact</p>
+          </div>
+        </div>
+
+        {/* Bottom */}
+        <div>
+          <button
+            className="flex mb-8 hover:bg-white/20 w-full p-4 rounded-lg duration-200"
+            onClick={logout}
+          >
+            <MdLogout className="text-2xl" />
+            <p className="ml-3">Logout</p>
+          </button>
+
+          {/* Sepatator */}
+          <div className="w-full border-b border-white/20 my-4" />
+
+          {/* Logo */}
+          <div className="p-2">
+            <h2 className="text-xl font-bold">SHINDOW</h2>
+            <p className="text-white/50">Version 1.0</p>
+          </div>
+        </div>
       </div>
     </div>
   ) : (
     <div
-      className="absolute left-[-8px] top-full bg-custom-green-150 py-3 rounded-r-xl 
+      className="absolute left-[-8px] top-full bg-custom-green-150 py-4 rounded-r-xl 
     hover:left-0 w-8 flex justify-end duration-200 cursor-pointer"
       onClick={() => {
         setLateralPanelOpen(true);

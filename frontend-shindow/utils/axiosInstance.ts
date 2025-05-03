@@ -19,10 +19,10 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (
       error.response?.status === HTTP_STATUS_CODE_UNAUTHORIZED &&
-      window.location.pathname !== "/login"
+      window.location.pathname !== "/"
     ) {
       localStorage.clear();
-      window.location.href = "/login";
+      window.location.href = "/";
     }
 
     return Promise.reject(error);
