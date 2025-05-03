@@ -1,34 +1,29 @@
 # Shindow
 
-## Development mode
+## Previous configurations
 
-### Previous configurations
-
-Before attempt to run the project you must configure some environment variables. <br>
+Before attempt to run the project in any mode you will need to setup the environment variables.
 The project is divided in three folders:
 
 - backend-shindow: This folder is for the API.
 - frontend-shindow: This folder is for the frontend.
 - server: This folder is the ubuntu server to which the API will connect.
 
-In the `backend-shindow` there is a file `env_example.txt`. Copy the content of the file and paste it in a new file in the same directory and name it `.env.development`.
-You will need to change the variable `SERVER_IP` with your own local ip.
+### Creating environment files
 
-In the `frontend-shindow` there is also a file `env_example.txt`. Copy the content of the file and paste it in a new file in the same directory and name it `.env.local`.
+To set up the environment files, follow these steps:
 
-### Running the project
+1. Navigate to the `backend-shindow` directory:
 
-In order to run the project just execute the following command in the root directory of the project.
+   - Locate the file `env_example.txt`.
+   - Copy its content and paste it into a new file named `.env.production` for production mode or `.env.development` for development mode.
+   - If unsure, default to `.env.production`.
 
-```
-npm run dev
-```
+2. Navigate to the `frontend-shindow` directory:
 
-If you did not modify it in the environment file the client should be running now in `http://localhost:3000`.
+   - Locate the file `env_example.txt`.
+   - Copy its content and paste it into a new file named `.env.production` for production mode or `.env.development` for development mode.
+   - If unsure, default to `.env.production`.
 
-You can attempt to login from `http://localhost:3000/login`. The default credentials are:
-
-- user: root
-- password: root
-
-You can modify this by changing the Dockerfile in the `server` folder.
+3. There is only one thing you need to edit in the `.env` file in `backend-shindow`. And it is the variable _SERVER_IP_. Here you will need to replace with the IP if your server.
+4. Ensure that the environment files are correctly configured in both directories before proceeding.
