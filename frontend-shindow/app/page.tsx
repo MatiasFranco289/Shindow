@@ -1,12 +1,22 @@
 "use client";
 import LoginForm from "@/components/loginForm";
 import CustomModal from "@/components/customModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState<string>("");
   const [modalTitle, setModalTitle] = useState<string>("");
+  const router = useRouter();
+
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+
+    if (username) {
+      router.push("/explorer");
+    }
+  });
 
   return (
     <div className="w-full min-h-screen bg-custom-green-100 flex justify-center items-center p-6">
