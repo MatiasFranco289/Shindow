@@ -21,7 +21,7 @@ export default function UploadMenu() {
       {isUploadMenuOpen && (
         <div
           className="absolute top-9 right-0 bg-custom-green-150 p-4 rounded-lg w-[450px] max-h-[50vh]
-        overflow-scroll duration-200"
+        overflow-hidden duration-200"
         >
           {uploadClipboard.length ? (
             uploadClipboard.map((resourceToUpload, index) => {

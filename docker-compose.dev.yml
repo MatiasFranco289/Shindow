@@ -12,6 +12,7 @@ services:
       - "5000:5000"
     volumes:
       - ./backend-shindow:/shindow/backend-shindow
+      - /shindow/backend-shindow/node_modules
 
   front:
     build:
@@ -26,6 +27,7 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend-shindow:/shindow/frontend-shindow
+      - /shindow/frontend-shindow/node_modules
 
   ubuntu-ssh:
     build:
