@@ -20,8 +20,8 @@ const expressSessionMiddleware = (secret: string, sessionMaxAge: string) => {
     cookie: {
       maxAge: parseInt(sessionMaxAge),
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      secure: false,
+      sameSite: "lax",
     },
   });
 };

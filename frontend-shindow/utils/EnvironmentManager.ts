@@ -83,6 +83,10 @@ export default class EnvironmentManager {
    * @returns - A string with the value of the variable.
    */
   public GetEnvironmentVariable(varName: keyof EnvironmentVariables) {
+    if (typeof window !== "undefined") {
+      return (window as any).env[varName];
+    }
+
     return this.environmentVariables[varName];
   }
 }

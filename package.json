@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "docker-compose -f docker-compose.dev.yml up",
-    "prd": "docker-compose -f docker-compose.prod-yml up",
-    "dev:down": "docker-compose -f docker-compose.dev.yml down",
-    "prod:down": "docker-compose -f docker-compose.prod.yml down"
+    "dev": "docker compose -f docker-compose.dev.yml up",
+    "prd": "docker compose -f docker-compose.prod-yml up",
+    "dev:down": "docker compose -f docker-compose.dev.yml down",
+    "prod:down": "docker compose -f docker-compose.prod.yml down"
   },
   "keywords": [],
   "author": "",

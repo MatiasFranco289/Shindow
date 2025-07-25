@@ -124,6 +124,7 @@ export default function FileExplorer() {
       const resourceListEndpoint = `${apiBaseUrl}${RESOURCE_LIST_ENDPOINT}?path=${encodeURIComponent(
         path
       )}`;
+
       const hiddenResourceNames = [".", ".."];
 
       axiosInstance
