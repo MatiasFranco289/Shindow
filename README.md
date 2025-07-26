@@ -2,7 +2,7 @@
 
 ## Previous requirements
 
-Before attempt to run the project in any mode you will need to setup the environment variables and have the following tools installed:
+Before attempting to run the project in any mode you will need to setup the environment variables and have the following tools installed:
 
 - Docker.
 - docker-compose.
@@ -67,7 +67,7 @@ To set up the environment files, follow these steps:
 
 ## Running the project
 
-After create the .env files in both, `frontend-shindow` and `backend-shindow` run the following command to start the project:
+After creating the .env files in both, `frontend-shindow` and `backend-shindow` run the following command at the root of the project to start it:
 
 ```
 docker-compose -f docker-compose.dev.yml up
@@ -77,4 +77,4 @@ docker-compose -f docker-compose.dev.yml up
 
 After that, the project should be running via docker and you can open it in your browser:
 
-http://localhost:5000
+http://localhost:3000
