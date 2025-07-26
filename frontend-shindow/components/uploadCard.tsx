@@ -7,27 +7,32 @@ import { UploadClipboardItem } from "@/interfaces";
 
 interface UploadCardProps {
   status: "queued" | "serverUpload" | "sshUpload";
-  progress: number;
-  totalSize: number;
   unit: "kb" | "mb" | "gb" | "tb";
   uploadClipboardItem: UploadClipboardItem;
 }
 
 export default function UploadCard({
   status,
-  progress,
-  totalSize,
   unit,
   uploadClipboardItem,
 }: UploadCardProps) {
-  const currentUploadedSize = totalSize * (progress / 100);
-
+  const totalSize = uploadClipboardItem.file.size;
   const statusMessage = {
     queued: "In Queue",
     serverUpload: "Transferring to remote",
     sshUpload: "Transferring to server",
     complete: "Upload completed",
   };
+
+  function formatFileSize(bytes: number): string {
+    if (bytes === 0) return "0 B";
+
+    const sizes = ["B", "KB", "MB", "GB", "TB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const size = bytes / Math.pow(1024, i);
+
+    return `${size.toFixed(2)} ${sizes[i]}`;
+  }
 
   useEffect(() => {
     uploadClipboardItem.enterAnimationPlayed = true;
@@ -66,10 +71,12 @@ export default function UploadCard({
               <GrStorage className="text-2xl" />
 
               <div className="flex">
-                <p className="ml-1">{currentUploadedSize}</p>
+                <p className="ml-1">{formatFileSize(totalSize)}</p>
                 <p className="mx-1 text-white/40">/</p>
                 <p className="text-white/40">
-                  {totalSize + " " + unit.toUpperCase()}
+                  {formatFileSize(
+                    (totalSize * uploadClipboardItem.progress) / 100
+                  )}
                 </p>
               </div>
             </div>

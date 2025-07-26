@@ -23,8 +23,8 @@ import { useExplorer } from "@/components/explorerProvider";
 import KeyboardController from "@/utils/KeyboardController";
 import CustomContextMenuLogic from "@/components/customContextMenuLogic";
 import HelpMenu from "@/components/helpMenu";
-import Panel from "@/components/lateralPanel";
-import LateralPanel from "@/components/lateralPanel";
+import { toast } from "react-toastify";
+import { customToastStyles } from "@/customToastSyles";
 
 export default function FileExplorer() {
   const environmentManager = EnvironmentManager.getInstance();
@@ -207,6 +207,11 @@ export default function FileExplorer() {
     setActiveResources(new Set<Resource>());
   };
 
+  const isDirectory = (item: DataTransferItem): boolean => {
+    const entry = (item as any).webkitGetAsEntry?.();
+    return entry && entry.isDirectory;
+  };
+
   return (
     <div
       className={`${
@@ -241,19 +246,39 @@ export default function FileExplorer() {
           e.stopPropagation();
           setIsDragging(false);
 
-          const files = e.dataTransfer.files;
+          const files = e.dataTransfer.items;
+          const validFiles: Array<File> = [];
 
-          const filesToUpload: Array<UploadClipboardItem> = Array.from(
-            files
-          ).map((file) => {
-            return {
-              id: crypto.randomUUID(),
-              file: file,
-              enterAnimationPlayed: false,
-              status: "queued",
-              progress: 0,
-            };
+          // Check and filter valid files
+          Array.from(files).forEach((resource) => {
+            if (resource.kind !== "file") return;
+
+            if (!isDirectory(resource)) {
+              const file = resource.getAsFile();
+              if (file) validFiles.push(file);
+            } else {
+              const entry = resource.webkitGetAsEntry();
+
+              toast.error(
+                `The resource "${
+                  entry ? entry.name : "Unknown"
+                }" was ignored because it is a directory.`,
+                customToastStyles.error
+              );
+            }
           });
+
+          const filesToUpload: Array<UploadClipboardItem> = validFiles.map(
+            (file) => {
+              return {
+                id: crypto.randomUUID(),
+                file: file,
+                enterAnimationPlayed: false,
+                status: "queued",
+                progress: 0,
+              };
+            }
+          );
 
           setUploadClipboad(filesToUpload);
         }}

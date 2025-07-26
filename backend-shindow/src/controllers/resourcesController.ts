@@ -23,6 +23,7 @@ import {
 import logger from "../utils/logger";
 import upload from "../utils/multer";
 import { throttle } from "lodash";
+import { escapePath } from "../utils/utils";
 
 const sshConnectionManager = SshConnectionManager.getInstance();
 const fileManager = FileManager.getInstance();
@@ -45,13 +46,14 @@ const resourcesController = {
   ) => {
     const sessionId = req.sessionID;
     const path = (req.query.path as string) || "/";
-    const escapedPath = path.replace(/["\\]/g, "\\$&");
+    const escapedPath = escapePath(path);
     const command = "ls -la --full-time";
+    const finalCommand = `${command} $'${escapedPath}'`;
 
     try {
       const result = await sshConnectionManager.ExecuteCommand(
         sessionId,
-        `${command} "${escapedPath}"`
+        finalCommand
       );
 
       const resourcesList: Array<Resource> = fileManager.LsToResource(
@@ -87,7 +89,7 @@ const resourcesController = {
     (io: Server) =>
     async (req: any, res: Response<ApiResponse<null>>, next: NextFunction) => {
       const sessionId = req.sessionID;
-      const remotePath = req.query.remotePath as string;
+      const remotePath = escapePath(req.query.remotePath);
       const uploadMiddleware = upload.single("file");
 
       const response: ApiResponse<null> = {
@@ -102,14 +104,15 @@ const resourcesController = {
 
       // Validates if the provided remotePath exist in the SSH server and you have permissions
       try {
-        await sshConnectionManager.ExecuteCommand(
-          sessionId,
-          `ls ${remotePath}`
-        );
+        const command = "ls";
+        const finalCommand = `${command} $'${remotePath}'`;
+        await sshConnectionManager.ExecuteCommand(sessionId, finalCommand);
       } catch (err) {
         customError.error = new Error(REMOTE_PATH_NOT_VALID);
         return next(customError);
       }
+
+      res.status(200);
 
       uploadMiddleware(req, res, async (err: Error) => {
         if (err) {
@@ -122,7 +125,7 @@ const resourcesController = {
         // Validation of fields file and remotePath
         if (!file) return next(customError);
 
-        const fileName = file.filename;
+        const fileName = decodeURIComponent(file.filename);
         const filePath = path.join(DEFAULT_UPLOAD_DIRECTORY, fileName);
         const fileSize = file.size;
         let uploaded = 0;
@@ -132,7 +135,6 @@ const resourcesController = {
         );
 
         io.emit("upload-start");
-
         // Emit progress of the upload in realtime
         const fileStream = fs.createReadStream(filePath);
 
@@ -227,8 +229,8 @@ const resourcesController = {
     };
 
     let finalPath = `${path}/${name}`;
-    finalPath = finalPath.replace(/["\\]/g, "\\$&");
-    let finalCommand = `${command} "${finalPath}"`;
+    finalPath = escapePath(finalPath);
+    let finalCommand = `${command} $'${finalPath}'`;
 
     try {
       await sshConnectionManager.ExecuteCommand(sessionId, finalCommand);
@@ -261,10 +263,11 @@ const resourcesController = {
   ) => {
     const sessionId = req.sessionID;
     const path = req.query.path as string;
-    const escapedPath = path.replace(/["\\]/g, "\\$&");
+    const escapedPath = escapePath(path);
 
     const { recursive, force } = req.body;
     const command = `rm${recursive ? " -r" : ""}${force ? " -f" : ""}`;
+    const finalCommand = `${command} $'${escapedPath}'`;
     const response: ApiResponse<null> = {
       status_code: HTTP_STATUS_CODE_OK,
       message: "The resource was successfully deleted.",
@@ -272,10 +275,7 @@ const resourcesController = {
     };
 
     try {
-      await sshConnectionManager.ExecuteCommand(
-        sessionId,
-        `${command} "${escapedPath}"`
-      );
+      await sshConnectionManager.ExecuteCommand(sessionId, finalCommand);
 
       res.status(response.status_code).json(response);
     } catch (err) {
@@ -306,20 +306,17 @@ const resourcesController = {
     const sessionId = req.sessionID;
     const { originPath, destinationPath, recursive } = req.body;
     const command = `cp${recursive ? " -rT" : ""}`;
+    const escapedOriginPath = escapePath(originPath);
+    const escapedDestinationPath = escapePath(destinationPath);
+    const finalCommand = `${command} $'${escapedOriginPath}' $'${escapedDestinationPath}'`;
     const response: ApiResponse<null> = {
       status_code: HTTP_STATUS_CODE_OK,
       message: "Resource successfully copied.",
       data: [],
     };
 
-    const escapedOriginPath = originPath.replace(/["\\]/g, "\\$&");
-    const escapedDestinationPath = destinationPath.replace(/["\\]/g, "\\$&");
-
     try {
-      await sshConnectionManager.ExecuteCommand(
-        sessionId,
-        `${command} "${escapedOriginPath}" "${escapedDestinationPath}"`
-      );
+      await sshConnectionManager.ExecuteCommand(sessionId, finalCommand);
 
       res.status(response.status_code).json(response);
     } catch (err) {
@@ -344,10 +341,11 @@ const resourcesController = {
   moveResource: async (req: Request, res: Response, next: NextFunction) => {
     const sessionId = req.sessionID;
     const { originPath, destinationPath } = req.body;
-    const escapedOriginPath = originPath.replace(/["\\]/g, "\\$&");
-    const escapedDestinationPath = destinationPath.replace(/["\\]/g, "\\$&");
-
     const command = "mv";
+    const escapedOriginPath = escapePath(originPath);
+    const escapedDestinationPath = escapePath(destinationPath);
+    const finalCommand = `${command} $'${escapedOriginPath}' $'${escapedDestinationPath}'`;
+
     const response: ApiResponse<null> = {
       status_code: HTTP_STATUS_CODE_OK,
       message: "Resource successfully moved.",
@@ -355,10 +353,7 @@ const resourcesController = {
     };
 
     try {
-      await sshConnectionManager.ExecuteCommand(
-        sessionId,
-        `${command} "${escapedOriginPath}" "${escapedDestinationPath}"`
-      );
+      await sshConnectionManager.ExecuteCommand(sessionId, finalCommand);
 
       res.status(response.status_code).json(response);
     } catch (err) {

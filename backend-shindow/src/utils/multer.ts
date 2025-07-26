@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
     cb(null, DEFAULT_UPLOAD_DIRECTORY);
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
+    cb(null, decodeURIComponent(file.originalname));
   },
 });
 
