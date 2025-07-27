@@ -21,6 +21,4 @@ export const HTTP_STATUS_CODE_NOT_FOUND = 404;
 export const HTTP_STATUS_CODE_SERVICE_UNAVAILABLE = 503;
 
 export const SHINDOW_WEBSITE_URL = "https://shindow.mfranco289.com";
-export const SHINDOW_DONATIONS_URL =
-  "https://shindow.mfranco289.com/donations.com";
 export const SHINDOW_CONTACT_MAIL = "matias.franco289@gmail.com";

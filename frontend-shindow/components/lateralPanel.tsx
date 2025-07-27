@@ -7,7 +7,6 @@ import { MdLogout } from "react-icons/md";
 import {
   LOGOUT_ENDPOINT,
   SHINDOW_CONTACT_MAIL,
-  SHINDOW_DONATIONS_URL,
   SHINDOW_WEBSITE_URL,
 } from "@/constants";
 import axiosInstance from "@/utils/axiosInstance";
@@ -86,16 +85,6 @@ export default function LateralPanel() {
           >
             <BiWorld className="text-2xl" />
             <p className="ml-3">Website</p>
-          </div>
-
-          <div
-            className="flex items-center cursor-pointer hover:bg-white/20 p-4 rounded-lg duration-200"
-            onClick={() => {
-              redirectTo(SHINDOW_DONATIONS_URL);
-            }}
-          >
-            <BiDonateHeart className="text-2xl" />
-            <p className="ml-3">Donations</p>
           </div>
 
           <div
