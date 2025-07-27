@@ -31,6 +31,20 @@ To set up the environment files, follow these steps:
 
 3. Ensure that the environment files are correctly configured in both directories before proceeding.
 
+## Running the project
+
+After creating the .env files in both, `frontend-shindow` and `backend-shindow` run the following command at the root of the project to start it:
+
+```
+docker-compose -f docker-compose.dev.yml up
+```
+
+`* In the latest version of docker the command was changed by "docker compose" (without the '-').`
+
+After that, the project should be running via docker and you can open it in your browser:
+
+http://localhost:3000
+
 ### Backend environment variables explanation
 
 - `API_PORT`: Specifies the port on which the API server will run. This is the entry point for backend requests.
@@ -65,16 +79,44 @@ To set up the environment files, follow these steps:
 
 - `NEXT_PUBLIC_CLIENT_BASE_URL`: The base URL where the frontend application is running. This is used for cross-origin communication and other client-specific configurations. Example: `'http://localhost:3000'`.
 
-## Running the project
+## Create a Production Build
 
-After creating the .env files in both, `frontend-shindow` and `backend-shindow` run the following command at the root of the project to start it:
+To create an optimized production build, follow these steps:
 
+1 - Make sure to create and properly configure the `.env.development` files inside both `backend-shindow` and `frontend-shindow`.
+
+2 - Inside `backend-shindow`, delete the `dist` folder to clean up previous builds, then run the command:
+
+```bash
+npm run build
 ```
-docker-compose -f docker-compose.dev.yml up
+
+3 - Inside frontend-shindow, delete the .next folder to remove previous builds, then run the command:
+
+```bash
+npm run build
 ```
 
-`* In the latest version of docker the command was changed by "docker compose" (without the '-').`
+4 - Inside the project's root folder, run the command:
 
-After that, the project should be running via docker and you can open it in your browser:
+```bash
+npm run prd:build
+```
 
-http://localhost:3000
+Alternatively, you can use the command:
+
+```bash
+docker compose -f docker-compose.prod.yml build --no-cache
+```
+
+5 - This should set up both containers correctly. If you need to start them, run the following command inside the project's root folder:
+
+```bash
+npm run prd:start
+```
+
+or alternatively:
+
+```bash
+docker compose -f docker-compose.prod.yml up
+```

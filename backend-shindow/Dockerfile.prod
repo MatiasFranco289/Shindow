@@ -1,14 +1,12 @@
-# Node slim
+# Node 20.15.0
 FROM node:slim
 
 WORKDIR /shindow/backend-shindow
 
-COPY package.json .
-
-RUN npm install
+COPY package*.json ./
+RUN npm ci --omit=dev
 
 COPY dist ./dist
 
 EXPOSE 5000
-
 CMD ["node", "dist/index.js"]
