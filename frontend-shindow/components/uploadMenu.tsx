@@ -30,8 +30,6 @@ export default function UploadMenu() {
                   key={`upload_card_${index}`}
                   status={"queued"}
                   unit="mb"
-                  progress={20}
-                  totalSize={100}
                   uploadClipboardItem={resourceToUpload}
                 />
               );

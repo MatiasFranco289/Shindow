@@ -13,7 +13,8 @@ const storage = multer.diskStorage({
     cb(null, DEFAULT_UPLOAD_DIRECTORY);
   },
   filename: (req, file, cb) => {
-    cb(null, decodeURIComponent(file.originalname));
+    const utf8Name = Buffer.from(file.originalname, "latin1").toString("utf8");
+    cb(null, utf8Name);
   },
 });
 
