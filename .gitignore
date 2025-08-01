@@ -1,4 +1,12 @@
-dist/
-node_module/
-dist/
+**/dist/
+**/node_modules/
+**/dist/
+**/logs/*
 .env*
+**/.next/*
+**/uploads
+**/tests/ssh-test-server/*
+*.key
+*.key.pub
+server/volumes
+env.js

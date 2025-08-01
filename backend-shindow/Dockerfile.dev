@@ -1,0 +1,14 @@
+# Node slim
+FROM node:slim
+
+WORKDIR /shindow/backend-shindow
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["npx", "ts-node-dev", "src/index.ts"]

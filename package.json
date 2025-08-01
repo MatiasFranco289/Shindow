@@ -1,0 +1,19 @@
+{
+  "name": "shindow",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:start": "docker compose -f docker-compose.dev.yml up",
+    "prd:start": "docker compose -f docker-compose.prod.yml up",
+    "prd:build": "docker compose -f docker-compose.prod.yml build --no-cache",
+    "dev:down": "docker compose -f docker-compose.dev.yml down",
+    "prod:down": "docker compose -f docker-compose.prod.yml down"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^29.5.14"
+  }
+}

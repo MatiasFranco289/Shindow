@@ -1,0 +1,43 @@
+services:
+  back:
+    build:
+      context: ./backend-shindow
+      dockerfile: Dockerfile.dev
+    container_name: backend-shindow-dev
+    image: backend-shindow-dev
+    env_file: ./backend-shindow/.env.development
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend-shindow:/shindow/backend-shindow
+      - /shindow/backend-shindow/node_modules
+
+  front:
+    build:
+      context: ./frontend-shindow
+      dockerfile: Dockerfile.dev
+    container_name: frontend-shindow-dev
+    image: frontend-shindow-dev
+    env_file: ./frontend-shindow/.env.development
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend-shindow:/shindow/frontend-shindow
+      - /shindow/frontend-shindow/node_modules
+
+  ubuntu-ssh:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    image: ubuntu:rolling
+    container_name: ubuntu-shindow
+    ports:
+      - "2222:22"
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./server/volumes:/home

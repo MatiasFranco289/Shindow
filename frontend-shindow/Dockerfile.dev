@@ -1,0 +1,17 @@
+# Node 20.15.0
+FROM node:slim
+
+WORKDIR /shindow/frontend-shindow
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+RUN chmod +x ./entrypoint.sh
+
+EXPOSE 3000
+
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["npm", "run", "dev"]
